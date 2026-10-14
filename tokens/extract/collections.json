@@ -1,0 +1,87 @@
+{
+  "$comment": [
+    "룰북이 전제하는 컬렉션 이름과 최상위 경로 목록입니다.",
+    "추출 전에 Figma 실제 컬렉션을 이 목록과 대조합니다 (to-dtcg.mjs --verify).",
+    "이름이 하나라도 다르면 추출을 멈추고 사용자에게 보고해야 합니다 —",
+    "룰북들이 '토큰 이름 자체가 다르면 이 룰북을 적용하지 마세요' 라고 명시하고 있습니다.",
+    "docs/TOKENS.md 의 '이름 체계 자체가 다른 경우' 절차를 따르세요."
+  ],
+  "expected": {
+    "color-primitive": {
+      "rulebook": "color-token-rule.md §1",
+      "emit": false,
+      "heads": []
+    },
+    "color-semantic": {
+      "rulebook": "color-token-rule.md §1-§6",
+      "emit": true,
+      "heads": ["interactive", "brand", "white", "black", "success", "error", "warning", "info"],
+      "modeNamePattern": "^(light|dark)/[a-z0-9-]+$",
+      "modeNote": "명도/브랜드 2단 구조. §9 참고 — 현재는 전부 light/* 일 수 있습니다."
+    },
+    "shape-primitive": {
+      "rulebook": "shape-token-rule.md §1",
+      "emit": false,
+      "heads": []
+    },
+    "shape-semantic": {
+      "rulebook": "shape-token-rule.md §1-§2",
+      "emit": true,
+      "heads": ["spacing", "radius", "size"]
+    },
+    "icon-size": {
+      "rulebook": "shape-token-rule.md §3 + icon-prop-rule.md",
+      "emit": true,
+      "heads": ["icon-size", "icon-line-height"],
+      "modeNote": "색상 테마와 무관한 반응형 스케일 축 (size-1 ~ size-9 등). 텍스트 스텝 번호와 매칭됩니다."
+    },
+    "icon-prop": {
+      "rulebook": "icon-prop-rule.md",
+      "emit": true,
+      "heads": [],
+      "modeNote": "부트스트랩 시 실제 heads 확인 필요. icon-frame-* 컴포넌트가 소비하는 토큰 컬렉션."
+    },
+    "typeface-primitive": {
+      "rulebook": "typography-token-rule.md §1",
+      "emit": false,
+      "heads": []
+    },
+    "typeface-semantic": {
+      "rulebook": "typography-token-rule.md §1-§3",
+      "emit": true,
+      "heads": ["font-family", "font-weight", "font-size", "line-height"],
+      "modeNote": "브랜드×언어 조합. 색상 모드와 다른 축입니다 (§3)."
+    },
+    "effects": {
+      "rulebook": "effect-token-rule.md §0-§3",
+      "emit": true,
+      "heads": ["shadow", "background-blur", "liquid-glass"]
+    },
+    "liquid-glass": {
+      "rulebook": "liquid-glass-rule.md",
+      "emit": true,
+      "heads": [],
+      "modeNamePattern": "^(supported|unsupported)$",
+      "modeNote": "liquid-glass 효과의 플랫폼별 지원 여부 스위치. effects/liquid-glass/* (시각적 정의) 와 별개 컬렉션. 부트스트랩 시 실제 heads 확인 필요."
+    },
+    "language": {
+      "rulebook": "language-rule.md",
+      "emit": false,
+      "heads": [],
+      "note": "다국어 i18n 문자열 컬렉션. design-tokens.json / theme.css 파이프라인이 아닌 별도 i18n 파일로 추출해서 i18n 라이브러리로 소비. 부트스트랩 시 처리 방식 결정."
+    }
+  },
+  "styles": {
+    "textStyles": {
+      "rulebook": "style-rule.md",
+      "required": true,
+      "namePattern": "^[a-z]+/[a-z]+/[a-z0-9]+$",
+      "note": "{카테고리}/{굵기}/{스텝}. 굵기가 가운데 세그먼트입니다 (§2)."
+    },
+    "effectStyles": {
+      "rulebook": "effect-token-rule.md §0",
+      "required": false,
+      "note": "effects 변수를 감싼 레거시 Effect Style. 있으면 함께 덤프해서 대조합니다."
+    }
+  }
+}

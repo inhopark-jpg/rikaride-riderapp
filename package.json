@@ -1,0 +1,41 @@
+{
+  "name": "rikaride",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "tokens:build": "node tokens/build-theme.mjs",
+    "tokens:verify": "node tokens/extract/to-dtcg.mjs --verify",
+    "tokens:extract": "node tokens/extract/to-dtcg.mjs",
+    "rulebook:verify": "node tokens/verify-rulebook.mjs",
+    "predev": "npm run tokens:build",
+    "prebuild": "npm run tokens:build",
+    "prestorybook": "npm run tokens:build",
+    "prebuild-storybook": "npm run tokens:build"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-designs": "8.2.1",
+    "@storybook/addon-essentials": "8.6.18",
+    "@storybook/react": "8.6.18",
+    "@storybook/react-vite": "8.6.18",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.2.0",
+    "storybook": "8.6.18",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vite": "6.4.3"
+  }
+}
