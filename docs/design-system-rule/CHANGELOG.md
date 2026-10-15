@@ -14,6 +14,10 @@
 
 ---
 
+## 2026-10-15
+
+- **design-to-dev-rule.md §5.1, FIGMA-GUIDEBOOK.md §3** — 스켈레톤 분리 예시의 이름 `.skeleton-badge-pill` / `.skeleton-badge-ghost` 를 `.skeleton/badge-pill` / `.skeleton/badge-ghost` 로 수정 — `component-structure-rule.md` §3 스키마(`.skeleton/{family}-{subgroup}`)와 §2 변환 표(`.skeleton/btn-ghost`)는 슬래시를 쓰는데 예시만 하이픈이라 오타였음. 실제 Figma 분리 작업(badge)이 스키마 표기를 따랐음
+
 ## 2026-10-09
 
 - **color-token-rule.md §3 「그룹 종류 선택」 신설** — 그룹 종류는 상호작용 여부로 먼저 갈림: 정적 컴포넌트는 처음부터 non-interactive, 상호작용 컴포넌트는 interactive 1순위이되 그래픽 요소(knob 등)·대비 부적절 시 해당 레이어만 non-interactive 차용 허용(새 그룹 컨텍스트, variant별 스케일 지정, pressed 는 state-overlay, description 에 근거) — pattern-switch 제작 중 interactive 토큰만으로는 knob·off 트랙 색을 정할 수 없었고, 룰북에 해당 경우가 없어 QA 가 그룹 불일치로 오판할 여지가 있었음
