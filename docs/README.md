@@ -8,8 +8,9 @@
 
 | 작업 | 읽을 문서 (순서대로) |
 |---|---|
-| Figma → 코드 (화면/컴포넌트 구현) | `design-system-rule/component-structure-rule.md` → `design-system-rule/design-to-dev-rule.md` → 해당 토큰 룰 |
-| 코드 → Figma (컴포넌트를 Figma에 만들 때) | `design-system-rule/component-structure-rule.md` → `design-system-rule/design-to-dev-rule.md` |
+| Figma → 코드 (화면/컴포넌트 구현) | `design-system-rule/component-structure-rule.md` → `design-system-rule/section-layout-rule.md` → `design-system-rule/design-to-dev-rule.md` → 해당 토큰 룰 |
+| 코드 → Figma (컴포넌트를 Figma에 만들 때) | `design-system-rule/component-structure-rule.md` → `design-system-rule/section-layout-rule.md` → `design-system-rule/design-to-dev-rule.md` |
+| Figma 섹션 정리·읽기 (Organize Sections 플러그인 작업 포함) | `design-system-rule/section-layout-rule.md` → `design-system-rule/component-structure-rule.md` |
 | 컴포넌트/파일 이름 짓기 | `design-system-rule/design-to-dev-rule.md` |
 | 색을 고를 때 / 색이 맞는지 검증할 때 | `design-system-rule/color-token-rule.md` |
 | 간격·radius·아이콘 크기 | `design-system-rule/shape-token-rule.md` |
@@ -38,6 +39,7 @@
 | `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported 모드). 플랫폼별 지원 여부 스위치. `effects/liquid-glass/*` 와 별개. 앱 루트에 `[data-liquid-glass]` 서브트리 오버라이드로 적용 |
 | `language-rule.md` | `language` 컬렉션(다국어 i18n 문자열). 텍스트 노드/text prop 에만 적용, 토큰명=번역키, `design-tokens.json` 이 아닌 별도 i18n 파일로 추출. typeface-semantic 모드와 동기 전환 |
 | `component-structure-rule.md` | 스켈레톤/템플릿/패턴 3계층 판별 2단계 테스트, 중첩 규칙, 빌딩블록·스코프 플래그, 네이밍 스키마, 페이지 배치 규칙 |
+| `section-layout-rule.md` | Figma 페이지 안의 섹션 구성. 컴포넌트 레이아웃(패밀리 → sub-group → template/pattern/building-block)과 페이지 레이아웃(흐름 → sub-group → page/sub page). **위치가 곧 사용 관계** — 빌딩블록은 쓰는 쪽을 모두 포함하는 가장 안쪽 섹션 아래. 기존 섹션을 읽어 레이어·공유 범위를 판별하는 절차 |
 | `design-to-dev-rule.md` | Figma↔코드 변환 규칙 — 이름 기계적 변환 알고리즘(`.` → `_`, `pattern-` 을 앞으로) + 스켈레톤/템플릿 속성 재선언 처리 |
 
 ### 프로젝트 문서 (`docs/`)

@@ -30,7 +30,7 @@ Section 2 를 이해하기 위한 최소 용어. 상세는 Section 3 참고.
 | 용어 | 뜻 |
 |---|---|
 | **디자인 토큰** | "primary 배경색", "surface margin" 같이 이름 붙은 디자인 값. Figma 변수 = 코드의 토큰 |
-| **룰북** | `docs/design-system-rule/` 아래 7개 마크다운 파일. 토큰 이름·컴포넌트 구조·명명 규칙의 기준 문서 |
+| **룰북** | `docs/design-system-rule/` 아래 11개 마크다운 파일. 토큰 이름·컴포넌트 구조·명명 규칙의 기준 문서 |
 | **슬래시 명령** | Claude 채팅창에 `/build-tokens` 처럼 `/` 로 시작하는 짧은 명령 |
 | **에이전트** | 특정 작업 전문 AI 서브프로세스. 예: 코드 리뷰만 하는 프로세스, QA 만 하는 프로세스 |
 | **스킬** | 반복되는 작업 절차를 묶어둔 재사용 지침 파일 |
@@ -555,7 +555,7 @@ docs/
 ├── FIGMA-GUIDEBOOK.md      ← 사람이 Figma에서 직접 작업하는 법 (Claude는 안 읽음)
 ├── TOKENS.md               ← 토큰 부트스트랩·업데이트 절차
 ├── DESIGN.md               ← 제품 성격·디자인 원칙 (규칙 아님)
-└── design-system-rule/     ← 룰북 10개 + 변경 로그
+└── design-system-rule/     ← 룰북 11개 + 변경 로그
     ├── color-token-rule.md
     ├── shape-token-rule.md
     ├── typography-token-rule.md
@@ -565,6 +565,7 @@ docs/
     ├── liquid-glass-rule.md
     ├── language-rule.md
     ├── component-structure-rule.md
+    ├── section-layout-rule.md
     ├── design-to-dev-rule.md
     └── CHANGELOG.md
 ```
@@ -575,9 +576,9 @@ docs/
 
 **DESIGN.md** 는 "왜 이 프로젝트가 이런 결정을 했는가" 같은 배경 설명. 규칙이 아니라 맥락.
 
-**FIGMA-GUIDEBOOK.md** 는 아래 룰북 10개 중 사람이 Figma에서 직접 컴포넌트를 만들거나 토큰·스타일을 적용할 때 필요한 부분만 사람이 읽기 쉽게 정리한 요약본이다. Claude는 이 문서를 읽지 않고 룰북 원문을 직접 읽는다 — 이 문서와 룰북 원문이 어긋나면 원문이 맞다.
+**FIGMA-GUIDEBOOK.md** 는 아래 룰북 11개 중 사람이 Figma에서 직접 컴포넌트를 만들거나 토큰·스타일을 적용할 때 필요한 부분만 사람이 읽기 쉽게 정리한 요약본이다. Claude는 이 문서를 읽지 않고 룰북 원문을 직접 읽는다 — 이 문서와 룰북 원문이 어긋나면 원문이 맞다.
 
-**`design-system-rule/`** 의 10개 룰북은 이 프로젝트의 **기준 문서** 다. Claude 가 컴포넌트를 만들거나 토큰을 다룰 때 반드시 참조한다.
+**`design-system-rule/`** 의 11개 룰북은 이 프로젝트의 **기준 문서** 다. Claude 가 컴포넌트를 만들거나 토큰을 다룰 때 반드시 참조한다.
 
 | 룰북 | 다루는 것 |
 |---|---|
@@ -590,6 +591,7 @@ docs/
 | `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported). 플랫폼별 유리 효과 지원 스위치 |
 | `language-rule.md` | `language` 컬렉션. 다국어 i18n 문자열, 텍스트 노드/text prop 에만 적용 |
 | `component-structure-rule.md` | 스켈레톤/템플릿/패턴 3계층 판별 규칙 |
+| `section-layout-rule.md` | Figma 페이지 안의 섹션 구성(컴포넌트 레이아웃 / 페이지 레이아웃)과 기존 섹션을 읽는 법 |
 | `design-to-dev-rule.md` | Figma↔코드 변환 규칙 — 이름 변환 알고리즘 + 스켈레톤/템플릿 속성 재선언 처리 |
 
 **CHANGELOG.md** 는 룰북 편집 이력을 기록한다. 사용자·Claude 누가 편집했든 남긴다.

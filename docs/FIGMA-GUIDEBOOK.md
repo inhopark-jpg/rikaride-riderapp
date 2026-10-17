@@ -4,7 +4,7 @@
 
 **이 문서는 요약본이다.** 진짜 기준은 항상 `docs/design-system-rule/*.md` 원문이고, 여기 내용과 원문이 어긋나면 **원문이 맞다**. 원문이 바뀌면 이 문서도 같이 갱신해야 한다 — 각 섹션 제목 옆에 원문 경로를 적어뒀으니, 뭔가 이상하면 그 파일을 먼저 확인한다.
 
-값(색상 hex, 간격 숫자 등)은 이 문서에도, 어떤 룰북에도 없다. 전부 `tokens/design-tokens.json` 또는 Figma 변수 패널에서 직접 조회한다. 여기서 다루는 건 "어떤 토큰을 왜 쓰는가"뿐이다.
+디자인 토큰의 값(색상 hex, 간격 숫자 등)은 이 문서에도, 어떤 룰북에도 없다. 전부 `tokens/design-tokens.json` 또는 Figma 변수 패널에서 직접 조회한다. 여기서 다루는 건 "어떤 토큰을 왜 쓰는가"뿐이다. (예외: [§4](#4-섹션-정리하기)의 섹션 간격·배경색은 토큰이 아니라 캔버스 정리용 고정값이라 룰북과 이 문서에 직접 적는다.)
 
 ---
 
@@ -13,14 +13,15 @@
 1. [컴포넌트 만들기 — 3계층 구조](#1-컴포넌트-만들기--3계층-구조)
 2. [이름 붙이기](#2-이름-붙이기)
 3. [스켈레톤 속성을 템플릿이 다시 써야 할 때](#3-스켈레톤-속성을-템플릿이-다시-써야-할-때)
-4. [색상 적용하기](#4-색상-적용하기)
-5. [간격·radius·아이콘 크기](#5-간격radius아이콘-크기)
-6. [아이콘 배치하기](#6-아이콘-배치하기)
-7. [텍스트 스타일 적용하기](#7-텍스트-스타일-적용하기)
-8. [그림자·블러·리퀴드 글라스](#8-그림자블러리퀴드-글라스)
-9. [다국어 문자열](#9-다국어-문자열)
-10. [자주 하는 실수 모음](#10-자주-하는-실수-모음)
-11. [부록 — 룰북 원문 대응표](#11-부록--룰북-원문-대응표)
+4. [섹션 정리하기](#4-섹션-정리하기)
+5. [색상 적용하기](#5-색상-적용하기)
+6. [간격·radius·아이콘 크기](#6-간격radius아이콘-크기)
+7. [아이콘 배치하기](#7-아이콘-배치하기)
+8. [텍스트 스타일 적용하기](#8-텍스트-스타일-적용하기)
+9. [그림자·블러·리퀴드 글라스](#9-그림자블러리퀴드-글라스)
+10. [다국어 문자열](#10-다국어-문자열)
+11. [자주 하는 실수 모음](#11-자주-하는-실수-모음)
+12. [부록 — 룰북 원문 대응표](#12-부록--룰북-원문-대응표)
 
 ---
 
@@ -153,7 +154,61 @@ Figma 쪽 이름이 이 스키마를 안 따르면 자동 변환이 깨지거나
 
 ---
 
-## 4. 색상 적용하기
+## 4. 섹션 정리하기
+
+*(원문: `section-layout-rule.md`)*
+
+Figma 페이지 안의 컴포넌트와 화면은 **Section 중첩**으로 정리한다. 섹션의 위치만 보고도 누가 무엇을 쓰는지 알 수 있게 하는 게 목적이다. 핵심 원칙은 하나다 — **쓰는 쪽이 위, 재료가 아래.**
+
+> "페이지"라는 말이 두 가지라 주의한다. 그냥 "페이지"(page 섹션, 페이지 레이아웃)는 **앱·웹의 화면 페이지**고, Figma 좌측 패널의 페이지는 항상 **"Figma 페이지"**라고 부른다.
+
+### 섹션 이름
+
+| 섹션 | 이름 |
+|---|---|
+| 최상위 | 패밀리명(`button`) 또는 흐름 이름(`Home`) |
+| sub-group | **이름 없음** — 이름 없는 섹션은 sub-group 에만 쓴다 |
+| template / pattern | 안에 든 컴포넌트 이름과 **글자 하나까지 같게** (`btn-primary`) |
+| building-block | 항상 `building-block` (컴포넌트 이름 아님) |
+| 메모(`적용 예시` 등) | 자유. **배경 투명** |
+
+섹션 하나에는 **주제 컴포넌트(또는 화면) 하나**만 넣는다.
+
+### 컴포넌트 레이아웃 (패밀리·Foundations Figma 페이지)
+
+- 패밀리 섹션 안에 sub-group 을 가로로 놓는다. **sub-group = 같은 빌딩블록(주로 스켈레톤)을 함께 쓰는 템플릿·패턴의 묶음.** 공유하는 게 없으면 따로 sub-group 을 만든다 (복합 템플릿, 독립 패턴도 각자).
+- template 섹션은 위에서부터 **pattern 섹션 줄 → 템플릿 본문(주석·메모 포함) → building-block 줄**. 패턴은 이름 앞부분이 가리키는 template 섹션에 넣는다 (`btn-ghost/pattern-go-back` → `btn-ghost` 섹션).
+- building-block 섹션 안에는 빌딩블록 하나, 그 아래에 그 빌딩블록이 쓰는 빌딩블록들 (재귀).
+- 형제끼리 높이를 맞추지 않는다.
+
+### 페이지 레이아웃 (Feature Figma 페이지)
+
+- 흐름 하나가 최상위 섹션 하나. 안의 sub-group 은 **세로로** 쌓는다.
+- page 섹션은 위에 **[화면] → (1000) → [하위 page 들]**, 아래에 **building-block 줄**. 하위 page 도 같은 구조를 반복한다 (하위 page = 이 화면에서 진입하는 화면).
+- 여기서 building-block 은 **그 화면들이 쓰는 이 feature 전용(로컬) 컴포넌트**다. 자기 Figma 페이지가 있는 패밀리 컴포넌트는 두지 않는다.
+- 같은 줄의 형제 page 섹션은 높이를 맞춘다.
+
+### 빌딩블록을 어디에 두는가
+
+1. 다른 빌딩블록이 쓰면 → 그 빌딩블록의 building-block 섹션 **안**에 중첩
+2. 아니면 → 쓰는 것들을 **모두 포함하는 가장 안쪽 섹션의 맨 아래** (템플릿 하나만 쓰면 그 template 섹션, 여럿이 쓰면 sub-group / 화면 하나만 쓰면 그 page 섹션, 여럿이면 그들을 포함하는 섹션)
+3. 이 Figma 페이지 안에 쓰는 곳이 없으면 → 독립 sub-group
+
+맨 아래 줄의 building-block 섹션은 부모 섹션이 더 넓으면 그 폭까지 늘린다 (같은 줄에 여럿이면 각자 폭 유지).
+
+### 배경색과 간격 (캔버스 고정값)
+
+- 배경: 최상위 **투명** → 흰색 `#FFFFFF` → `#F2F2F2` → `#E6E6E6` → `#F2F2F2` … 깊이마다 번갈아. 메모 섹션은 투명으로 두고 순서에서 건너뛴다.
+- 간격: 섹션 안쪽 여백 100 / 형제 사이 100 / 컴포넌트 레이아웃 위아래 띠 사이 200 / 페이지 레이아웃 띠 사이·sub-group 사이 1000.
+
+### 하지 말 것
+
+- 작은 흰색 컴포넌트가 안 보인다고 **배경용 섹션으로 감싸지 않는다** — 이름 없는 섹션은 sub-group 으로 읽힌다. 필요하면 섹션이 아닌 배경 frame 을 뒤에 깐다.
+- 컴포넌트 이름을 바꾸고 섹션 이름을 그대로 두지 않는다 — 둘은 항상 같아야 한다.
+
+---
+
+## 5. 색상 적용하기
 
 *(원문: `color-token-rule.md`)*
 
@@ -236,7 +291,7 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 
 ---
 
-## 5. 간격·radius·아이콘 크기
+## 6. 간격·radius·아이콘 크기
 
 *(원문: `shape-token-rule.md`)*
 
@@ -263,11 +318,11 @@ shape-semantic   ← 의미 있는 이름으로 재포장. shape-primitive를 �
 
 ### 아이콘 크기는 별도 컬렉션 (`icon-size`)
 
-`shape-*`가 아니라 별도 `icon-size` 컬렉션으로 관리한다. `icon-size/{text-pair}`(아이콘 자체 크기)와 `icon-line-height/{text-pair}`(감싸는 프레임 높이, 짝지어진 텍스트의 line-height와 일치) 두 계열이 있고, `size-1`, `size-2`... 모드를 갖는다. **소비는 항상 `icon-frame-*` 컴포넌트를 통해서만** 한다 — 자세한 건 [§6](#6-아이콘-배치하기).
+`shape-*`가 아니라 별도 `icon-size` 컬렉션으로 관리한다. `icon-size/{text-pair}`(아이콘 자체 크기)와 `icon-line-height/{text-pair}`(감싸는 프레임 높이, 짝지어진 텍스트의 line-height와 일치) 두 계열이 있고, `size-1`, `size-2`... 모드를 갖는다. **소비는 항상 `icon-frame-*` 컴포넌트를 통해서만** 한다 — 자세한 건 [§7](#7-아이콘-배치하기).
 
 ---
 
-## 6. 아이콘 배치하기
+## 7. 아이콘 배치하기
 
 *(원문: `icon-prop-rule.md`)*
 
@@ -308,7 +363,7 @@ icon-frame-body (예)
 
 ---
 
-## 7. 텍스트 스타일 적용하기
+## 8. 텍스트 스타일 적용하기
 
 *(원문: `typography-token-rule.md`, `style-rule.md`)*
 
@@ -341,7 +396,7 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 
 ### 브랜드 × 언어 모드
 
-`typeface-semantic`의 모드는 색상처럼 "브랜드 무드"가 아니라 **"어느 브랜드 앱 + 어느 언어권"** 조합이다. **`language` 컬렉션([§9](#9-다국어-문자열))과 동기 전환** 해야 한다 — 앱 언어가 바뀌면 문자열(`language`)과 폰트(`typeface-semantic`) 모드를 동시에 바꾼다. 하나만 바뀌면 텍스트 내용과 폰트가 어긋난다.
+`typeface-semantic`의 모드는 색상처럼 "브랜드 무드"가 아니라 **"어느 브랜드 앱 + 어느 언어권"** 조합이다. **`language` 컬렉션([§10](#10-다국어-문자열))과 동기 전환** 해야 한다 — 앱 언어가 바뀌면 문자열(`language`)과 폰트(`typeface-semantic`) 모드를 동시에 바꾼다. 하나만 바뀌면 텍스트 내용과 폰트가 어긋난다.
 
 ### 텍스트 치트시트
 
@@ -351,11 +406,11 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 | 본문 강조 | `body`는 세 굵기 다 있으니 그중 선택 |
 | 헤드라인을 더 얇게/굵게 | 안 됨 — `headline`은 `bold` 하나뿐, 디자이너 확인 필요 |
 | 에디토리얼/잡지 느낌 | `magazine/{regular|bold}/m{1-3}` |
-| 아이콘과 나란히 쓰는 텍스트 | [§6](#6-아이콘-배치하기) — 같은 카테고리의 `icon-frame-*` |
+| 아이콘과 나란히 쓰는 텍스트 | [§7](#7-아이콘-배치하기) — 같은 카테고리의 `icon-frame-*` |
 
 ---
 
-## 8. 그림자·블러·리퀴드 글라스
+## 9. 그림자·블러·리퀴드 글라스
 
 *(원문: `effect-token-rule.md`, `liquid-glass-rule.md`)*
 
@@ -387,7 +442,7 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 
 ---
 
-## 9. 다국어 문자열
+## 10. 다국어 문자열
 
 *(원문: `language-rule.md`)*
 
@@ -400,18 +455,21 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 2. **각 언어 모드마다 값을 채운다** — 하나라도 비우면 그 언어에서 빈 문자열로 표시된다
 3. 그 문자열이 표시될 텍스트 노드에 토큰을 참조로 바인딩
 
-**앱 언어를 전환하는 로직을 만들 때는 `typeface-semantic`([§7](#7-텍스트-스타일-적용하기))과 항상 동시에 전환한다** — 문자열만 바뀌고 폰트가 안 바뀌면(또는 반대) 어긋난다.
+**앱 언어를 전환하는 로직을 만들 때는 `typeface-semantic`([§8](#8-텍스트-스타일-적용하기))과 항상 동시에 전환한다** — 문자열만 바뀌고 폰트가 안 바뀌면(또는 반대) 어긋난다.
 
 값은 CSS 변수로 방출하지 않는다 — 별도 i18n 파일(예: `tokens/i18n/{언어}.json`)로 추출해서 i18n 라이브러리로 소비한다.
 
 ---
 
-## 10. 자주 하는 실수 모음
+## 11. 자주 하는 실수 모음
 
 | 영역 | 실수 | 올바른 처리 |
 |---|---|---|
 | 컴포넌트 구조 | 단독 사용 불가하다고 스켈레톤이라 추론 | 빌딩블록 여부와 레이어는 별개 질문 ([§1](#1-컴포넌트-만들기--3계층-구조)) |
 | 컴포넌트 구조 | 재사용 빈도가 높다고 Foundations로 이동 | 정체성 있으면(버튼 등) 자기 페이지 유지 |
+| 섹션 | 컴포넌트 이름을 바꾸고 섹션 이름은 그대로 둠 | 섹션 이름 = 컴포넌트 이름 ([§4](#4-섹션-정리하기)) |
+| 섹션 | 잘 안 보이는 컴포넌트 밑에 배경용 섹션을 깖 | 섹션 대신 배경 frame — 이름 없는 섹션은 sub-group 으로 읽힘 |
+| 섹션 | 공유하지 않는 템플릿·패턴을 한 sub-group 에 모음 / 빌딩블록 섹션에 컴포넌트 이름을 붙임 | sub-group 은 빌딩블록 공유 묶음, 빌딩블록 섹션 이름은 항상 `building-block` |
 | 재선언 | 재선언된 속성인데 중첩 스켈레톤 그룹을 직접 수정 | 항상 템플릿 자체(최상단) 값만 조작 ([§3](#3-스켈레톤-속성을-템플릿이-다시-써야-할-때)) |
 | 색상 | `bg`의 상태를 보고 `inner`도 같을 거라 가정 | 세 역할(bg/border/inner)을 독립적으로 판단 |
 | 색상 | non-interactive 그룹에서 `default` 이름을 찾음 | non-interactive의 기본값 이름은 `base` |
@@ -429,7 +487,7 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 
 ---
 
-## 11. 부록 — 룰북 원문 대응표
+## 12. 부록 — 룰북 원문 대응표
 
 이 문서의 각 섹션이 실제로 근거하는 룰북 파일. 내용이 궁금하거나 이 문서와 어긋나 보이면 원문을 확인한다.
 
@@ -438,11 +496,12 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 1. 컴포넌트 만들기 | `docs/design-system-rule/component-structure-rule.md` |
 | 2. 이름 붙이기 | `docs/design-system-rule/component-structure-rule.md` §3, `docs/design-system-rule/design-to-dev-rule.md` §1~4 |
 | 3. 스켈레톤 속성 재선언 | `docs/design-system-rule/design-to-dev-rule.md` §5 |
-| 4. 색상 | `docs/design-system-rule/color-token-rule.md` |
-| 5. 간격·radius·아이콘 크기 | `docs/design-system-rule/shape-token-rule.md` |
-| 6. 아이콘 배치 | `docs/design-system-rule/icon-prop-rule.md` |
-| 7. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/style-rule.md` |
-| 8. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md`, `docs/design-system-rule/liquid-glass-rule.md` |
-| 9. 다국어 문자열 | `docs/design-system-rule/language-rule.md` |
+| 4. 섹션 정리하기 | `docs/design-system-rule/section-layout-rule.md` |
+| 5. 색상 | `docs/design-system-rule/color-token-rule.md` |
+| 6. 간격·radius·아이콘 크기 | `docs/design-system-rule/shape-token-rule.md` |
+| 7. 아이콘 배치 | `docs/design-system-rule/icon-prop-rule.md` |
+| 8. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/style-rule.md` |
+| 9. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md`, `docs/design-system-rule/liquid-glass-rule.md` |
+| 10. 다국어 문자열 | `docs/design-system-rule/language-rule.md` |
 
 값(토큰의 실제 hex/숫자)은 `tokens/design-tokens.json` 또는 Figma 변수 패널에서 조회한다 — 이 문서에도 룰북에도 없다.

@@ -28,7 +28,7 @@ URL에서 `fileKey` 와 `node-id` 를 뽑는다. 다음이 불분명하면 **구
 
 1. **`docs/README.md` 를 Read 한다.**
 2. 분기표에서 이 작업에 해당하는 행을 찾는다. Figma → 코드 구현이면:
-   `component-structure-rule.md` → `design-to-dev-rule.md` → 해당 토큰 룰
+   `component-structure-rule.md` → `section-layout-rule.md` → `design-to-dev-rule.md` → 해당 토큰 룰
 3. **그 행에 적힌 문서를 전부 Read 한다.** 제목만 보고 내용을 추측하지 않는다.
    색을 쓰면 `color-token-rule.md`, 간격/아이콘이면 `shape-token-rule.md`,
    텍스트면 `typography-token-rule.md` + `style-rule.md`, 그림자/블러면 `effect-token-rule.md`.

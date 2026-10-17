@@ -83,7 +83,7 @@ btn-ghost/pattern-go-back    → PatternBtnGhostGoBack.tsx
 
 ## 룰북을 고치지 마라
 
-`docs/design-system-rule/` 의 10개 파일은 이 프로젝트의 기준 문서다.
+`docs/design-system-rule/` 의 11개 파일은 이 프로젝트의 기준 문서다.
 
 - 내용을 다른 문서로 복사하거나 요약해 옮기지 않는다. 경로로 참조만 한다
 - 논리적 모순이나 코드와 맞지 않는 부분을 발견해도 **승인 없이 고치지 않는다.** 보고한다

@@ -14,6 +14,14 @@
 
 ---
 
+## 2026-10-16
+
+- **section-layout-rule.md 신규** — Figma 페이지 안의 섹션 구성 규칙. 컴포넌트 레이아웃(패밀리 → 이름 없는 sub-group → template/pattern/building-block 섹션, 띠 간격 200)과 페이지 레이아웃(흐름 → 세로 sub-group → page/sub page, 띠 간격 1000), 빌딩블록 배치 3단계(빌딩블록이 쓰면 중첩 → 사용처를 모두 포함하는 가장 안쪽 섹션 아래 → 페이지 안에 사용처 없으면 독립 sub-group), 섹션 이름 규칙(template·pattern = 컴포넌트 이름, 빌딩블록 = `building-block`), 배경색·간격 캔버스 고정값, 기존 섹션 읽기 절차, 오류 패턴 — 섹션 배치로 레이어·공유 범위를 판별하는 규칙이 어디에도 없었고, Organize Sections 플러그인이 암묵적으로만 구현하고 있었음. Rider-App Feature 페이지의 이상 예시 3개와 Button·Map Overlay·Dialog·Top and Bottom Bar·Foundation 실측(인스턴스 사용 관계)으로 도출
+- **component-structure-rule.md 헤더·§4** — 관련 룰북에 `section-layout-rule.md` 추가. "빌딩블록은 페이지 상단에 `.` 접두사 섹션으로 모음"·"`local-components` 섹션" 두 문장을 "Figma 페이지 안의 섹션 구성은 `section-layout-rule.md` 를 따른다"로 위임 — 두 문장이 실제 정리 방식(사용 범위마다 아래쪽에 분산 배치)과 충돌했음 (사용자 승인)
+- **docs/README.md** — 분기표 "Figma → 코드"·"코드 → Figma" 행에 `section-layout-rule.md` 추가, "Figma 섹션 정리·읽기" 행 신설, 룰북 요약표에 1행 추가
+- **FIGMA-GUIDEBOOK.md** — `## 4. 섹션 정리하기` 신설, 기존 §4~§11 → §5~§12 번호 이동(목차·앵커·부록 대응표 동기화), 실수 모음에 섹션 3행 추가. 서두의 "값은 어떤 룰북에도 없다"를 "디자인 토큰의 값"으로 좁히고 섹션 캔버스 고정값을 예외로 명시 — 섹션 간격·배경색은 토큰이 아니라 룰북 외에 둘 곳이 없음 (사용자 결정). 이 날짜 이전 기록의 "FIGMA-GUIDEBOOK.md §N" 표기는 당시 번호 기준
+- **docs/GUIDEBOOK.md, 루트 CLAUDE.md, .claude/agents/figma-implementer.md** — "룰북 10개" → "11개"(GUIDEBOOK 용어표의 낡은 "7개" 도 함께 정정), 트리·룰북 표·figma-implementer 읽기 순서에 `section-layout-rule.md` 반영 (스테일 방지)
+
 ## 2026-10-15
 
 - **design-to-dev-rule.md §5.1, FIGMA-GUIDEBOOK.md §3** — 스켈레톤 분리 예시의 이름 `.skeleton-badge-pill` / `.skeleton-badge-ghost` 를 `.skeleton/badge-pill` / `.skeleton/badge-ghost` 로 수정 — `component-structure-rule.md` §3 스키마(`.skeleton/{family}-{subgroup}`)와 §2 변환 표(`.skeleton/btn-ghost`)는 슬래시를 쓰는데 예시만 하이픈이라 오타였음. 실제 Figma 분리 작업(badge)이 스키마 표기를 따랐음
