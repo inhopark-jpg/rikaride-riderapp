@@ -21,6 +21,7 @@
 - **section-layout-rule.md §2·§3, FIGMA-GUIDEBOOK.md** — 「예외 — 아이콘 글리프」 신설: 개별 아이콘은 building-block 줄 안 분류별 섹션으로 묶고 주제 하나·이름 규칙 미적용 — Icons 페이지 아이콘 약 200개에 섹션 하나씩은 비현실적 (사용자 결정)
 - **component-structure-rule.md 헤더·§1·§6, FIGMA-GUIDEBOOK.md 레이어 표·판별** — 스켈레톤에 칠한 색은 자리표시이고 소유가 아님(템플릿이 덮어쓰거나 같은 색을 확정), `black`·`white` 그룹 권장, 레이어 판별 1단계는 색이 칠해졌는지가 아니라 그 색을 정하는지로 본다 — 디자이너가 형태를 알아보려면 스켈레톤에도 색이 필요한데 "색상을 가질 수 없음"을 글자 그대로 읽으면 색 있는 스켈레톤을 패턴으로 오판함(`.skeleton/stop-direction-arrow` 사례) (사용자 승인)
 - **component-structure-rule.md §1 중첩 규칙, FIGMA-GUIDEBOOK.md** — `icon-frame-*` 은 스켈레톤에 중첩 가능한 예외로 명시(아이콘 자리의 크기·line-height 를 정하는 형태 요소, 색은 템플릿이 정함) — `.skeleton/btn`·`.skeleton/marker-general`·`.skeleton/contained-icon` 이 이미 icon-frame 을 담고 있어 글자 그대로는 중첩 규칙 위반으로 읽혔음 (사용자 승인)
+- **section-layout-rule.md §1·§5·§7 다듬기** — §1 주제 판단 문구를 단서 열거 없이 2줄로 축약, §5 2·3단계에서 §1·`component-structure-rule.md` 와 겹치는 설명 제거, §7 `.` 주석 오독 행 삭제(§1 과 중복) — 룰북이 길어지고 처방적이 되어 맥락 판단을 막지 않도록 (사용자 승인)
 
 ## 2026-10-16
 
