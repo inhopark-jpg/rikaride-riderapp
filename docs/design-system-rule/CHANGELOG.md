@@ -14,6 +14,12 @@
 
 ---
 
+## 2026-10-17
+
+- **section-layout-rule.md §1·§2·§3·§5·§7** — 구조 판정에 쓰는 노드를 고정 목록(주석 "인스턴스" 열거)이 아니라 섹션의 **주제**를 맥락으로 골라 판단하도록 변경(§1), 주제 개수 세기·섹션 종류 판별을 이에 맞춤(§2·§5-2), "주석 인스턴스" → "주석"(§3), `.` 접두사 주석 컴포넌트 오독 행 추가(§7) — Button 페이지 검수에서 `.address-anchor` 가 인스턴스가 아니라 섹션마다 컴포넌트 정의로 있어 글자 그대로 읽으면 빌딩블록 배치 대상이 됐음. 판정 노드 규정이 지나치게 처방적이라는 사용자 판단 (사용자 승인)
+- **section-layout-rule.md §1·§2·§3·§5, FIGMA-GUIDEBOOK.md 섹션 정리** — 빌딩블록은 플래그이고 섹션 구성은 주제의 레이어를 따른다고 명시(§1). 빌딩블록 템플릿도 pattern 줄을 갖는 3띠 구조(§3 building-block 섹션), 패턴은 빌딩블록이어도 자기 템플릿 섹션에 두고 템플릿의 사용처에서 자기 패턴은 뺀다(§2 빌딩블록 배치), 패턴 앞부분 비교 시 `.` 무시(§3), 해석 절차 항목 추가(§5-4) — General Nav Bar 의 `.gnb-bar-item` + 패턴 구조를 글자 그대로 읽으면 템플릿을 자기 패턴 섹션 안에 넣으라는 역전된 결론이 났음. `component-structure-rule.md` 와 충돌 없음 확인 (사용자 승인)
+- **section-layout-rule.md §2·§3, FIGMA-GUIDEBOOK.md** — 「예외 — 아이콘 글리프」 신설: 개별 아이콘은 building-block 줄 안 분류별 섹션으로 묶고 주제 하나·이름 규칙 미적용 — Icons 페이지 아이콘 약 200개에 섹션 하나씩은 비현실적 (사용자 결정)
+
 ## 2026-10-16
 
 - **section-layout-rule.md 신규** — Figma 페이지 안의 섹션 구성 규칙. 컴포넌트 레이아웃(패밀리 → 이름 없는 sub-group → template/pattern/building-block 섹션, 띠 간격 200)과 페이지 레이아웃(흐름 → 세로 sub-group → page/sub page, 띠 간격 1000), 빌딩블록 배치 3단계(빌딩블록이 쓰면 중첩 → 사용처를 모두 포함하는 가장 안쪽 섹션 아래 → 페이지 안에 사용처 없으면 독립 sub-group), 섹션 이름 규칙(template·pattern = 컴포넌트 이름, 빌딩블록 = `building-block`), 배경색·간격 캔버스 고정값, 기존 섹션 읽기 절차, 오류 패턴 — 섹션 배치로 레이어·공유 범위를 판별하는 규칙이 어디에도 없었고, Organize Sections 플러그인이 암묵적으로만 구현하고 있었음. Rider-App Feature 페이지의 이상 예시 3개와 Button·Map Overlay·Dialog·Top and Bottom Bar·Foundation 실측(인스턴스 사용 관계)으로 도출
