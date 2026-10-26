@@ -29,17 +29,12 @@
       "emit": true,
       "heads": ["spacing", "radius", "size"]
     },
-    "icon-size": {
-      "rulebook": "shape-token-rule.md §3 + icon-prop-rule.md",
+    "icon-frame": {
+      "rulebook": "icon-frame-rule.md",
       "emit": true,
       "heads": ["icon-size", "icon-line-height"],
-      "modeNote": "색상 테마와 무관한 반응형 스케일 축 (size-1 ~ size-9 등). 텍스트 스텝 번호와 매칭됩니다."
-    },
-    "icon-prop": {
-      "rulebook": "icon-prop-rule.md",
-      "emit": true,
-      "heads": [],
-      "modeNote": "부트스트랩 시 실제 heads 확인 필요. icon-frame-* 컴포넌트가 소비하는 토큰 컬렉션."
+      "modeNamePattern": "^size-[0-9]+$",
+      "modeNote": "색상 테마와 무관한 축. 모드 size-N 은 짝지어진 텍스트의 스텝 번호. icon-line-height/{카테고리} 는 typeface-semantic line-height 를 참조합니다."
     },
     "typeface-primitive": {
       "rulebook": "typography-token-rule.md §1",

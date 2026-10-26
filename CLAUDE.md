@@ -25,9 +25,9 @@ Figma 디자인 시스템을 코드로 옮기는 프로젝트다. **상세 규�
 허용되는 두 가지 형태:
 
 1. `@theme` 이 생성한 Tailwind 유틸 — `bg-interactive-primary-bg-default`, `p-surface-margin-base`, `shadow-mid`
-2. CSS 변수 직접 참조 — `var(--icon-weight-body-bold)`
+2. CSS 변수 직접 참조 — `var(--liquid-glass-mid-frost)`
 
-유틸이 없는 토큰(`icon-weight`, `liquid-glass`, `background-blur/progressive`)은 2번으로 쓴다.
+유틸이 없는 토큰(`liquid-glass`, `background-blur/progressive`)은 2번으로 쓴다.
 
 금지:
 

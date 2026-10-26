@@ -1,7 +1,7 @@
 # Color Token 적용 규칙 (공통 룰북)
 
 > **다루는 것** — 색상 토큰의 그룹/역할/상태 3분해와 모드 오버라이드. 인터랙션(default) vs non-interactive(base) 어휘 구분, 서브트리 지역 오버라이드까지.
-> **관련 룰북** — `shape-token-rule.md`, `typography-token-rule.md`, `icon-prop-rule.md`, `liquid-glass-rule.md`
+> **관련 룰북** — `shape-token-rule.md`, `typography-token-rule.md`, `icon-frame-rule.md`, `liquid-glass-rule.md`
 > **소비 제약** — primitive 컬렉션은 CSS 변수로 방출되지 않음. semantic 토큰만 사용.
 
 **이 문서는 색상 "값"이 아니라 "의미와 사용 규칙"만 다룹니다.** 실제 hex/rgba 값은 하드코딩하지 않습니다 — 프로젝트의 `design-tokens.json`이 항상 유일한 진실의 원천입니다.

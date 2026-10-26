@@ -13,8 +13,8 @@
 | Figma 섹션 정리·읽기 (Organize Sections 플러그인 작업 포함) | `design-system-rule/section-layout-rule.md` → `design-system-rule/component-structure-rule.md` |
 | 컴포넌트/파일 이름 짓기 | `design-system-rule/design-to-dev-rule.md` |
 | 색을 고를 때 / 색이 맞는지 검증할 때 | `design-system-rule/color-token-rule.md` |
-| 간격·radius·아이콘 크기 | `design-system-rule/shape-token-rule.md` |
-| 아이콘 프레임 컴포넌트(`icon-frame-*`) 다룰 때 | `design-system-rule/icon-prop-rule.md` |
+| 간격·radius | `design-system-rule/shape-token-rule.md` |
+| 아이콘 배치 / 아이콘 프레임 컴포넌트(`icon-frame-*`) 다룰 때 | `design-system-rule/icon-frame-rule.md` |
 | 폰트 크기/굵기/행간 | `design-system-rule/typography-token-rule.md` + `design-system-rule/style-rule.md` |
 | 그림자·블러 | `design-system-rule/effect-token-rule.md` |
 | liquid-glass 지원 여부 스위치 (supported/unsupported 모드) | `design-system-rule/liquid-glass-rule.md` |
@@ -31,8 +31,8 @@
 | 파일 | 한 줄 설명 |
 |---|---|
 | `color-token-rule.md` | 색상 토큰을 **그룹/역할/상태** 3분해로 고르는 법. interactive(`default`)와 non-interactive(`base`)가 다른 어휘를 쓴다. `icon-frame`의 `negative` 레이어 규칙, 모드가 서브트리 단위로 지역 오버라이드된다는 점까지 |
-| `shape-token-rule.md` | spacing / radius / icon-size. 숫자 스텝을 고르기 전에 `surface-margin`·`viewport-margin` 같은 **의미 기반 토큰이 있는지 먼저** 확인하라는 규칙. `icon-size` 컬렉션의 토큰 구조만 다루고, 소비 규칙은 `icon-prop-rule.md` 로 이관됨 |
-| `icon-prop-rule.md` | `icon-frame-*` (5개) 컴포넌트가 `icon-prop`·`icon-size` 토큰을 소비하는 규칙. 2층 구조(프레임 + icon-wrap), 텍스트 카테고리·스텝 매칭, 모든 아이콘 배치는 `icon-frame-*` 을 통해서만 가능하다는 제약 |
+| `shape-token-rule.md` | spacing / radius. 숫자 스텝을 고르기 전에 `surface-margin`·`viewport-margin` 같은 **의미 기반 토큰이 있는지 먼저** 확인하라는 규칙. 아이콘 크기는 다루지 않고 `icon-frame-rule.md` 로 보낸다 |
+| `icon-frame-rule.md` | `icon-frame` 컬렉션과 `icon-frame-*` (5개) 컴포넌트. 모든 아이콘 배치는 `icon-frame-*` 을 거친다는 제약, 2층 구조(프레임 + icon-wrap), 텍스트 카테고리 → 컴포넌트·스텝 → `size-N` 모드 매칭, `icon-line-height` 가 텍스트 `line-height` 를 참조하는 관계 |
 | `typography-token-rule.md` | font-family / weight / size / line-height 변수 구조. 카테고리(display·headline·body·magazine)마다 **지원 굵기가 비대칭**이다. 모드 축이 "브랜드×언어"로 색상과 다르다 |
 | `style-rule.md` | 디자이너가 실제로 레이어에 적용하는 완성 프리셋(Text Style). 이름이 `{카테고리}/{굵기}/{스텝}`이고 **굵기가 가운데 세그먼트**. 5속성을 빠짐없이 적용하는 규칙 |
 | `effect-token-rule.md` | shadow(5필드 분리) / background-blur(uniform vs progressive) / `effects/liquid-glass/*` (유리 효과 시각적 정의). **liquid-glass는 표준 CSS로 재현 불가**라는 경고와 플랫폼별 대안 |

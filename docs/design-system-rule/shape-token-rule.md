@@ -1,8 +1,8 @@
 # Shape Token 적용 규칙 (공통 룰북)
 
-> **다루는 것** — spacing / radius / icon-size 토큰 선택. 숫자 스텝 전에 의미 기반 토큰(`surface-margin`·`viewport-margin` 등) 을 먼저 확인.
-> **관련 룰북** — `color-token-rule.md`, `icon-prop-rule.md`
-> **소비 제약** — primitive 참조 금지. `icon-size` 컬렉션 토큰은 `icon-prop-rule.md` 절차대로 `icon-frame-*` 을 통해서만 소비.
+> **다루는 것** — spacing / radius 토큰 선택. 숫자 스텝 전에 의미 기반 토큰(`surface-margin`·`viewport-margin` 등) 을 먼저 확인. 아이콘 크기는 별도 `icon-frame` 컬렉션 (§3).
+> **관련 룰북** — `color-token-rule.md`, `icon-frame-rule.md`
+> **소비 제약** — primitive 참조 금지. `icon-frame` 컬렉션 변수는 `icon-frame-rule.md` 대로 `icon-frame-*` 컴포넌트를 통해서만 소비.
 
 **값이 아니라 의미와 사용 규칙만 다룹니다.** 실제 spacing/radius/size 숫자는 하드코딩하지 않습니다 — 프로젝트의 `design-tokens.json`이 항상 유일한 진실의 원천입니다.
 
@@ -11,7 +11,7 @@
 ## 0. 체크리스트
 
 1. `shape-primitive` / `shape-semantic` 두 컬렉션이 있는지 확인한다 (이 프로젝트는 **2단계 구조**).
-2. 아이콘 크기가 필요하면 `shape-*`가 아니라 별도의 `icon-size` 컬렉션을 확인한다 (§3).
+2. 아이콘 크기가 필요하면 `shape-*`가 아니라 `icon-frame-*` 컴포넌트를 쓴다 (§3).
 3. 값은 항상 `design-tokens.json`에서 조회한다.
 
 ## 1. 2단계 구조 — `shape-primitive` → `shape-semantic`
@@ -41,16 +41,9 @@ shape-semantic   ← 의미 있는 이름으로 재포장된 토큰. 전부 shap
 
 용도가 명시 안 된 나머지 토큰들은 그냥 숫자 눈금입니다 — 필요한 크기에 제일 가까운 스텝을 가져다 씁니다. `radius-full`(또는 `full`이 붙은 토큰)은 완전한 pill/원형용 특수값입니다.
 
-## 3. `icon-size` — 텍스트와 짝을 이루는 아이콘 전용 컬렉션
+## 3. 아이콘 크기 — `shape-*` 가 아니라 `icon-frame` 컬렉션
 
-이 프로젝트는 아이콘 크기를 `shape-*` 가 아니라 **별도의 `icon-size` 컬렉션**으로 관리합니다. 두 개의 토큰 계열이 있습니다:
-
-- `icon-size/{text-pair}` — 아이콘 자체의 시각적 크기 (너비/높이).
-- `icon-line-height/{text-pair}` — 아이콘을 감싸는 프레임의 높이. 짝지어진 텍스트의 line-height 와 일치시키기 위한 값.
-
-`text-pair` 는 `display`, `headline`, `body`, `magazine`, `standalone` 중 하나 — 타이포그래피 카테고리와 이름이 대응됩니다. 이 컬렉션은 `size-1`, `size-2`, ... 형식의 **모드** 를 갖습니다. 색상 테마 모드와는 별개의 축(반응형 스케일)입니다.
-
-**소비 규칙**: 이 토큰들은 임의의 요소에 직접 적용하지 않고 **`icon-frame-*` 컴포넌트를 통해서만** 사용됩니다. 컴포넌트 선택(`icon-frame-body` 등), 모드 매칭(`size-N` ↔ 텍스트 스텝), 복합 컴포넌트(Button 등) 안의 아이콘 슬롯 배치 규칙은 `icon-prop-rule.md` 를 참고하세요. 이 프로젝트에서 raw SVG 를 직접 배치해 아이콘처럼 쓰는 것은 잘못된 사용입니다.
+아이콘 크기는 `shape-*` 에서 고르지 않습니다. 별도의 **`icon-frame` 컬렉션**(`icon-size/*`, `icon-line-height/*`, `size-N` 모드)이 정하고, 이 변수들은 `icon-frame-*` 컴포넌트에만 바인딩되어 있습니다. 아이콘이 필요하면 `icon-frame-*` 인스턴스를 놓고 모드를 고릅니다 — 컬렉션 구조, 컴포넌트·모드 선택 규칙은 `icon-frame-rule.md` 에 있습니다.
 
 ## 4. 치트시트
 
@@ -60,5 +53,5 @@ shape-semantic   ← 의미 있는 이름으로 재포장된 토큰. 전부 shap
 | 화면 가장자리 안전 여백 | `spacing/viewport-margin/{side|top|bottom}/base` |
 | 일반 요소 간 gap | `shape-semantic`의 일반 spacing 스텝 |
 | 완전히 동그란/캡슐형 요소 | `radius-full` |
-| 텍스트 옆에 나란히 놓는 아이콘 | `icon-prop-rule.md` — 같은 카테고리의 `icon-frame-*` 사용 |
-| 텍스트 없이 단독으로 쓰는 아이콘 | `icon-frame-standalone` (`icon-prop-rule.md`) |
+| 텍스트 옆에 나란히 놓는 아이콘 | `icon-frame-rule.md` — 같은 카테고리의 `icon-frame-*` + 모드 `size-{텍스트 스텝}` |
+| 텍스트 없이 단독으로 쓰는 아이콘 | `icon-frame-standalone` (`icon-frame-rule.md`) |

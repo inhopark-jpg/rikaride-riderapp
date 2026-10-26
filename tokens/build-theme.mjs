@@ -25,9 +25,8 @@
  *   shape-primitive      *방출 안 함*
  *   shape-semantic       spacing/surface-margin/base    → --spacing-surface-margin-base
  *                        radius/surface-radius/low      → --radius-surface-radius-low
- *   icon-size            icon-size/body                 → --spacing-icon-body
+ *   icon-frame           icon-size/body                 → --spacing-icon-body
  *                        icon-line-height/body          → --spacing-icon-lh-body
- *                        icon-weight/body/bold          → --icon-weight-body-bold  (유틸 없음)
  *   typeface-primitive   *방출 안 함*
  *   typeface-semantic    font-family/display            → --font-display
  *                        font-weight/body/bold          → --font-weight-body-bold
@@ -51,7 +50,7 @@
  *   임의 깊이의 지역 오버라이드가 그대로 동작한다.
  *     color-semantic    → [data-theme="..."]        (명도/브랜드)
  *     typeface-semantic → [data-typeface="..."]     (브랜드×언어, 색과 별개 축)
- *     icon-size         → [data-icon-scale="..."]   (반응형 스케일, 또 별개 축)
+ *     icon-frame        → [data-icon-scale="..."]   (텍스트 스텝 매칭, 또 별개 축)
  *   @theme inline 은 값을 인라인해서 오버라이드를 깨뜨리므로 쓰지 않는다.
  *   @theme static 은 미사용 변수도 항상 방출한다 — 오버라이드 블록이 가리킬 대상이
  *   tree-shaking 으로 사라지는 것을 막는다.
@@ -89,17 +88,16 @@ const NAMESPACE_MAP = {
       'line-height': 'leading',
     },
   },
-  'icon-size': {
+  'icon-frame': {
     emit: true,
     ns: null,
     modeAttr: 'data-icon-scale',
     byHead: {
       'icon-size': 'spacing',
       'icon-line-height': 'spacing',
-      'icon-weight': 'icon-weight',
     },
     // icon-line-height 는 --spacing-icon-* 와 충돌하므로 접두사를 달리 붙인다.
-    rename: { 'icon-size': 'icon', 'icon-line-height': 'icon-lh', 'icon-weight': '' },
+    rename: { 'icon-size': 'icon', 'icon-line-height': 'icon-lh' },
   },
   effects: {
     emit: true,

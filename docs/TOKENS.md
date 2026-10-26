@@ -57,7 +57,7 @@ npm run tokens:build      # → src/styles/theme.css
    color-primitive       128
    color-semantic         94
    shape-semantic         41
-   icon-size              27
+   icon-frame             10
    typeface-semantic      36
    effects                23
 

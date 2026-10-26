@@ -16,6 +16,13 @@
 
 ## 2026-10-17
 
+- **icon-prop-rule.md → icon-frame-rule.md (이름 변경·전면 재작성)** — 존재하지 않는 `icon-prop`·`icon-size` 컬렉션 전제를 실제 `icon-frame` 컬렉션 하나로 교체. 아이콘은 `icon-frame-*` 5개 중 하나를 놓고 instance swap 으로 교체(§1), `icon-line-height/{카테고리}` 가 `typeface-semantic` `line-height/*` 를 참조해 프레임 높이 = 짝 텍스트 line-height(§2, standalone 은 size 스케일 참조), 카테고리 매칭에 굵기 무관(§4), 모드 `size-N` = 텍스트 스텝이며 카테고리에 없는 스텝의 모드(값 0, 예: body 의 size-7~9)는 쓰지 않음(§5) — 룰북이 Figma 실제 구조와 달라 버튼 패밀리 설계 테스트에서 적용 여부를 판단할 수 없었음 (사용자 설명·승인)
+- **shape-token-rule.md 헤더·§0·§3·§4** — 아이콘 크기 서술을 `icon-frame` 컬렉션 + `icon-frame-rule.md` 위임으로 축약 — 컬렉션 이름 오류, 중복 제거 (사용자 승인)
+- **typography-token-rule.md 헤더·§0·§1·§4** — 참조를 `icon-frame-rule.md` 로, `line-height/*` 가 `icon-line-height` 의 참조 원본임을 §1 에 명시 — line-height 변경이 아이콘 프레임 높이로 전파됨을 알리기 위해 (사용자 승인)
+- **color-token-rule.md·component-structure-rule.md·section-layout-rule.md·language-rule.md·effect-token-rule.md** — `icon-prop-rule.md`·`icon-prop`·`icon-size` 참조를 `icon-frame-rule.md`·`icon-frame` 으로 갱신 (사용자 승인)
+- **docs/README.md, GUIDEBOOK.md, FIGMA-GUIDEBOOK.md §6·§7·§11·§12, TOKENS.md** — 위 변경 반영(파일명, 컬렉션명, 스텝 범위·굵기 무관 규칙) (사용자 승인)
+- **tokens/extract/collections.json, tokens/build-theme.mjs, to-dtcg.mjs 주석, 루트 CLAUDE.md** — `icon-size`·`icon-prop` 기대값을 `icon-frame` 하나로 교체(modeNamePattern `^size-[0-9]+$`), 삭제된 `icon-weight` 매핑·예시 제거 — 그대로면 `tokens:verify` 가 추출을 막음 (사용자 승인)
+
 - **section-layout-rule.md §1·§2·§3·§5·§7** — 구조 판정에 쓰는 노드를 고정 목록(주석 "인스턴스" 열거)이 아니라 섹션의 **주제**를 맥락으로 골라 판단하도록 변경(§1), 주제 개수 세기·섹션 종류 판별을 이에 맞춤(§2·§5-2), "주석 인스턴스" → "주석"(§3), `.` 접두사 주석 컴포넌트 오독 행 추가(§7) — Button 페이지 검수에서 `.address-anchor` 가 인스턴스가 아니라 섹션마다 컴포넌트 정의로 있어 글자 그대로 읽으면 빌딩블록 배치 대상이 됐음. 판정 노드 규정이 지나치게 처방적이라는 사용자 판단 (사용자 승인)
 - **section-layout-rule.md §1·§2·§3·§5, FIGMA-GUIDEBOOK.md 섹션 정리** — 빌딩블록은 플래그이고 섹션 구성은 주제의 레이어를 따른다고 명시(§1). 빌딩블록 템플릿도 pattern 줄을 갖는 3띠 구조(§3 building-block 섹션), 패턴은 빌딩블록이어도 자기 템플릿 섹션에 두고 템플릿의 사용처에서 자기 패턴은 뺀다(§2 빌딩블록 배치), 패턴 앞부분 비교 시 `.` 무시(§3), 해석 절차 항목 추가(§5-4) — General Nav Bar 의 `.gnb-bar-item` + 패턴 구조를 글자 그대로 읽으면 템플릿을 자기 패턴 섹션 안에 넣으라는 역전된 결론이 났음. `component-structure-rule.md` 와 충돌 없음 확인 (사용자 승인)
 - **section-layout-rule.md §2·§3, FIGMA-GUIDEBOOK.md** — 「예외 — 아이콘 글리프」 신설: 개별 아이콘은 building-block 줄 안 분류별 섹션으로 묶고 주제 하나·이름 규칙 미적용 — Icons 페이지 아이콘 약 200개에 섹션 하나씩은 비현실적 (사용자 결정)

@@ -19,7 +19,7 @@
 
 **`language` 컬렉션의 토큰은 텍스트 노드 또는 컴포넌트의 text prop value 에만 바인딩됩니다.** 색상, 크기, 배경 등 다른 속성에는 적용할 수 없습니다.
 
-이 제약은 `typeface-semantic` ↔ Text Style, `icon-prop` ↔ `icon-frame-*` 처럼 소비 경로가 지정된 다른 컬렉션들과 같은 패턴입니다.
+이 제약은 `typeface-semantic` ↔ Text Style, `icon-frame` 컬렉션 ↔ `icon-frame-*` 컴포넌트 처럼 소비 경로가 지정된 다른 컬렉션들과 같은 패턴입니다.
 
 ## 2. 토큰명 = 번역 키 (ID)
 

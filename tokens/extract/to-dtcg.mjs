@@ -198,7 +198,7 @@ function main() {
       let cursor = node
       for (const s of segs.slice(0, -1)) cursor = cursor[s] ??= {}
       // $extensions 는 항상 방출한다 — variableId 는 rename 추적의 핵심이라
-      // 모드가 하나뿐인 컬렉션(icon-size 등)에서도 보존되어야 한다.
+      // 모드가 하나뿐인 컬렉션(effects 등)에서도 보존되어야 한다.
       // com.figma.modeValues 는 모드가 여럿일 때만 추가한다.
       const $extensions = { 'com.figma.variableId': v.id }
       if (c.modes.length > 1) $extensions['com.figma.modeValues'] = modeValues

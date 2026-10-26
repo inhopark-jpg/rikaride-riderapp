@@ -316,26 +316,28 @@ shape-semantic   ← 의미 있는 이름으로 재포장. shape-primitive를 �
 
 용도가 명시 안 된 나머지는 그냥 숫자 눈금 — 필요한 크기에 가장 가까운 스텝을 쓴다. `radius-full`은 완전한 pill/원형 전용.
 
-### 아이콘 크기는 별도 컬렉션 (`icon-size`)
+### 아이콘 크기는 별도 컬렉션 (`icon-frame`)
 
-`shape-*`가 아니라 별도 `icon-size` 컬렉션으로 관리한다. `icon-size/{text-pair}`(아이콘 자체 크기)와 `icon-line-height/{text-pair}`(감싸는 프레임 높이, 짝지어진 텍스트의 line-height와 일치) 두 계열이 있고, `size-1`, `size-2`... 모드를 갖는다. **소비는 항상 `icon-frame-*` 컴포넌트를 통해서만** 한다 — 자세한 건 [§7](#7-아이콘-배치하기).
+`shape-*`가 아니라 별도 `icon-frame` 컬렉션으로 관리한다. `icon-size/{text-pair}`(아이콘 자체 크기)와 `icon-line-height/{text-pair}`(감싸는 프레임 높이) 두 계열이 있고, `size-1`, `size-2`... 모드를 갖는다. **소비는 항상 `icon-frame-*` 컴포넌트를 통해서만** 한다 — 자세한 건 [§7](#7-아이콘-배치하기).
 
 ---
 
 ## 7. 아이콘 배치하기
 
-*(원문: `icon-prop-rule.md`)*
+*(원문: `icon-frame-rule.md`)*
 
-**이 프로젝트에서 모든 아이콘 배치는 반드시 `icon-frame-*`를 거친다.** raw SVG를 그냥 요소로 배치해서 아이콘처럼 쓰는 건 잘못된 사용이다. Button 같은 복합 컴포넌트의 아이콘 슬롯도 raw SVG가 아니라 `icon-frame-*` 인스턴스를 받도록 설계돼 있다.
+**아이콘을 그냥 넣지 않는다. 항상 `icon-frame-*` 5개 중 하나를 놓고, 아이콘은 그 인스턴스의 instance swap 속성으로 바꾼다.** 버튼 같은 복합 컴포넌트의 아이콘 자리도 마찬가지로 `icon-frame-*` 인스턴스를 담는다.
 
 ### 2층 구조
 
 ```
 icon-frame-body (예)
-├─ height: icon-line-height/body 적용        ← 텍스트 line-height와 정렬
+├─ height: icon-line-height/body 적용        ← body 텍스트 line-height와 같은 높이
 └─ icon-wrap
-    └─ height: icon-size/body 적용            ← 아이콘 자체의 시각 크기
+    └─ width/height: icon-size/body 적용      ← 아이콘 자체의 시각 크기
 ```
+
+`icon-line-height/{display|headline|body|magazine}` 은 `typeface-semantic`의 `line-height/{카테고리}/{스텝}` 을 참조한다. 그래서 프레임 높이가 짝지어진 텍스트의 line-height와 항상 같다. (`standalone` 은 짝지어진 텍스트가 없어서 size 스케일을 참조한다)
 
 ### 컴포넌트 선택 (텍스트 카테고리 매칭)
 
@@ -347,9 +349,13 @@ icon-frame-body (예)
 | `icon-frame-magazine` | `magazine` 텍스트 옆 |
 | `icon-frame-standalone` | 텍스트 없이 단독(아이콘 버튼 등) |
 
+굵기는 상관없다 — `body/regular/b3` 옆이든 `body/bold/b3` 옆이든 `icon-frame-body`.
+
 ### 모드 선택 (텍스트 스텝 매칭)
 
-`icon-size`의 모드(`size-N`)는 **텍스트의 스텝 번호와 대응**한다. `body/b6` 옆이면 `size-6`, `headline/h3` 옆이면 `size-3`. CSS로는 `[data-icon-scale="size-N"]`로 서브트리에 건다.
+인스턴스에 `icon-frame` 컬렉션의 모드 `size-N` 을 적용한다. **N = 짝지어진 텍스트의 스텝 번호.** `body/regular/b3` 옆이면 `size-3`, `headline/bold/h3` 옆이면 `size-3`. 그래야 프레임 높이가 그 텍스트의 line-height와 같아진다.
+
+**그 카테고리에 없는 스텝의 모드는 쓰지 않는다.** body는 b6까지만 있으므로 `icon-frame-body`에 `size-7`~`size-9`를 적용할 수 없다 (값이 0). 코드에서는 `[data-icon-scale="size-N"]`로 건다.
 
 ### 자주 하는 실수
 
@@ -358,7 +364,8 @@ icon-frame-body (예)
 | SVG를 `icon-frame` 없이 직접 배치 | 항상 `icon-frame-*`를 통과 |
 | body 텍스트 옆에 `icon-frame-headline` | 텍스트 카테고리와 동일한 icon-frame |
 | 텍스트 없는 아이콘에 `icon-frame-body` | `icon-frame-standalone` |
-| `icon-size` 모드가 텍스트 스텝과 다름 (body-6 옆에 size-3) | 스텝 번호 일치 |
+| 모드가 텍스트 스텝과 다름 (b6 옆에 size-3) | 스텝 번호 일치 |
+| 카테고리에 없는 스텝의 모드 (`icon-frame-body`에 size-9) | 존재하는 스텝 범위 안에서만 |
 | Button 슬롯에 raw SVG 삽입 | 슬롯엔 `icon-frame-*` 인스턴스 |
 
 ---
@@ -476,7 +483,7 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 색상 | `icon-frame`의 `negative`에 `inner/*`를 바인딩 | `negative`는 부모의 `bg/`를 따라감 |
 | 간격 | 숫자 스텝부터 고름 | `surface-margin`/`viewport-margin` 같은 의미 기반 토큰부터 확인 |
 | 아이콘 | SVG를 `icon-frame` 없이 직접 배치 | 모든 아이콘은 `icon-frame-*`를 통과 |
-| 아이콘 | `icon-size` 모드가 텍스트 스텝과 다름 | 스텝 번호 일치 |
+| 아이콘 | `icon-frame` 모드가 텍스트 스텝과 다름 | 스텝 번호 일치 |
 | 텍스트 | 없는 굵기를 있다고 가정 (헤드라인에 medium 등) | 카테고리별 실제 지원 굵기부터 확인 |
 | 텍스트 | letter-spacing이 기본값이라 생략 | 5속성 전부 명시적으로 적용 |
 | 효과 | `backdrop-filter: blur()`만으로 리퀴드 글라스 재현 시도 | 7개 속성은 표준 CSS로 불가 — 플랫폼별 대안 필요 |
@@ -499,7 +506,7 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 4. 섹션 정리하기 | `docs/design-system-rule/section-layout-rule.md` |
 | 5. 색상 | `docs/design-system-rule/color-token-rule.md` |
 | 6. 간격·radius·아이콘 크기 | `docs/design-system-rule/shape-token-rule.md` |
-| 7. 아이콘 배치 | `docs/design-system-rule/icon-prop-rule.md` |
+| 7. 아이콘 배치 | `docs/design-system-rule/icon-frame-rule.md` |
 | 8. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/style-rule.md` |
 | 9. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md`, `docs/design-system-rule/liquid-glass-rule.md` |
 | 10. 다국어 문자열 | `docs/design-system-rule/language-rule.md` |

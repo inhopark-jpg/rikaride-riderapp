@@ -561,7 +561,7 @@ docs/
     ├── typography-token-rule.md
     ├── style-rule.md
     ├── effect-token-rule.md
-    ├── icon-prop-rule.md
+    ├── icon-frame-rule.md
     ├── liquid-glass-rule.md
     ├── language-rule.md
     ├── component-structure-rule.md
@@ -587,7 +587,7 @@ docs/
 | `typography-token-rule.md` | 폰트 패밀리·굵기·크기·행간 변수 구조 |
 | `style-rule.md` | 디자이너가 실제로 쓰는 완성 프리셋(Text Style) |
 | `effect-token-rule.md` | 그림자·블러·유리 효과 시각적 정의 |
-| `icon-prop-rule.md` | `icon-frame-*` 컴포넌트와 `icon-prop`·`icon-size` 토큰 매칭 규칙 |
+| `icon-frame-rule.md` | `icon-frame-*` 컴포넌트와 `icon-frame` 컬렉션 — 텍스트 카테고리·스텝 매칭 규칙 |
 | `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported). 플랫폼별 유리 효과 지원 스위치 |
 | `language-rule.md` | `language` 컬렉션. 다국어 i18n 문자열, 텍스트 노드/text prop 에만 적용 |
 | `component-structure-rule.md` | 스켈레톤/템플릿/패턴 3계층 판별 규칙 |

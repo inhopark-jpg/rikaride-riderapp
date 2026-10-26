@@ -1,7 +1,7 @@
 # Typography Token 적용 규칙 (공통 룰북)
 
 > **다루는 것** — font-family / weight / size / line-height 변수 구조. 카테고리(display · headline · body · magazine) 별 지원 굵기 비대칭.
-> **관련 룰북** — `style-rule.md` (완성 프리셋), `language-rule.md` (동기 전환), `icon-prop-rule.md` (카테고리 매칭)
+> **관련 룰북** — `style-rule.md` (완성 프리셋), `language-rule.md` (동기 전환), `icon-frame-rule.md` (카테고리·스텝 매칭, `line-height/*` 참조)
 > **소비 제약** — 실제 텍스트 노드 적용은 Text Style 프리셋을 권장 (`style-rule.md`).
 
 **값이 아니라 의미와 사용 규칙만 다룹니다.** 실제 폰트 크기 숫자, line-height 숫자 등은 하드코딩하지 않습니다 — 프로젝트의 `design-tokens.json`이 항상 유일한 진실의 원천입니다.
@@ -13,7 +13,7 @@
 1. `typeface-primitive` / `typeface-semantic` 두 컬렉션이 있는지 확인한다 (2단계 구조).
 2. `typeface-semantic`은 **브랜드×언어 조합의 여러 모드**를 가진다 — 어떤 모드가 이 프로젝트에 해당하는지 먼저 확인한다.
 3. Figma에 typeface-semantic 변수를 그대로 감싼 **Text Style(레거시 스타일 리소스)도 별도로 존재**할 수 있다 — 디자이너가 레이어에 실제로 적용하는 건 보통 이 Text Style 쪽이니, 컴포넌트 작업 시 함께 확인한다.
-4. 아이콘과 나란히 쓰는 텍스트라면 `icon-prop-rule.md` 를 참고한다 (텍스트 카테고리별 `icon-frame-*` 컴포넌트로 배치, `data-icon-scale` 로 스텝 매칭).
+4. 아이콘과 나란히 쓰는 텍스트라면 `icon-frame-rule.md` 를 참고한다 (같은 카테고리의 `icon-frame-*` 컴포넌트, `icon-frame` 모드 `size-{스텝}`).
 
 ## 1. 2단계 구조 + 완성 프리셋(Text Style)의 3중 구조
 
@@ -26,6 +26,8 @@ Text Style (레거시)   ← 디자이너가 실제로 레이어에 적용하는
 ### ⭐ `line-height`가 독립된 변수로 존재한다
 
 이 프로젝트는 `line-height/{카테고리}/{스텝}`가 `typeface-semantic`의 독립된 변수로 존재하고, `typeface-primitive`의 같은 숫자 스케일을 참조합니다. 즉 font-size와 line-height가 **같은 원자 스케일을 공유**합니다 — 새로운 크기 조합을 만들 때 이 스케일 재사용 관계를 유지하세요 (line-height에 스케일에 없는 임의의 숫자를 새로 넣지 않는다).
+
+`line-height/{카테고리}/{스텝}` 은 `icon-frame` 컬렉션의 `icon-line-height/{카테고리}` 가 참조하는 원본이기도 합니다 — line-height 를 바꾸면 그 스텝과 짝지어진 아이콘 프레임 높이도 함께 바뀝니다 (`icon-frame-rule.md` §2).
 
 ## 2. `font-family/*`, `font-weight/*`, `font-size/*`, `line-height/*` — 카테고리 구조
 
@@ -48,5 +50,5 @@ Text Style (레거시)   ← 디자이너가 실제로 레이어에 적용하는
 | 기존 화면과 같은 스타일의 텍스트 | 먼저 Figma의 Text Style(레거시 스타일)에 맞는 프리셋이 있는지 확인 |
 | 새로운 크기 조합이 필요하다 | `typeface-primitive`의 같은 스케일 값에서 font-size/line-height를 짝지어 고른다 |
 | 다국어 지원 시 폰트가 안 바뀐다 | `typeface-semantic`의 브랜드×언어 모드 전환 로직 확인 |
-| 아이콘과 나란히 쓰는 텍스트 | `icon-prop-rule.md` — 같은 카테고리의 `icon-frame-*` 사용, `data-icon-scale` 로 스텝 매칭 |
+| 아이콘과 나란히 쓰는 텍스트 | `icon-frame-rule.md` — 같은 카테고리의 `icon-frame-*`, 모드 `size-{스텝}` |
 | 특정 카테고리에 원하는 굵기가 없다 | 그 카테고리가 실제로 지원하는 font-weight 목록을 먼저 확인 (비대칭 구조) |
