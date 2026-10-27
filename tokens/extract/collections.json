@@ -68,7 +68,7 @@
   },
   "styles": {
     "textStyles": {
-      "rulebook": "style-rule.md",
+      "rulebook": "text-style-rule.md",
       "required": true,
       "namePattern": "^[a-z]+/[a-z]+/[a-z0-9]+$",
       "note": "{카테고리}/{굵기}/{스텝}. 굵기가 가운데 세그먼트입니다 (§2)."

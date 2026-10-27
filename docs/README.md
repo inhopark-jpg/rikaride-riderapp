@@ -15,7 +15,7 @@
 | 색을 고를 때 / 색이 맞는지 검증할 때 | `design-system-rule/color-token-rule.md` |
 | 간격·radius | `design-system-rule/shape-token-rule.md` |
 | 아이콘 배치 / 아이콘 프레임 컴포넌트(`icon-frame-*`) 다룰 때 | `design-system-rule/icon-frame-rule.md` |
-| 폰트 크기/굵기/행간 | `design-system-rule/typography-token-rule.md` + `design-system-rule/style-rule.md` |
+| 폰트 크기/굵기/행간 | `design-system-rule/typography-token-rule.md` + `design-system-rule/text-style-rule.md` |
 | 그림자·블러 | `design-system-rule/effect-token-rule.md` |
 | liquid-glass 지원 여부 스위치 (supported/unsupported 모드) | `design-system-rule/liquid-glass-rule.md` |
 | 다국어 문자열 (`language` 컬렉션) | `design-system-rule/language-rule.md` |
@@ -34,7 +34,7 @@
 | `shape-token-rule.md` | spacing / radius. 숫자 스텝을 고르기 전에 `surface-margin`·`viewport-margin` 같은 **의미 기반 토큰이 있는지 먼저** 확인하라는 규칙. 아이콘 크기는 다루지 않고 `icon-frame-rule.md` 로 보낸다 |
 | `icon-frame-rule.md` | `icon-frame` 컬렉션과 `icon-frame-*` (5개) 컴포넌트. 모든 아이콘 배치는 `icon-frame-*` 을 거친다는 제약, 2층 구조(프레임 + icon-wrap), 텍스트 카테고리 → 컴포넌트·스텝 → `size-N` 모드 매칭, `icon-line-height` 가 텍스트 `line-height` 를 참조하는 관계 |
 | `typography-token-rule.md` | font-family / weight / size / line-height 변수 구조. 카테고리(display·headline·body·magazine)마다 **지원 굵기가 비대칭**이다. 모드 축이 "브랜드×언어"로 색상과 다르다 |
-| `style-rule.md` | 디자이너가 실제로 레이어에 적용하는 완성 프리셋(Text Style). 이름이 `{카테고리}/{굵기}/{스텝}`이고 **굵기가 가운데 세그먼트**. 5속성을 빠짐없이 적용하는 규칙 |
+| `text-style-rule.md` | 디자이너가 실제로 레이어에 적용하는 완성 프리셋(Text Style). 이름이 `{카테고리}/{굵기}/{스텝}`이고 **굵기가 가운데 세그먼트**. 5속성을 빠짐없이 적용하는 규칙 |
 | `effect-token-rule.md` | shadow(5필드 분리) / background-blur(uniform vs progressive) / `effects/liquid-glass/*` (유리 효과 시각적 정의). **liquid-glass는 표준 CSS로 재현 불가**라는 경고와 플랫폼별 대안 |
 | `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported 모드). 플랫폼별 지원 여부 스위치. `effects/liquid-glass/*` 와 별개. 앱 루트에 `[data-liquid-glass]` 서브트리 오버라이드로 적용 |
 | `language-rule.md` | `language` 컬렉션(다국어 i18n 문자열). 텍스트 노드/text prop 에만 적용, 토큰명=번역키, `design-tokens.json` 이 아닌 별도 i18n 파일로 추출. typeface-semantic 모드와 동기 전환 |

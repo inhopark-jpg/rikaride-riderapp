@@ -1,7 +1,7 @@
 # Icon Frame 적용 규칙 (공통 룰북)
 
 > **다루는 것** — `icon-frame` 변수 컬렉션과 이를 소비하는 `icon-frame-*` (5개) 컴포넌트. 모든 아이콘 배치가 `icon-frame-*` 을 거친다는 제약, 2층 구조, 텍스트 카테고리·스텝 ↔ 컴포넌트·모드 매칭.
-> **관련 룰북** — `typography-token-rule.md` (`line-height/*` — `icon-line-height` 가 참조하는 원본), `style-rule.md` (카테고리·스텝 이름), `shape-token-rule.md` §3, `color-token-rule.md` §6 (positive/negative 색) · §10 (모드 지역 오버라이드)
+> **관련 룰북** — `typography-token-rule.md` (`line-height/*` — `icon-line-height` 가 참조하는 원본), `text-style-rule.md` (카테고리·스텝 이름), `shape-token-rule.md` §3, `color-token-rule.md` §6 (positive/negative 색) · §10 (모드 지역 오버라이드)
 > **소비 제약** — `icon-frame` 컬렉션 변수는 `icon-frame-*` 컴포넌트에만 바인딩된다. 모든 아이콘 배치는 `icon-frame-*` 을 거친다.
 
 **값이 아니라 의미와 사용 규칙만 다룹니다.** 실제 크기·line-height 숫자는 하드코딩하지 않습니다 — 프로젝트의 `design-tokens.json`이 항상 유일한 진실의 원천입니다.
@@ -19,7 +19,7 @@
 
 **아이콘을 그냥 넣지 않는다.** 아이콘이 필요한 자리에는 항상 `icon-frame-*` 5개 중 하나의 인스턴스를 놓고, 실제 아이콘은 그 인스턴스의 instance swap 속성으로 교체합니다. 벡터나 아이콘 컴포넌트를 직접 배치해 아이콘처럼 쓰면 잘못된 사용입니다. 복합 컴포넌트(예: 버튼의 leading/trailing 아이콘 자리)도 마찬가지로 `icon-frame-*` 인스턴스를 담습니다.
 
-`icon-frame` 컬렉션의 변수는 `icon-frame-*` 컴포넌트 안에만 바인딩되어 있습니다. 다른 요소에 직접 바인딩하지 않습니다. 이 제약은 `typeface-semantic` 이 Text Style 을 통해서만 텍스트에 적용되는 것과 같은 패턴입니다 (`style-rule.md` §0).
+`icon-frame` 컬렉션의 변수는 `icon-frame-*` 컴포넌트 안에만 바인딩되어 있습니다. 다른 요소에 직접 바인딩하지 않습니다. 이 제약은 `typeface-semantic` 이 Text Style 을 통해서만 텍스트에 적용되는 것과 같은 패턴입니다 (`text-style-rule.md` §0).
 
 ## 2. `icon-frame` 컬렉션 — 두 계열과 참조 관계
 
@@ -56,7 +56,7 @@ icon-frame-body (예)
 | `icon-frame-magazine` | `magazine` 텍스트와 함께 |
 | `icon-frame-standalone` | 텍스트와 페어링 없이 단독으로 (아이콘 버튼 등) |
 
-**규칙:** 함께 놓이는 Text Style 의 카테고리(`style-rule.md` §2 의 첫 세그먼트)와 같은 이름의 `icon-frame-*` 을 고릅니다. 굵기는 선택에 영향을 주지 않습니다 — `body/regular/b3` 옆이든 `body/bold/b3` 옆이든 `icon-frame-body` 입니다. 텍스트가 없으면 `icon-frame-standalone` 입니다.
+**규칙:** 함께 놓이는 Text Style 의 카테고리(`text-style-rule.md` §2 의 첫 세그먼트)와 같은 이름의 `icon-frame-*` 을 고릅니다. 굵기는 선택에 영향을 주지 않습니다 — `body/regular/b3` 옆이든 `body/bold/b3` 옆이든 `icon-frame-body` 입니다. 텍스트가 없으면 `icon-frame-standalone` 입니다.
 
 ## 5. 모드 선택 — 텍스트 스텝 매칭
 
@@ -72,7 +72,7 @@ icon-frame-body (예)
 
 그래야 §2 의 참조를 따라 프레임 높이가 그 스텝의 line-height 와 같아집니다.
 
-**그 카테고리에 없는 스텝의 모드는 쓰지 않습니다.** 컬렉션의 모드 수는 카테고리 중 가장 긴 스텝 범위에 맞춰져 있어서, 스텝이 더 적은 카테고리에는 대응하는 텍스트가 없는 모드가 남습니다. 그런 모드의 값은 `0` 입니다. 예: body 텍스트는 b6 까지만 있으므로 `icon-frame-body` 에 `size-7` ~ `size-9` 를 적용할 수 없습니다. 어떤 스텝이 있는지는 Text Style 목록(`style-rule.md`)에서 확인합니다.
+**그 카테고리에 없는 스텝의 모드는 쓰지 않습니다.** 컬렉션의 모드 수는 카테고리 중 가장 긴 스텝 범위에 맞춰져 있어서, 스텝이 더 적은 카테고리에는 대응하는 텍스트가 없는 모드가 남습니다. 그런 모드의 값은 `0` 입니다. 예: body 텍스트는 b6 까지만 있으므로 `icon-frame-body` 에 `size-7` ~ `size-9` 를 적용할 수 없습니다. 어떤 스텝이 있는지는 Text Style 목록(`text-style-rule.md`)에서 확인합니다.
 
 모드는 서브트리 단위로 지역 오버라이드됩니다 (`color-token-rule.md` §10 과 같은 원리, 별개의 축). 코드에서는 `[data-icon-scale="size-N"]` 속성으로 겁니다.
 

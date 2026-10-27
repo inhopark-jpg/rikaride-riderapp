@@ -14,6 +14,13 @@
 
 ---
 
+## 2026-10-26
+
+- **style-rule.md → text-style-rule.md 이름 변경** — 파일명이 Text Style 이 아닌 Figma 스타일 전반(Effect Style 등)을 다루는 것처럼 읽혔음. 참조하는 룰북(typography-token-rule·icon-frame-rule·component-structure-rule), docs/README.md·GUIDEBOOK.md·FIGMA-GUIDEBOOK.md, figma-implementer 에이전트, tokens/extract·build-theme 주석과 collections.json 갱신
+- **text-style-rule.md §4** — "body/regular·medium 이 display 쪽 font-weight 변수를 재사용한다" 사례 삭제, "바인딩 변수의 카테고리·굵기는 스타일 이름과 일치하며 어긋나면 Figma 오류로 보고" 규칙으로 교체. §1 체크리스트 3·§6 치트시트 동반 수정 — 해당 바인딩은 Figma 파일 오류였고 수정됨. Rider-App 의 Text Style 42개 전부 자기 카테고리·굵기 변수에 바인딩된 것을 use_figma 로 확인
+- **text-style-rule.md §0** — letter-spacing 참조 §4 → §5 — 원래 잘못된 번호였음
+- **typography-token-rule.md §2** — font-weight 비대칭 예시를 실제 구조로 교정 (`display`·`headline` = bold, `body` = regular/medium/bold, `magazine` = regular/bold) — 기존 예시가 §4 의 착오와 같은 전제로 반대로 적혀 있었음
+
 ## 2026-10-17
 
 - **icon-prop-rule.md → icon-frame-rule.md (이름 변경·전면 재작성)** — 존재하지 않는 `icon-prop`·`icon-size` 컬렉션 전제를 실제 `icon-frame` 컬렉션 하나로 교체. 아이콘은 `icon-frame-*` 5개 중 하나를 놓고 instance swap 으로 교체(§1), `icon-line-height/{카테고리}` 가 `typeface-semantic` `line-height/*` 를 참조해 프레임 높이 = 짝 텍스트 line-height(§2, standalone 은 size 스케일 참조), 카테고리 매칭에 굵기 무관(§4), 모드 `size-N` = 텍스트 스텝이며 카테고리에 없는 스텝의 모드(값 0, 예: body 의 size-7~9)는 쓰지 않음(§5) — 룰북이 Figma 실제 구조와 달라 버튼 패밀리 설계 테스트에서 적용 여부를 판단할 수 없었음 (사용자 설명·승인)

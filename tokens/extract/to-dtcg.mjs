@@ -228,7 +228,7 @@ function main() {
         return p ? `{${p}}` : null
       }
       styles[s.name] = {
-        // style-rule.md §5 — 5속성 전부 기록한다. 변수 바인딩이 없으면 리터럴로.
+        // text-style-rule.md §5 — 5속성 전부 기록한다. 변수 바인딩이 없으면 리터럴로.
         fontFamily: ref('fontFamily') ?? s.fontName?.family ?? null,
         fontWeight: ref('fontWeight') ?? s.fontName?.style ?? null,
         fontSize: ref('fontSize') ?? s.fontSize ?? null,
@@ -245,7 +245,7 @@ function main() {
     }
     out.$textStyles = styles
   } else {
-    console.warn('⚠️  raw/text-styles.json 이 없습니다 — Text Style 프리셋 없이 생성합니다 (style-rule.md 적용 불가).')
+    console.warn('⚠️  raw/text-styles.json 이 없습니다 — Text Style 프리셋 없이 생성합니다 (text-style-rule.md 적용 불가).')
   }
 
   if (problems.length) {

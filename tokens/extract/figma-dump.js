@@ -74,11 +74,11 @@ export const step2_dumpCollection = async () => {
 /* ---------------------------------------------------------------------------
  * step 3 — Text Style (레거시 스타일 리소스)
  *
- * style-rule.md §0: 5속성 중 4개(family/weight/size/line-height)가 변수 바인딩,
+ * text-style-rule.md §0: 5속성 중 4개(family/weight/size/line-height)가 변수 바인딩,
  * letter-spacing 만 리터럴입니다. boundVariables 를 반드시 같이 받아야
  * alias 관계를 코드까지 이어갈 수 있습니다.
- * §4 의 "body/regular 가 display 쪽 weight 변수를 참조" 같은 슬롯 재사용도
- * 여기서만 드러납니다 — 이름으로 짐작하지 말고 이 결과를 근거로 쓰세요.
+ * §4 의 "바인딩 변수가 스타일 이름과 일치하는가" 도 여기서만 확인됩니다 —
+ * 이름으로 짐작하지 말고 이 결과를 근거로 쓰세요.
  * ------------------------------------------------------------------------ */
 export const step3_dumpTextStyles = async () => {
   const styles = await figma.getLocalTextStylesAsync()

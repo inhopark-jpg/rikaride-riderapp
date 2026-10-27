@@ -1,8 +1,8 @@
 # Typography Token 적용 규칙 (공통 룰북)
 
 > **다루는 것** — font-family / weight / size / line-height 변수 구조. 카테고리(display · headline · body · magazine) 별 지원 굵기 비대칭.
-> **관련 룰북** — `style-rule.md` (완성 프리셋), `language-rule.md` (동기 전환), `icon-frame-rule.md` (카테고리·스텝 매칭, `line-height/*` 참조)
-> **소비 제약** — 실제 텍스트 노드 적용은 Text Style 프리셋을 권장 (`style-rule.md`).
+> **관련 룰북** — `text-style-rule.md` (완성 프리셋), `language-rule.md` (동기 전환), `icon-frame-rule.md` (카테고리·스텝 매칭, `line-height/*` 참조)
+> **소비 제약** — 실제 텍스트 노드 적용은 Text Style 프리셋을 권장 (`text-style-rule.md`).
 
 **값이 아니라 의미와 사용 규칙만 다룹니다.** 실제 폰트 크기 숫자, line-height 숫자 등은 하드코딩하지 않습니다 — 프로젝트의 `design-tokens.json`이 항상 유일한 진실의 원천입니다.
 
@@ -34,7 +34,7 @@ Text Style (레거시)   ← 디자이너가 실제로 레이어에 적용하는
 카테고리: `display`, `headline`, `body`, `magazine`.
 
 - **font-family**: 카테고리별로 다른 폰트가 지정될 수 있음(display만 별도 폰트, 나머지는 공용 폰트인 경우가 많음 — 실제 값 확인).
-- **font-weight**: 카테고리마다 지원하는 굵기 종류가 다를 수 있음 (`display`는 `bold`/`regular`/`medium` 세 가지, `body`는 `bold`만 있는 식으로 **비대칭**일 수 있으니, 없는 굵기를 가정하지 말고 실제 존재하는 조합만 사용).
+- **font-weight**: 카테고리마다 지원하는 굵기 종류가 다를 수 있음 (`display`·`headline`은 `bold`만, `body`는 `regular`/`medium`/`bold`, `magazine`은 `regular`/`bold` 처럼 **비대칭**이니, 없는 굵기를 가정하지 말고 실제 존재하는 조합만 사용).
 - **font-size / line-height**: 카테고리+스텝(예: `d1`, `h3`, `b5`, `m2`)별로 `typeface-primitive`의 스케일 값 하나씩을 alias로 가져다 씀.
 
 ## 3. `typeface-semantic`의 모드 = "브랜드 × 언어" 조합 (색상 테마 모드와는 다른 축)

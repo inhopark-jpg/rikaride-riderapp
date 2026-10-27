@@ -372,7 +372,7 @@ icon-frame-body (예)
 
 ## 8. 텍스트 스타일 적용하기
 
-*(원문: `typography-token-rule.md`, `style-rule.md`)*
+*(원문: `typography-token-rule.md`, `text-style-rule.md`)*
 
 ```
 typeface-primitive  ← 폰트 크기 원자 스케일
@@ -507,7 +507,7 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 5. 색상 | `docs/design-system-rule/color-token-rule.md` |
 | 6. 간격·radius·아이콘 크기 | `docs/design-system-rule/shape-token-rule.md` |
 | 7. 아이콘 배치 | `docs/design-system-rule/icon-frame-rule.md` |
-| 8. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/style-rule.md` |
+| 8. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/text-style-rule.md` |
 | 9. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md`, `docs/design-system-rule/liquid-glass-rule.md` |
 | 10. 다국어 문자열 | `docs/design-system-rule/language-rule.md` |
 

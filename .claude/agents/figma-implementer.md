@@ -31,7 +31,7 @@ URL에서 `fileKey` 와 `node-id` 를 뽑는다. 다음이 불분명하면 **구
    `component-structure-rule.md` → `section-layout-rule.md` → `design-to-dev-rule.md` → 해당 토큰 룰
 3. **그 행에 적힌 문서를 전부 Read 한다.** 제목만 보고 내용을 추측하지 않는다.
    색을 쓰면 `color-token-rule.md`, 간격/아이콘이면 `shape-token-rule.md`,
-   텍스트면 `typography-token-rule.md` + `style-rule.md`, 그림자/블러면 `effect-token-rule.md`.
+   텍스트면 `typography-token-rule.md` + `text-style-rule.md`, 그림자/블러면 `effect-token-rule.md`.
 4. `get_design_context` 로 노드를 읽는다. 큰 화면이면 `get_metadata` 로 구조를 먼저 보고 나눠 읽는다.
 5. `get_variable_defs` 로 이 노드에 **실제로 바인딩된 변수 이름**을 확인한다.
 6. `tokens/design-tokens.json` 에서 그 토큰이 존재하는지 확인한다.

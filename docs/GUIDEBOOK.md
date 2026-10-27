@@ -4,6 +4,27 @@
 
 ---
 
+## 목차
+
+0. [이 프로젝트는 무엇인가](#0-이-프로젝트는-무엇인가)
+1. [용어 최소 정의](#1-용어-최소-정의)
+2. [자주 하는 작업 — 상황별 액션 가이드](#2-자주-하는-작업--상황별-액션-가이드)
+   - [A. 디자인 시스템(토큰) 수정 시](#a-디자인-시스템토큰-수정-시)
+   - [B. 룰북 수정 시](#b-룰북-수정-시)
+   - [C. 컴포넌트 작업](#c-컴포넌트-작업)
+   - [D. QA / 릴리스 전 검증](#d-qa--릴리스-전-검증)
+   - [E. 최초 셋업 (부트스트랩)](#e-최초-셋업-부트스트랩)
+3. [폴더 구조와 파일별 역할](#3-폴더-구조와-파일별-역할)
+   - [A. 프로젝트 루트](#a-프로젝트-루트)
+   - [B. `docs/` — 문서](#b-docs--문서)
+   - [C. `tokens/` — 토큰 파이프라인](#c-tokens--토큰-파이프라인)
+   - [D. `src/` — 소스 코드](#d-src--소스-코드)
+   - [E. `.claude/` — Claude Code 전용 설정](#e-claude--claude-code-전용-설정)
+4. [자주 겪는 실수와 대응](#4-자주-겪는-실수와-대응)
+5. [참고 자료](#5-참고-자료)
+
+---
+
 ## 0. 이 프로젝트는 무엇인가
 
 Figma 디자인 시스템을 React 컴포넌트로 옮기는 프로젝트다. 특징:
@@ -19,7 +40,7 @@ Figma 디자인 시스템을 React 컴포넌트로 옮기는 프로젝트다. �
 - Claude Code 설치 (이미 되어 있어야 함)
 - Figma MCP 연결 (`/mcp` 로 확인)
 
-첫 세팅이면 **토큰 부트스트랩** 을 먼저 Claude 에게 요청해야 한다 (프롬프트는 Section E-1 참고 — 사용자가 직접 명령을 실행할 필요는 없다). `tokens/design-tokens.json` 이 없으면 이후 모든 작업이 무의미하다.
+첫 세팅이면 **토큰 부트스트랩** 을 먼저 Claude 에게 요청해야 한다 (프롬프트는 [2-E-1](#e-1-토큰-부트스트랩) 참고 — 사용자가 직접 명령을 실행할 필요는 없다). `tokens/design-tokens.json` 이 없으면 이후 모든 작업이 무의미하다.
 
 ---
 
@@ -200,11 +221,11 @@ high-contrast 모드를 새로 만들었어. 반영해줘.
 
 **언제**: Figma 에서 `language` 컬렉션의 특정 토큰 값을 다른 문자열로 바꿈. 예: 토큰 `action/next` 의 korean 모드 값을 "다음" → "계속하기" 로 변경.
 
-**중요**: 이 작업은 시각 토큰(A-1~A-6) 과 파이프라인이 다름:
+**중요**: 이 작업은 시각 토큰([A-1](#a-1-토큰-값만-바뀜)~[A-6](#a-6-새-모드-추가)) 과 파이프라인이 다름:
 - 시각 토큰: `design-tokens.json` → `theme.css` 로 흐름
 - language 토큰: 별도 i18n 파일 (`tokens/i18n/*.json`) 로 흐름 (i18n = 국제화, internationalization)
 
-**전제**: i18n 인프라(라이브러리 설치, `to-i18n.mjs` 스크립트, i18n 파일들) 가 세팅되어 있어야 함. 없으면 먼저 E-2 진행.
+**전제**: i18n 인프라(라이브러리 설치, `to-i18n.mjs` 스크립트, i18n 파일들) 가 세팅되어 있어야 함. 없으면 먼저 [E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때) 진행.
 
 **프롬프트 예시:**
 ```
@@ -385,7 +406,7 @@ Button 컴포넌트에 새 size 추가된 걸 반영해줘: <Figma URL>
 
 **언제**: Figma 컴포넌트의 text prop 이나 텍스트 노드에 `language` 컬렉션의 토큰이 참조로 걸려 있을 때 (예: 하드코딩된 "다음" 이 아니라 `action/next` 토큰이 걸림).
 
-**전제**: i18n 인프라(라이브러리, `to-i18n.mjs`, i18n 파일, 앱의 i18n Provider) 가 세팅되어 있어야 매끄럽게 돌아감. 없으면 E-2 부터 진행.
+**전제**: i18n 인프라(라이브러리, `to-i18n.mjs`, i18n 파일, 앱의 i18n Provider) 가 세팅되어 있어야 매끄럽게 돌아감. 없으면 [E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때) 부터 진행.
 
 **프롬프트 예시:**
 ```
@@ -445,7 +466,7 @@ QA 돌려줘, Figma 원본이랑 비교까지.
 ```
 
 **자동으로 벌어지는 일:**
-위 9항목 + Figma 비교 2항목:
+[D-1](#d-1-기본-qa-코드만) 의 9항목 + Figma 비교 2항목:
 - Figma 변수 vs `design-tokens.json` 일치 여부
 - Figma 스크린샷 vs 실제 렌더링 대조
 
@@ -483,7 +504,7 @@ docs/TOKENS.md 절차대로 토큰 부트스트랩 해줘. 이 Figma 파일 씀:
 
 #### E-2. i18n 인프라 셋업 (language 컬렉션이 있을 때)
 
-**언제**: `language` 컬렉션이 있는 Figma 파일을 처음 부트스트랩할 때. E-1 과 독립된 별개 작업.
+**언제**: `language` 컬렉션이 있는 Figma 파일을 처음 부트스트랩할 때. [E-1](#e-1-토큰-부트스트랩) 과 독립된 별개 작업.
 
 **부트스트랩 시 결정할 것 (Claude 가 시작 시 물어봄):**
 - 어떤 i18n 라이브러리를 쓸지 (react-i18next / react-intl / lingui 등). **기본 추천: react-i18next**
@@ -513,7 +534,7 @@ tokens/i18n/{언어}.json 에 두자.
 
 ## 3. 폴더 구조와 파일별 역할
 
-### 3.1 프로젝트 루트
+### A. 프로젝트 루트
 
 ```
 rikaride/
@@ -522,12 +543,14 @@ rikaride/
 ├── vite.config.ts          ← 빌드 도구 설정
 ├── tsconfig*.json          ← TypeScript 설정
 ├── index.html              ← Vite 진입점
-├── docs/                   ← 문서 (섹션 3.2)
-├── tokens/                 ← 토큰 파이프라인 (섹션 3.3)
-├── src/                    ← 소스 코드 (섹션 3.4)
+├── docs/                   ← 문서 (섹션 3-B)
+├── tokens/                 ← 토큰 파이프라인 (섹션 3-C)
+├── src/                    ← 소스 코드 (섹션 3-D)
 ├── .storybook/             ← Storybook 설정
-└── .claude/                ← Claude Code 전용 설정 (섹션 3.5)
+└── .claude/                ← Claude Code 전용 설정 (섹션 3-E)
 ```
+
+폴더별 상세: [3-B `docs/`](#b-docs--문서) · [3-C `tokens/`](#c-tokens--토큰-파이프라인) · [3-D `src/`](#d-src--소스-코드) · [3-E `.claude/`](#e-claude--claude-code-전용-설정)
 
 **CLAUDE.md** 는 Claude 가 프로젝트에 처음 접근할 때 반드시 읽는 파일이다. 이 프로젝트의 전반적인 규칙(토큰 하드코딩 금지, 컴포넌트 4파일 구조 등) 이 여기에 요약되어 있고, 상세 규칙은 `docs/` 로 경로만 가리킨다.
 
@@ -546,7 +569,7 @@ rikaride/
 
 ---
 
-### 3.2 `docs/` — 문서
+### B. `docs/` — 문서
 
 ```
 docs/
@@ -559,7 +582,7 @@ docs/
     ├── color-token-rule.md
     ├── shape-token-rule.md
     ├── typography-token-rule.md
-    ├── style-rule.md
+    ├── text-style-rule.md
     ├── effect-token-rule.md
     ├── icon-frame-rule.md
     ├── liquid-glass-rule.md
@@ -572,7 +595,7 @@ docs/
 
 **README.md** 는 "이럴 때 이 문서를 읽어라" 는 분기표를 담은 라우터다. Claude 가 작업 전 이 파일을 먼저 읽고, 표에서 해당 행을 찾아 지정된 룰북을 읽는다.
 
-**TOKENS.md** 는 Figma 에서 토큰을 처음 뽑는 부트스트랩 절차와, 이후 값·이름·모드가 바뀌었을 때 대응 절차를 담는다. **주 대상은 Claude** — 사용자가 이 문서의 명령을 직접 실행할 필요는 없다. Section E-1 의 프롬프트만 치면 Claude 가 이 절차대로 진행한다.
+**TOKENS.md** 는 Figma 에서 토큰을 처음 뽑는 부트스트랩 절차와, 이후 값·이름·모드가 바뀌었을 때 대응 절차를 담는다. **주 대상은 Claude** — 사용자가 이 문서의 명령을 직접 실행할 필요는 없다. [2-E-1](#e-1-토큰-부트스트랩) 의 프롬프트만 치면 Claude 가 이 절차대로 진행한다.
 
 **DESIGN.md** 는 "왜 이 프로젝트가 이런 결정을 했는가" 같은 배경 설명. 규칙이 아니라 맥락.
 
@@ -585,7 +608,7 @@ docs/
 | `color-token-rule.md` | 색상 토큰의 그룹·역할·상태 3분해, 모드 오버라이드 |
 | `shape-token-rule.md` | 간격·radius·아이콘 크기 토큰. 의미 기반 토큰 우선 |
 | `typography-token-rule.md` | 폰트 패밀리·굵기·크기·행간 변수 구조 |
-| `style-rule.md` | 디자이너가 실제로 쓰는 완성 프리셋(Text Style) |
+| `text-style-rule.md` | 디자이너가 실제로 쓰는 완성 프리셋(Text Style) |
 | `effect-token-rule.md` | 그림자·블러·유리 효과 시각적 정의 |
 | `icon-frame-rule.md` | `icon-frame-*` 컴포넌트와 `icon-frame` 컬렉션 — 텍스트 카테고리·스텝 매칭 규칙 |
 | `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported). 플랫폼별 유리 효과 지원 스위치 |
@@ -598,7 +621,7 @@ docs/
 
 ---
 
-### 3.3 `tokens/` — 토큰 파이프라인
+### C. `tokens/` — 토큰 파이프라인
 
 ```
 tokens/
@@ -627,7 +650,7 @@ tokens/
 
 ---
 
-### 3.4 `src/` — 소스 코드
+### D. `src/` — 소스 코드
 
 ```
 src/
@@ -658,7 +681,7 @@ src/
 
 ---
 
-### 3.5 `.claude/` — Claude Code 전용 설정
+### E. `.claude/` — Claude Code 전용 설정
 
 ```
 .claude/
@@ -674,7 +697,7 @@ src/
 
 **settings.json** 은 훅(자동 검사) 을 언제 실행할지 정의하고, `.env` 나 `theme.css` 같은 보호된 파일 접근을 막는다. 사용자가 직접 편집할 일은 거의 없다.
 
-#### 3.5.1 `agents/` — 에이전트
+#### E-1. `agents/` — 에이전트
 
 에이전트는 **특정 작업에 특화된 AI 서브프로세스** 다. 메인 세션이 특정 작업을 위임하면 새로운 컨텍스트에서 그 에이전트가 돌아간다. 자연어("QA 돌려줘") 또는 명시 호출(`@agent-qa-reporter`) 로 부를 수 있다.
 
@@ -685,7 +708,7 @@ src/
 | `design-reviewer` | 코드 전체 스캔. 하드코딩·존재하지 않는 변수 참조·primitive 참조·그룹 불일치·4파일 누락 검출. Figma MCP 는 쓰지 않음 |
 | `qa-reporter` | 전체 QA 리포트 생성. 5단계 절차로 코드 검사 9항목 + 옵션으로 Figma 원본 비교까지 |
 
-#### 3.5.2 `commands/` — 슬래시 명령
+#### E-2. `commands/` — 슬래시 명령
 
 슬래시 명령은 **짧은 별칭** 이다. 채팅창에 `/build-tokens` 처럼 치면 정해진 작업을 실행한다.
 
@@ -698,7 +721,7 @@ src/
 | `/gen-all-stories` | 스토리 없는 컴포넌트에 일괄 생성 |
 | `/implement-figma` | `figma-implementer` 에이전트에 위임 |
 
-#### 3.5.3 `skills/` — 스킬
+#### E-3. `skills/` — 스킬
 
 스킬은 **반복되는 작업의 절차를 묶은 지침 파일** 이다. 슬래시 명령이 스킬을 호출하거나, Claude 가 판단해서 자동으로 스킬을 참조한다.
 
@@ -708,7 +731,7 @@ src/
 | `sync-tokens` | Figma 변수와 `design-tokens.json` 을 5분류로 비교. Figma 변수 ID 기반이라 rename 을 정확히 감지 |
 | `verify-design` | 코드에서 하드코딩·잘못된 참조·primitive 참조 검출. `theme.css` 를 화이트리스트로 사용 |
 
-#### 3.5.4 `hooks/` — 훅
+#### E-4. `hooks/` — 훅
 
 훅은 **파일을 저장할 때 자동으로 도는 검사 스크립트** 다. 사용자가 명시적으로 부르지 않는다.
 
@@ -731,10 +754,10 @@ src/
 | Figma 파일 붙였는데 추출이 안 됨 | 컬렉션 이름이 룰북 전제와 다름 | `tokens:verify` 결과대로 세 가지 중 선택 (Figma 이름 수정 / 룰북 수정 / 룰북 적용 안 함) |
 | rename 후 코드 여러 곳이 조용히 깨짐 | 옛 유틸 클래스가 남아있음 | `design-reviewer` 로 스캔 |
 | 룰북이 낡은 토큰 이름을 언급 | 룰북 편집 놓침 | `npm run rulebook:verify` 로 조기 감지 |
-| 컴포넌트에 하드코딩된 UI 문자열이 남아있음 | 자동 검사가 텍스트는 안 잡음 | 사람 리뷰. 리팩터링 시 `language` 토큰으로 교체 (C-5 참고) |
+| 컴포넌트에 하드코딩된 UI 문자열이 남아있음 | 자동 검사가 텍스트는 안 잡음 | 사람 리뷰. 리팩터링 시 `language` 토큰으로 교체 ([2-C-5](#c-5-컴포넌트에-다국어-텍스트language-토큰가-있을-때) 참고) |
 | 앱에서 언어 전환했는데 폰트가 안 바뀜 | typeface-semantic 모드 전환 로직 누락 | language 모드와 typeface-semantic 모드를 동시에 전환 (`language-rule.md` §3) |
-| language 토큰 값을 바꿨는데 화면에 안 뜸 | `to-i18n.mjs` 재실행 안 함 or 앱 리로드 안 함 | `/check-tokens` 로 확인 후 재추출 (A-7 참고) |
-| 인스턴스의 재선언된 속성(예: `size`)과 실제 렌더링이 다름 | 속성 패널 최상단이 아니라 중첩된 스켈레톤 그룹의 속성을 직접 바꿈 | 최상단 값만 원래 의도대로 되돌리고, 중첩 그룹은 건드리지 않기 (`docs/FIGMA-GUIDEBOOK.md` §3 참고) |
+| language 토큰 값을 바꿨는데 화면에 안 뜸 | `to-i18n.mjs` 재실행 안 함 or 앱 리로드 안 함 | `/check-tokens` 로 확인 후 재추출 ([2-A-7](#a-7-language-토큰의-값-변경-예-다음--계속하기) 참고) |
+| 인스턴스의 재선언된 속성(예: `size`)과 실제 렌더링이 다름 | 속성 패널 최상단이 아니라 중첩된 스켈레톤 그룹의 속성을 직접 바꿈 | 최상단 값만 원래 의도대로 되돌리고, 중첩 그룹은 건드리지 않기 ([FIGMA-GUIDEBOOK §3](FIGMA-GUIDEBOOK.md#3-스켈레톤-속성을-템플릿이-다시-써야-할-때) 참고) |
 
 ---
 

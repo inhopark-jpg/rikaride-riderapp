@@ -57,7 +57,7 @@
  *
  * Text Style 은 CSS 변수가 아니라 @utility 로 낸다:
  *   5속성(family/weight/size/line-height/letter-spacing)은 변수 하나에 안 들어간다.
- *   생성된 유틸이 밑단 변수를 var() 로 참조하므로 style-rule.md §0 의 alias 관계와
+ *   생성된 유틸이 밑단 변수를 var() 로 참조하므로 text-style-rule.md §0 의 alias 관계와
  *   §5 의 "5속성 빠짐없이 적용" 이 둘 다 지켜진다.
  * ============================================================================
  */
@@ -416,7 +416,7 @@ function main() {
   const textStyles = root.$textStyles ?? {}
   const styleNames = Object.keys(textStyles)
   if (styleNames.length) {
-    L.push('/* Text Style 프리셋 — 5속성 전부 적용 (style-rule.md §5) */')
+    L.push('/* Text Style 프리셋 — 5속성 전부 적용 (text-style-rule.md §5) */')
     const PROP_CSS = {
       fontFamily: 'font-family',
       fontWeight: 'font-weight',
