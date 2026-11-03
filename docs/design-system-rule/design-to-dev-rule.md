@@ -22,8 +22,8 @@
 | 템플릿 | `btn-ghost` | `BtnGhost` |
 | 패턴 | `btn-ghost/pattern-go-back` | `PatternBtnGhostGoBack` |
 | 빌딩블록 + 패턴 | `.btn-ghost/pattern-save-item` | `_PatternBtnGhostSaveItem` |
-| 패밀리 없는 패턴 | `pattern-loading-overlay` | `PatternLoadingOverlay` |
-| 패밀리 없는 빌딩블록 | `.pattern-scrim` | `_PatternScrim` |
+| 템플릿 없는 패턴 | `pattern-loading-overlay` | `PatternLoadingOverlay` |
+| 템플릿 없는 빌딩블록 패턴 | `.pattern-scrim` | `_PatternScrim` |
 
 ---
 
@@ -32,7 +32,7 @@
 1. `.` 접두사가 있으면 → `_`로 대체.
 2. `pattern-` 마커가 있으면 → 문자열 맨 앞으로 옮기고 `Pattern`으로 표기.
 3. 남은 `family-subgroup` 및 `pattern-name` 세그먼트를 하이픈 기준으로 쪼갠 뒤, 각 단어의 첫 글자를 대문자로 바꿔 공백 없이 이어붙임.
-4. 슬래시(`/`)는 최종 결과에 남지 않음 — 슬래시가 구분하던 두 세그먼트(family와 pattern-name)는 이어붙는 순서로만 표현됨.
+4. 슬래시(`/`)는 최종 결과에 남지 않음 — 슬래시가 구분하던 두 세그먼트(템플릿 이름과 pattern-name)는 이어붙는 순서로만 표현됨.
 
 Figma 쪽에서 이미 확정된 규칙이 그대로 보존되는 지점:
 

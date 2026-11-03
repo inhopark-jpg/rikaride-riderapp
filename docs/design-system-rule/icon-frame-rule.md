@@ -1,4 +1,4 @@
-# Icon Frame 적용 규칙 (공통 룰북)
+# Icon Frame 적용 규칙
 
 > **다루는 것** — `icon-frame` 변수 컬렉션과 이를 소비하는 `icon-frame-*` (5개) 컴포넌트. 모든 아이콘 배치가 `icon-frame-*` 을 거친다는 제약, 2층 구조, 텍스트 카테고리·스텝 ↔ 컴포넌트·모드 매칭.
 > **관련 룰북** — `typography-token-rule.md` (`line-height/*` — `icon-line-height` 가 참조하는 원본), `text-style-rule.md` (카테고리·스텝 이름), `shape-token-rule.md` §3, `color-token-rule.md` §6 (positive/negative 색) · §10 (모드 지역 오버라이드)

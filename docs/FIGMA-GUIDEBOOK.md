@@ -4,6 +4,8 @@
 
 **이 문서는 요약본이다.** 진짜 기준은 항상 `docs/design-system-rule/*.md` 원문이고, 여기 내용과 원문이 어긋나면 **원문이 맞다**. 원문이 바뀌면 이 문서도 같이 갱신해야 한다 — 각 섹션 제목 옆에 원문 경로를 적어뒀으니, 뭔가 이상하면 그 파일을 먼저 확인한다.
 
+**Figma 편집을 Claude 에게 맡길 수도 있다** — 컴포넌트 생성, 화면 조립, 하드코딩 텍스트 찾기와 번역 제안 등. 방법은 [GUIDEBOOK §2-F](GUIDEBOOK.md#f-figma-직접-편집-claude-에게-맡기기). 직접 작업한 뒤 이 문서의 규칙을 지켰는지는 `/figma-audit` 으로 검사할 수 있다 ([GUIDEBOOK §2-D-3](GUIDEBOOK.md#d-3-figma-구조-검사)).
+
 디자인 토큰의 값(색상 hex, 간격 숫자 등)은 이 문서에도, 어떤 룰북에도 없다. 전부 `tokens/design-tokens.json` 또는 Figma 변수 패널에서 직접 조회한다. 여기서 다루는 건 "어떤 토큰을 왜 쓰는가"뿐이다. (예외: [§4](#4-섹션-정리하기)의 섹션 간격·배경색은 토큰이 아니라 캔버스 정리용 고정값이라 룰북과 이 문서에 직접 적는다.)
 
 ---
@@ -39,20 +41,21 @@
 
 ### 어떤 레이어인지 판별하는 법 (2단계 테스트, 순서대로)
 
+0. **스켈레톤이 될 수 없는 경우인가?** 템플릿을 담았거나, 퍼블리시되는 패턴을 담았거나, 자신이 빌딩블록이 아니면서 패턴을 담았으면 → 1번을 건너뛰고 2번으로. (빌딩블록 패턴은 스켈레톤의 부품일 수 있어 여기서 세지 않는다.)
 1. **색상/상태/엘리베이션을 소유하는가?** (칠해진 색이 아니라 그 색을 여기서 정하는지) → 아니오면 **스켈레톤**. 끝. (수정 가능한 속성이 하나도 없어도 스켈레톤이다 — "고정이냐 수정 가능이냐"는 질문 자체가 이 레이어엔 안 통한다.)
-2. **텍스트/아이콘/중첩 인스턴스 중 여전히 수정 가능한 게 있는가?** → 있으면 **템플릿**, 없으면 **패턴**.
+2. **텍스트/아이콘/중첩 인스턴스 중 여전히 수정 가능한 게 있는가?** → 있으면 **템플릿**, 없으면 **패턴**. (고정된 콘텐츠를 켜고 끄기만 하는 표시 boolean·데이터 슬롯은 "수정 가능"에 넣지 않는다.)
 
 다른 기준(예: "형제 인스턴스가 다르게 쓸 것 같다")은 쓰지 않는다 — 사람마다 판단이 달라지는 문제 때문에 폐기됐다.
 
 ### 중첩 규칙
 
 ```
-스켈레톤 → 스켈레톤만 중첩 가능
+스켈레톤 → 스켈레톤, 빌딩블록 패턴만 중첩 가능
 템플릿   → 스켈레톤, 템플릿, 패턴 전부 중첩 가능
 패턴     → 스켈레톤, 템플릿, 패턴 전부 중첩 가능
 ```
 
-자기 자신과 같거나 아래 레이어만 중첩할 수 있다. 스켈레톤 안에 템플릿/패턴이 들어가면 색상 규칙 위반이다. (예외: `icon-frame-*`은 스켈레톤에 들어갈 수 있다)
+자기 자신과 같거나 아래 레이어만 중첩할 수 있다. 스켈레톤 안에 템플릿이나 퍼블리시되는 패턴이 들어가면 색상 규칙 위반이다. 부품인 빌딩블록 패턴(`.` 접두사)은 들어갈 수 있다. (예외: `icon-frame-*`도 스켈레톤에 들어갈 수 있다)
 
 ### 속성은 누가 소유하는가
 
@@ -116,9 +119,10 @@
 |---|---|---|
 | 스켈레톤 | `.skeleton/{family}-{subgroup}` | `.skeleton/btn` |
 | 템플릿 | `{family}-{subgroup}` | `btn-ghost` |
-| 패턴 | `{family}-{subgroup}/pattern-{name}` | `btn-ghost/pattern-go-back` |
+| 패턴 (템플릿을 활용) | `{template}/pattern-{name}` | `btn-primary/pattern-go-back` |
+| 패턴 (템플릿 없이 만듦) | `pattern-{family}-{name}` | `.pattern-gnb-item-bg` |
 
-- `subgroup`은 선택 사항, 항상 하이픈(`-`)으로 결합. 슬래시(`/`)는 딱 두 경우에만: `.skeleton/`, 그리고 `family-subgroup/pattern-name`.
+- `subgroup`은 선택 사항, 항상 하이픈(`-`)으로 결합. 슬래시(`/`)는 딱 두 경우에만: `.skeleton/`, 그리고 `{template}/pattern-{name}` — 특정 템플릿을 활용한 패턴일 때만. 템플릿 없이 만든 패턴은 슬래시 없이 `pattern-` 을 맨 앞에 둔다.
 - **이름은 "그것이 무엇인지"로 짓는다** — 위치나 구성 요소로 짓지 않는다. 나쁜 예: `btn-layout-with-cancel-and-confirm-buttons/pattern-x`. 좋은 예: `btn-layout/pattern-cancel-confirm`.
 - **"default", "main" 같은 이름을 패턴 이름으로 쓰지 않는다.** 패턴은 자기 자신을 설명하는 구체적인 이름이어야 한다.
 - `pattern-`는 스켈레톤에 절대 안 붙는다. 콘텐츠가 고정된 모든 패턴엔 항상 붙는다(대응하는 열린 템플릿이 실제로 있는지 여부와 무관).
@@ -170,14 +174,14 @@ Figma 페이지 안의 컴포넌트와 화면은 **Section 중첩**으로 정리
 | sub-group | **이름 없음** — 이름 없는 섹션은 sub-group 에만 쓴다 |
 | template / pattern | 안에 든 컴포넌트 이름과 **글자 하나까지 같게** (`btn-primary`) |
 | building-block | 항상 `building-block` (컴포넌트 이름 아님) |
-| 메모(`적용 예시` 등) | 자유. **배경 투명** |
+| 주석 섹션(`적용 예시` 등) | 자유. **fill 없음 + dashed stroke** ([주석 달기](#주석-달기)) |
 
 섹션 하나에는 **주제 컴포넌트(또는 화면) 하나**만 넣는다. (예외: 아이콘 글리프는 분류별 섹션으로 묶는다)
 
 ### 컴포넌트 레이아웃 (패밀리·Foundations Figma 페이지)
 
 - 패밀리 섹션 안에 sub-group 을 가로로 놓는다. **sub-group = 같은 빌딩블록(주로 스켈레톤)을 함께 쓰는 템플릿·패턴의 묶음.** 공유하는 게 없으면 따로 sub-group 을 만든다 (복합 템플릿, 독립 패턴도 각자).
-- template 섹션은 위에서부터 **pattern 섹션 줄 → 템플릿 본문(주석·메모 포함) → building-block 줄**. 패턴은 이름 앞부분이 가리키는 template 섹션에 넣는다 (`btn-ghost/pattern-go-back` → `btn-ghost` 섹션).
+- template 섹션은 위에서부터 **pattern 섹션 줄 → 템플릿 본문(주석·주석 섹션 포함) → building-block 줄**. 패턴은 이름 앞부분이 가리키는 template 섹션에 넣는다 (`btn-ghost/pattern-go-back` → `btn-ghost` 섹션).
 - building-block 섹션 안에는 빌딩블록 하나(패턴이 있는 템플릿이면 위에 pattern 줄), 그 아래에 그 빌딩블록이 쓰는 빌딩블록들 (재귀).
 - 형제끼리 높이를 맞추지 않는다.
 
@@ -198,13 +202,29 @@ Figma 페이지 안의 컴포넌트와 화면은 **Section 중첩**으로 정리
 
 ### 배경색과 간격 (캔버스 고정값)
 
-- 배경: 최상위 **투명** → 흰색 `#FFFFFF` → `#F2F2F2` → `#E6E6E6` → `#F2F2F2` … 깊이마다 번갈아. 메모 섹션은 투명으로 두고 순서에서 건너뛴다.
+- 배경: 최상위 **투명** → 흰색 `#FFFFFF` → `#F2F2F2` → `#E6E6E6` → `#F2F2F2` … 깊이마다 번갈아. 주석 섹션은 fill 없이 두고 순서에서 건너뛴다.
 - 간격: 섹션 안쪽 여백 100 / 형제 사이 100 / 컴포넌트 레이아웃 위아래 띠 사이 200 / 페이지 레이아웃 띠 사이·sub-group 사이 1000.
 
 ### 하지 말 것
 
 - 작은 흰색 컴포넌트가 안 보인다고 **배경용 섹션으로 감싸지 않는다** — 이름 없는 섹션은 sub-group 으로 읽힌다. 필요하면 섹션이 아닌 배경 frame 을 뒤에 깐다.
 - 컴포넌트 이름을 바꾸고 섹션 이름을 그대로 두지 않는다 — 둘은 항상 같아야 한다.
+
+### 주석 달기
+
+*(원문: `annotation-rule.md`)*
+
+| 설명할 것 | 도구 | 위치 |
+|---|---|---|
+| variant 가 어느 속성 값인지 | `section-indicator` 브래킷 | 셋의 **위(X축)·왼쪽(Y축)에만** |
+| 이 UI 가 무엇인지, 이름 | `address-platter` + `.address-anchor` | UI 근처, 같은 섹션 |
+| 컴포넌트 안 특정 레이어 | Figma annotation (카테고리 없음) | 그 레이어 |
+| 컴포넌트 전체 | Figma spec | 주제 옆, 같은 섹션 |
+| 적용 예시·그림 설명 | 주석 섹션 | 주제 옆, 같은 섹션 |
+
+- **브래킷 라벨**은 `{속성}:` 줄바꿈 `{값}` 두 줄. 한 축에 속성이 여럿이면 덜 자주 바뀌는 속성이 바깥. 값이 하나뿐인 속성은 생략. 라벨끼리, 다른 주석과 겹치지 않게 간격을 넓힌다.
+- **anchor** 는 platter 안에 메인 컴포넌트로 만들고, 텍스트는 UI 이름과 글자 하나까지 같게. 다른 곳에서 이 UI 를 가리킬 때 anchor 인스턴스를 놓으면 go to main component 로 원본에 갈 수 있다. 새 UI 의 anchor 는 복제해서 새 메인 컴포넌트로.
+- **주석 섹션**: fill 없음, stroke 검정 2 / dash 8·8 / OUTSIDE. 배경을 칠하면 구조 섹션으로 오독된다.
 
 ---
 
@@ -221,17 +241,27 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 
 **컴포넌트에는 항상 `color-semantic`만 쓴다.** 이름은 항상 `{그룹}/{역할}/{상태 또는 스케일}` 3부분으로 분해된다.
 
-- **역할**은 그룹마다 공통 3가지: `bg`(배경), `border`(테두리), `inner`(텍스트 또는 아이콘 색).
+- **역할**은 5가지. 레이어 그룹에 공통인 3가지: `bg`(배경), `border`(테두리), `inner`(텍스트 또는 아이콘 색). `styles` 그룹 전용 2가지: `shadow`, `gradient`.
 - 한 레이어의 색은 **항상 하나의 그룹 안에서만** 결정한다 — 배경이 `brand`면 그 안 텍스트도 `brand/inner/*`여야 한다. 다른 그룹(`white/inner/*` 등)을 섞지 않는다.
 
-### 그룹은 두 종류, 서로 다른 어휘
+### 그룹은 세 종류, 서로 다른 어휘
 
-| | Interactive (`interactive/`로 시작) | Non-interactive (그 외 전부) |
-|---|---|---|
-| 세 번째 세그먼트 | **상태**: `default`, `pressed`, `disabled`, `selected` | **스케일**: `base`, `low`, `high`, `lightest`, `darkest` 등 |
-| "기본값" 이름 | `default` | **`base`** (`default`라는 이름 자체가 없음) |
+| | Interactive (`interactive/`로 시작) | Non-interactive (그 외 레이어 그룹) | `styles` |
+|---|---|---|---|
+| 역할 | `bg` / `border` / `inner` | `bg` / `bg-ghost` / `border` / `border-ghost` / `inner` | `shadow` / `gradient` |
+| 세 번째 세그먼트 | **상태**: `default`, `pressed`, `disabled`, `selected` | **스케일**: `lightest`, `lighter`, `light`, `base`, `dark`, `darker`, `darkest` | 역할마다 고정 목록 |
+| "기본값" 이름 | `default` | **`base`** (`default`라는 이름 자체가 없음) | 없음 |
+| 레이어에 직접 바인딩 | 예 | 예 | **아니오** |
 
 헷갈리지 않는다 — non-interactive에 `default`를 찾지 않고, interactive에 `lightest`/`darkest`를 기대하지 않는다.
+
+### `styles` 그룹: 레이어가 아니라 Style이 소비한다 (원문: `color-token-rule.md` §2-1)
+
+`styles/shadow/{low|mid|high}` 와 `styles/gradient/{overlay|solid|transparent}` 는 **Effect Style·색상 Style이 참조하는 색**이다. 레이어에는 Style을 적용하고, Style이 이 토큰을 참조한다.
+
+- **레이어별 색 선택 규칙(그룹 일치, 상태 판정, QA 순회)의 대상이 아니다.** QA 중 `styles` 토큰을 만나면 위반이 아니라 "Style이 소비하는 토큰"으로 보고 넘어간다.
+- 반대로 **레이어가 `styles` 토큰을 직접 물고 있으면 위반**이다 — Style을 적용해야 할 자리다.
+- 존재 이유는 모드다. `effects` 컬렉션과 색상 스타일에는 모드 축이 없어서, 그림자·그라디언트 색을 primitive에 직접 걸면 다크모드에서 영원히 안 바뀐다. `color-semantic` 안으로 끌어오면 **이 컬렉션의 모드 하나만 전환해서 색·그림자·그라디언트가 함께 따라온다.**
 
 ### Interactive 그룹: bg/border/inner는 따로 논다
 
@@ -253,7 +283,7 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 
 패턴: `{그룹}/{bg|bg-ghost|border|border-ghost|inner}/{스케일}`. 그룹: `brand`, `white`, `black`, `success`, `error`, `warning`, `info`.
 
-같은 그룹 안에서는 어떤 스케일을 쓰든 전부 정상(디자이너 재량). **문제는 그룹 자체가 어긋났을 때**다 — 예: `white` 배경 위에 `black/inner/lower`. 고칠 때는 역할+스케일은 유지한 채 그룹만 바꾼다.
+같은 그룹 안에서는 어떤 스케일을 쓰든 전부 정상(디자이너 재량). **문제는 그룹 자체가 어긋났을 때**다 — 예: `white` 배경 위에 `black/inner/base`. 고칠 때는 역할+스케일은 유지한 채 그룹만 바꾼다.
 
 `-ghost` 접미사(`bg-ghost`, `border-ghost`)는 **반투명 유리(glassmorphism) 배경/테두리** 전용이다 — "배경 없는 버튼"이라는 뜻이 아니다.
 
@@ -268,7 +298,7 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 
 ### 모드(테마)와 서브트리 오버라이드
 
-`color-semantic`은 여러 모드(브랜드 컬러 테마)를 갖는다. **모드는 화면 전체 단위가 아니라 노드/서브트리 단위로 지역 오버라이드될 수 있다** — 화면 전체가 `light/sky-blue`여도 특정 버튼 인스턴스만 `light/black`으로 개별 지정돼 있으면 그 버튼(과 자손)만 다른 색으로 보인다. 명시적 지정이 없으면 가장 가까운 상위 노드의 모드를 물려받는다.
+`color-semantic`은 여러 모드(브랜드 컬러 테마)를 갖는다. **모드는 화면 전체 단위가 아니라 노드/서브트리 단위로 지역 오버라이드될 수 있다** — 화면 전체가 `light/sky-blue`여도 특정 버튼 인스턴스만 `light/rikaride`으로 개별 지정돼 있으면 그 버튼(과 자손)만 다른 색으로 보인다. 명시적 지정이 없으면 가장 가까운 상위 노드의 모드를 물려받는다.
 
 ### 색상 치트시트
 
@@ -399,7 +429,7 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 
 ### letter-spacing도 빠짐없이 적용
 
-`letter-spacing`은 변수가 아니라 리터럴이고 지금은 전부 기본값(커스텀 자간 없음)이다. 그래도 **5개 속성(family/weight/size/line-height/letter-spacing) 전부를 빠짐없이 개별 적용**한다 — 나중에 자간이 추가될 수 있는데, 생략하면 그 변경을 놓친다.
+`letter-spacing`은 변수가 아니라 Text Style 안의 리터럴이다. 기본값(커스텀 자간 없음)이더라도 **5개 속성(family/weight/size/line-height/letter-spacing) 전부를 빠짐없이 개별 적용**한다 — 생략하면 자간이 지정된 스타일에서 그 값을 놓친다.
 
 ### 브랜드 × 언어 모드
 
@@ -419,7 +449,7 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 
 ## 9. 그림자·블러·리퀴드 글라스
 
-*(원문: `effect-token-rule.md`, `liquid-glass-rule.md`)*
+*(원문: `effect-token-rule.md`)*
 
 그림자·블러는 Figma Style이 아니라 **`effects` Variable 컬렉션**으로 관리된다.
 
@@ -427,25 +457,26 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 
 패턴: `shadow/{low|mid|high}/drop-shadow/{position-x|position-y|blur|spread|color}`. 강도가 높을수록 더 "떠 있는" 느낌(모달, 플로팅 버튼 등)에 쓴다. 5개 필드를 각각 개별 값으로 적용 — 나중에 하나만 바뀌어도 대응할 수 있게 분리 유지.
 
+`color` 필드는 **`color-semantic`의 `styles/shadow/*`를 참조**한다 (`color-token-rule.md` §2-1). primitive를 직접 참조하지 않는다 — `effects` 컬렉션엔 모드 축이 없어서 직접 걸면 다크모드에서 그림자 색이 안 바뀐다. 코드로 옮길 때 **모드 축이 다른 컬렉션으로 넘어가는 alias는 리터럴로 펼치지 말고 참조(`var()`)로 유지**한다. 다크모드 그림자는 색을 뒤집지 않고 **어두운 색 그대로 알파만 올린다** — 뒤집으면 글로우가 된다.
+
 ### 블러 — uniform vs progressive
 
 - **uniform**: 영역 전체에 똑같은 세기 (`background-blur/uniform/{강도}/blur`).
 - **progressive**: 시작(`start`)에서 끝(`end`)으로 점점 변하는 그라디언트 블러. 고정 헤더/바텀바 아래로 스크롤되며 서서히 흐려지는 효과 전용일 가능성이 높다. 단일 `blur()`로는 재현 안 됨 — 웹은 `mask-image` 그라디언트 조합, iOS/Android는 네이티브 variable blur API나 커스텀 쉐이더 필요.
 
-### 리퀴드 글라스 — 두 컬렉션을 헷갈리지 않는다
-
-| 컬렉션 | 다루는 것 |
-|---|---|
-| `effects/liquid-glass/*` | 유리 효과의 **시각적 정의** (light-angle, refraction, frost 등 7개 물리 속성) |
-| `liquid-glass` (최상위 별도 컬렉션) | 그 효과를 플랫폼별로 켤지 말지 결정하는 **지원 여부 스위치** (`supported`/`unsupported`) |
-
-두 컬렉션은 서로 참조하지 않는 완전히 별개 층이다.
+### 리퀴드 글라스 — 표준 CSS로 재현 불가
 
 `effects/liquid-glass/*`의 7개 속성(`light-angle`, `light-intensity`, `refraction`, `depth`, `dispersion`, `frost`, `splay`)은 **표준 CSS `backdrop-filter: blur()`로 재현 불가능**하다. Web은 SVG 필터/WebGL, iOS는 Metal 쉐이더(또는 iOS 26+ 네이티브 Liquid Glass API), Android는 `RenderEffect`/AGSL이 필요하다. 정확한 재현이 부담되면 `frost`만 blur로 근사하고 나머지는 디자인팀과 폴백 범위를 협의한다.
 
-`liquid-glass` 스위치 컬렉션은 컴포넌트의 `liquid-glass` 속성값에 참조로 바인딩된다. 사용자가 인스턴스마다 켜고 끄는 게 아니라, **화면/앱 루트에서 이 컬렉션의 모드를 지정하면 하위 컴포넌트가 일관되게 반응**한다 (코드에서는 `[data-liquid-glass="supported|unsupported"]` 서브트리 오버라이드).
+### 그라디언트 — 이것만 Variable이 아니라 색상 Style (원문: `effect-token-rule.md` §5)
 
-liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsupported` variant를 둘 다** 준비한다 — 하나만 만들면 안 된다.
+`gradient/{overlay|solid}-{up|down|left|right}` 색상 스타일. 그라디언트는 각도·스톱 위치를 포함한 페인트 전체라 변수 하나에 담을 수 없어서, 스타일로 두고 **스톱의 색만 변수를 참조**한다.
+
+- `overlay` = 반투명 → 투명(아래가 비쳐 보임), `solid` = 불투명 서피스 색 → 투명(아래를 완전히 덮다가 풀림). 방향은 **불투명한 쪽이 붙는 곳**이다.
+- 용도: 스크롤 콘텐츠가 고정 헤더·바텀바 밑으로 들어갈 때 잘린 느낌 없이 서피스로 녹인다. `background-blur/progressive`와 같은 자리에 함께 쓰인다 — 그쪽은 흐림, 이쪽은 색.
+- 스톱 색은 `styles/gradient/{overlay|solid|transparent}`를 참조한다.
+- **투명 끝점을 아무 투명색으로 두지 않는다.** 알파가 0이어도 RGB는 보간에 영향을 준다 — 흰색에서 "투명한 검정"으로 가면 중간이 회색으로 탁해진다. 사라지는 쪽은 진한 쪽과 같은 색조의 투명값이어야 한다.
+- **이름에 명도(`light`/`dark`)를 넣지 않는다.** 모드에 따라 색이 바뀌는 하나의 세트다.
 
 ---
 
@@ -455,20 +486,28 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 
 `language` 컬렉션은 엄밀히는 "디자인 토큰"이 아니라 i18n(국제화) 문자열 컬렉션이다. **텍스트 노드 / text prop에만** 적용한다 — 색상, 크기 등 다른 속성엔 못 쓴다.
 
-**토큰명 자체가 번역 키다.** 예: 토큰 `action/next` → korean 모드 값 "다음", english 모드 값 "Next". 텍스트 노드에 문자열을 하드코딩하지 않고 이 토큰을 참조로 바인딩하면, 모드(=언어)를 바꿀 때 표시 문자열이 자동으로 바뀐다 — 언어별 레이아웃(문자 길이 차이)을 Figma 안에서 바로 검토할 수 있다.
+**변수 하나 = 번역 항목 하나.** 변수 이름은 i18n 플러그인이 `{섹션 경로}/{레이어}/{6자 ID}` 로 붙인다 (예: `section-section-2/layer-frame-3/jpb5aj` → Korean "텍스트 노드", English "text node"). 이름을 직접 짓거나 바꾸지 않는다. 앞의 경로는 섹션을 정리하면 바뀔 수 있고, **끝의 6자 ID 는 바뀌지 않아 코드의 번역 키로 쓰인다.**
 
-**새 UI 문자열을 추가할 때:**
-1. `language` 컬렉션에 새 변수 생성 (예: `action/save-draft`)
-2. **각 언어 모드마다 값을 채운다** — 하나라도 비우면 그 언어에서 빈 문자열로 표시된다
-3. 그 문자열이 표시될 텍스트 노드에 토큰을 참조로 바인딩
+텍스트 노드에 문자열을 하드코딩하지 않고 이 변수를 참조로 바인딩하면, 모드(=언어)를 바꿀 때 표시 문자열이 자동으로 바뀐다 — 섹션이나 페이지 단위로 모드를 바꿔 언어별 레이아웃(문자 길이 차이)을 Figma 안에서 바로 검토할 수 있다.
+
+**새 UI 문자열을 추가할 때 — i18n 플러그인으로:**
+1. 텍스트 레이어 선택 → "토큰 생성하기"
+2. 기본 모드 값은 레이어 텍스트로 채워져 있다. **나머지 언어 모드에도 값을 채운다** — 비우면 `--`(미번역)로 남는다
+3. "생성 및 적용" → 변수 생성과 텍스트 노드 연결이 한 번에 된다
+
+변수 생성·연결은 플러그인으로만 한다. 플러그인이 자기 데이터(key 레이어 등)를 같이 기록하기 때문이다. 이미 있는 변수의 **값**을 고치는 건 변수 패널이나 Claude 로 해도 된다.
+
+**번역 테이블** — 화면 옆에 붙이는 `i18n-table` 은 원본과 같은 변수에 바인딩된 복사본이다. 하드코딩 검사(`/figma-audit`)에서 빠지고, 헤더 텍스트는 바인딩하지 않아도 된다.
 
 **앱 언어를 전환하는 로직을 만들 때는 `typeface-semantic`([§8](#8-텍스트-스타일-적용하기))과 항상 동시에 전환한다** — 문자열만 바뀌고 폰트가 안 바뀌면(또는 반대) 어긋난다.
 
-값은 CSS 변수로 방출하지 않는다 — 별도 i18n 파일(예: `tokens/i18n/{언어}.json`)로 추출해서 i18n 라이브러리로 소비한다.
+값은 CSS 변수로 방출하지 않는다 — 언어별 i18n 파일(키 = 6자 ID)로 추출해서 i18n 라이브러리로 소비한다. `--` 인 값은 누락으로 보고된다.
 
 ---
 
 ## 11. 자주 하는 실수 모음
+
+이 중 이름·섹션·3계층·변수 바인딩·하드코딩 텍스트에 관한 실수는 `/figma-audit` 이 노드 단위로 찾아준다. 색상 역할 선택이나 아이콘 스텝 매칭처럼 의도를 판단해야 하는 것은 사람이 확인한다.
 
 | 영역 | 실수 | 올바른 처리 |
 |---|---|---|
@@ -487,9 +526,9 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 텍스트 | 없는 굵기를 있다고 가정 (헤드라인에 medium 등) | 카테고리별 실제 지원 굵기부터 확인 |
 | 텍스트 | letter-spacing이 기본값이라 생략 | 5속성 전부 명시적으로 적용 |
 | 효과 | `backdrop-filter: blur()`만으로 리퀴드 글라스 재현 시도 | 7개 속성은 표준 CSS로 불가 — 플랫폼별 대안 필요 |
-| 효과 | liquid-glass 컴포넌트에 `unsupported` variant를 안 만듦 | 두 variant 모두 제공 |
-| 다국어 | 텍스트 노드에 문자열 하드코딩 | `language` 토큰을 참조로 바인딩 |
-| 다국어 | 새 언어 추가 시 일부 토큰에 값을 안 채움 | 모든 토큰 × 모든 언어 모드에 값 채우기 |
+| 다국어 | 텍스트 노드에 문자열 하드코딩 | i18n 플러그인으로 `language` 변수 생성·연결 |
+| 다국어 | 변수를 변수 패널에서 직접 만들거나 이름을 바꿈 | 생성·연결은 플러그인으로, 이름은 플러그인이 관리 |
+| 다국어 | 새 언어 추가 시 일부 변수에 값을 안 채움 (`--` 로 남김) | 모든 변수 × 모든 언어 모드에 값 채우기 |
 | 다국어 | language 모드만 바꾸고 typeface-semantic은 안 바꿈 | 두 컬렉션 동시 전환 |
 
 ---
@@ -503,12 +542,12 @@ liquid-glass를 쓰는 컴포넌트를 새로 만들 땐 **`supported`/`unsuppor
 | 1. 컴포넌트 만들기 | `docs/design-system-rule/component-structure-rule.md` |
 | 2. 이름 붙이기 | `docs/design-system-rule/component-structure-rule.md` §3, `docs/design-system-rule/design-to-dev-rule.md` §1~4 |
 | 3. 스켈레톤 속성 재선언 | `docs/design-system-rule/design-to-dev-rule.md` §5 |
-| 4. 섹션 정리하기 | `docs/design-system-rule/section-layout-rule.md` |
+| 4. 섹션 정리하기 | `docs/design-system-rule/section-layout-rule.md`, 주석 달기는 `docs/design-system-rule/annotation-rule.md` |
 | 5. 색상 | `docs/design-system-rule/color-token-rule.md` |
 | 6. 간격·radius·아이콘 크기 | `docs/design-system-rule/shape-token-rule.md` |
 | 7. 아이콘 배치 | `docs/design-system-rule/icon-frame-rule.md` |
 | 8. 텍스트 스타일 | `docs/design-system-rule/typography-token-rule.md`, `docs/design-system-rule/text-style-rule.md` |
-| 9. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md`, `docs/design-system-rule/liquid-glass-rule.md` |
+| 9. 그림자·블러·리퀴드 글라스 | `docs/design-system-rule/effect-token-rule.md` |
 | 10. 다국어 문자열 | `docs/design-system-rule/language-rule.md` |
 
 값(토큰의 실제 hex/숫자)은 `tokens/design-tokens.json` 또는 Figma 변수 패널에서 조회한다 — 이 문서에도 룰북에도 없다.

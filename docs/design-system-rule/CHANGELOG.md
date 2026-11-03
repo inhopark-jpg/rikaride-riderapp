@@ -14,6 +14,63 @@
 
 ---
 
+## 2026-11-03
+- **color-token-rule.md** §9 예외표 「그림자 색」과 「기본 서피스」 절 — **"어두운 색을 유지하고 알파를 올린다"를 "두 모드 모두 그대로 둔다"로 정정.** 이전 문구는 다크의 대비 수치(1.03~1.10)가 라이트(1.12~1.61)보다 낮다는 **숫자만 보고** 쓴 것이었는데, 실제로 알파를 올려보니 눈으로는 부자연스럽게 밝아졌다. 어두운 배경에서 그림자가 약한 것은 정상이고 수치로 보정할 대상이 아니다. 같은 이유로 「기본 서피스」 절의 "더 깊은 구분은 테두리나 그림자로" 를 **"테두리로"** 로 좁혔다 — 다크에서 그림자는 깊이를 벌리는 수단이 못 된다. 그림자 3개는 두 모드 모두 `neutral/dark-alpha/50·100·200` (사용자 판단, 눈으로 확인 후 직접 수정)
+- **color-token-rule.md** §1 역할·§2 역할 세그먼트·§5·§9 — **반투명 역할의 접미사를 모드 동작 하나로 정리.** 이전에는 `-ghost` 가 두 가지(흰색은 모드 따라감, 색 패밀리는 고정)를 뜻하고 `-floating` 이 위치(떠 있음)를 뜻해 축이 섞여 있었다. 이제 **`-ghost` 는 모드가 바뀌어도 그대로, `-tint` 는 모드를 따라 뒤집힌다** 한 줄로 정리됐다. 변수는 이름만 바꿔(35개) 바인딩은 전부 유지 — 기존 `white/*-floating`·`black/*-floating` → `*-ghost`, 기존 `white/*-ghost` → `white/*-tint`, 색 패밀리 `*-ghost` 67개는 이미 고정이라 이름 그대로. `-floating` 이라는 이름이 실제 쓰임보다 좁았던 것이 계기 — progress-segment 트랙처럼 떠 있지 않은 자리에도 "모드와 무관하게 밝게 덮는" 성질 때문에 쓰이고 있었다. 변수 description 102개와 `tokens/audit-rules.json` 의 검사 대상도 같이 갱신 (사용자 지시)
+- **color-semantic** `brand/inner/darkest` 를 전 라이트 모드 `neutral/default/950` 으로, 피드백 4계열(`error`·`info`·`success`·`warning`)의 `inner/lightest` 를 전 라이트 모드 `neutral/default/0` 으로 통일 — `light/rikaride` 만 수정되고 브랜드 6모드가 옛 값을 들고 있어 오버라이드가 모드당 4~5개씩 늘어 있었음. 통일 후 브랜드 오버라이드 수가 70/41/68/68/71/68 로 복귀 (사용자 지시)
+- **color-token-rule.md** §5 — "유리 위의 텍스트·아이콘 색" 절을 정정. 이전 문구는 "`white/*-floating` 면 위의 잉크는 `white/inner/*` 가 아니다 — 이 면은 모드와 무관하게 밝으므로" 였는데 **틀렸다.** 조건은 유리가 아니라 **그 뒤 바탕**이다: 바탕이 모드를 따라가면(앱 서피스) `{그룹}/inner/*` 가 맞고(측정 3.06~21.00 전부 통과, 스낵바·다이얼로그가 실제로 이 조합), 바탕이 모드를 안 따라가면(사진·지도) 글자 색 하나로 사다리 전체를 덮을 수 없어 §10 서브트리 모드 고정으로 풀어야 한다 — `npm run tokens:audit` 의 유리×바탕 검사가 라이트에서는 투명한 끝이, 다크에서는 불투명한 끝이 깨지는 것을 15건 잡아내면서 드러남 (사용자 승인)
+- **text-style-rule.md** §3 — `letter-spacing` 설명에서 시점 의존 서술("지금까지는 전부 기본값", "현재 자간을 조정해서 쓰지 않습니다")을 걷어내고, 기본값이든 아니든 5속성을 전부 명시 적용한다는 규칙만 남김. **FIGMA-GUIDEBOOK.md**·**TOKENS.md** 의 같은 문구도 함께 정리 — 룰북은 작성 시점의 상태가 아니라 언제 읽어도 성립하는 규칙이어야 하는데, "지금은 ~이다" 류는 파일이 바뀌는 순간 거짓이 되고 그걸 아무도 모른다 (사용자 지시)
+- **color-semantic** `black/border-floating/*` 7개 삭제 — 전 페이지(33개, 노드 22,408개) 전수 확인 결과 사용처 0. 유리 토큰 102개의 Figma description 앞에 `[ghost]`/`[floating]` 역할 문장을 붙이고(단계별 기존 설명은 보존), description 안에 남아 있던 옛 토큰 이름 참조 3건을 현재 이름으로 정정 (사용자 지시)
+- **color-token-rule.md** §1 역할·§2 역할 세그먼트·§5 `-ghost` 절·§9 예외표 — **반투명 유리를 역할 접미사로 구분.** `white` 그룹은 `bg`·`border`·`inner` 가 전부 모드를 따라가는데 `*-ghost` 만 고정이라 그룹 안에서 성질이 어긋나 있었다. 접미사는 **쓰임**을 가른다 — `-floating` 은 앱 위에 떠 있는 요소의 유리, `-ghost` 는 그 외 자리의 유리다. **모드 동작은 접미사가 아니라 그룹이 정하며**(`white/*-ghost` 만 모드를 따라가고 `white/*-floating`·`black/*-floating`·색 패밀리 `*-ghost` 는 고정), §5 에 그룹별 동작 표를 넣어 추측하지 않게 했다. non-interactive 역할이 5개에서 7개로 늘었다(`bg-floating`·`border-floating` 추가). 기존 `white/*-ghost`(밝은 유리 고정) 는 `white/*-floating` 으로, 모드를 따라가는 유리가 `white/*-ghost` 자리에 들어갔다. 쓰임은 바탕으로 갈린다 — `white/*-ghost` 배경화면·OS 표면 / `white/*-floating` 앱 콘텐츠 위에 떠 있는 것(스낵바·GNB·다이얼로그) / `black/*-ghost` 밝은 사진·지도. §5 에 유리 표와 "`-floating` 면 위의 잉크는 `white/inner/*` 가 아니다"는 단서를, §9 예외표에 "바탕은 모드와 무관한데 면은 시스템 외관을 따라가야 할 때" 행을 추가 — 잠금화면 Live Activity 가 배경화면 위에 있으면서 카드 자체는 시스템 라이트/다크를 따라가야 하는데 기존 토큰으로는 다크에서 흰 유리가 되어 맞지 않았고, 뒤집으면 스낵바·GNB 가 다크에서 사라져 둘을 한 토큰으로 못 푸는 것이 측정으로 확인됨. 변수는 **이름만 바꿔 기존 바인딩(스낵바 10 · GNB 44 · 다이얼로그 3곳)은 하나도 건드리지 않았다.** 측정상 `white/bg-ghost/lighter`(알파 800)가 iOS 실제 렌더와 일치. `black/*-ghost` 14개도 `black/*-floating` 으로 rename(사용처 29곳, 대부분 지도 마커 — 바인딩 유지). 전수 점검 결과 `-ghost` 81개 중 67개(색 패밀리)는 §9 때문에 고정이 맞아, "접미사가 모드 동작을 정한다"는 최초 문구를 사실에 맞게 정정함 (사용자 승인)
+- **color-token-rule.md** §5 — "같은 그룹이면 어떤 스케일이든 정상" 뒤에 단서 추가: 그룹 일치는 대비를 보장하지 않으며, 면과 잉크를 **같은 스케일로 짝지으면 거의 항상 실패**하므로 잉크는 반대쪽 끝에서 고른다. 다크에서 `inner/lightest` 가 거의 검정, `inner/darkest` 가 거의 흰색이 되어 이름과 실제 밝기가 반대라는 점도 명시 — `npm run tokens:audit` 측정 결과 한 그룹 안 bg×inner 176조합 중 110개가 양쪽 모드 모두 본문 대비 4.5 미달이었고, 이 세션에서 사람·에이전트가 다섯 번 같은 함정에 빠졌는데 §5 기준으로는 전부 "정상"이었음 (사용자 승인)
+- **color-token-rule.md** §9 — "기본 서피스" 절의 방향 보장이 **`white/bg/*` 에만** 해당함을 명시. 색 그룹의 `bg` 사다리 6개는 미러링 결과라 다크에서 방향이 뒤집히고, 그래서 그 그룹에서는 "한 단계 더 진하게"가 다크에서 반대로 작동한다. 깊이 표현은 `white/bg/*` 로 한다 — 감사의 '사다리 방향' 검사가 `brand`·`black`·`success`·`error`·`warning`·`info` 6개를 모두 뒤집힘으로 보고 (사용자 승인)
+- **color-token-rule.md** §9·§10, **FIGMA-GUIDEBOOK.md**, **DESIGN.md** — `color-semantic` 모드 이름 변경을 반영: `light/black` → `light/rikaride`, `dark/black` → `dark/rikaride`. 브랜드 축의 이름이 색(`black`)이 아니라 브랜드명(`rikaride`)으로 바뀐 것이고, 모드 이름이 `{명도}/{브랜드}` 2단 구조라는 규칙 자체는 그대로다. 예시 문구만 갱신했고 규칙은 바뀌지 않았다. 과거 항목의 `dark/black` 표기는 그 시점의 기록이므로 고치지 않았다 (사용자 지시)
+
+## 2026-11-02
+
+- **color-token-rule.md** 헤더·§0 체크리스트·§1·§2(§2-1 신설)·§7, **FIGMA-GUIDEBOOK.md** §5 — 그룹을 2종에서 **3종**(interactive / non-interactive / `styles`)으로, 역할을 3가지에서 **5가지**(`bg`·`border`·`inner` + `styles` 전용 `shadow`·`gradient`)로 확장. `styles` 는 레이어에 바인딩하지 않고 Effect/Paint Style 이 소비하므로 §3~§8 의 레이어별 판정 절차 대상이 아니며, 레이어가 직접 물고 있으면 위반임을 명시 — `effects` 컬렉션과 색상 스타일에 모드 축이 없어서 그림자·그라디언트 색을 primitive 에 직접 걸면 다크모드에서 영원히 안 바뀌는 문제. `color-semantic` 을 모드 전환의 단일 창구로 만들기 위함 (사용자 승인)
+- **color-token-rule.md** §9 전면 개정, **FIGMA-GUIDEBOOK.md** §5 — "아직 다크모드가 존재하지 않습니다" 삭제(`dark/black` 추가됨), 제목을 "명도 × 브랜드"로 정정. 다크모드 값 산출법 신설: primitive 참조 미러링을 1차 초안으로 쓰되 **미러링만으로는 완전한 다크모드가 되지 않으므로 스크린샷·명도 대비 검증이 필수**임과 미러링이 틀리는 5가지 경우(방향 고정 토큰 / 밝기가 뒤집히는 자리의 오버레이 / 그림자 색 / 램프 양 끝점 / 유리·지도 위 UI)의 처리를 표로 명시 — 단순 미러링으로 다크모드를 끝내려다 생기는 오류 방지 (사용자 승인)
+- **effect-token-rule.md** 헤더·§0·§0-1·§1, **FIGMA-GUIDEBOOK.md** §9 — shadow `color` 필드의 출처를 `color-primitive` 알파 색상에서 **`color-semantic` 의 `styles/shadow/*`** 로 정정. Effect Style 이 레거시가 아니라 실제 바인딩 대상임을 명시, 모드 축이 다른 컬렉션으로 넘어가는 alias 는 리터럴로 펼치지 말고 참조로 내보낼 것, 다크모드 그림자는 뒤집지 않고 알파를 올릴 것 추가 (사용자 승인)
+- **effect-token-rule.md** §5 신설(기존 치트시트 §5 → §6), **FIGMA-GUIDEBOOK.md** §9, **docs/README.md**·**docs/GUIDEBOOK.md** 한 줄 설명 — `gradient/{overlay|solid}-{up|down|left|right}` 색상 스타일 규칙 신설. 그라디언트는 이 프로젝트에서 유일하게 Variable 이 아닌 토큰 리소스이고 스톱 색만 `styles/gradient/*` 를 참조한다는 점, 투명 끝점의 RGB 가 보간에 영향을 주므로 진한 쪽과 같은 색조여야 한다는 점, 이름에 명도를 넣지 않는다는 점 — 그라디언트 규칙이 룰북에 아예 없었고, 실제 스타일 8개가 primitive 를 직접 참조하고 있었음 (사용자 승인)
+
+- **color-token-rule.md** §9 예외 표 — "의미 신호 색" 행 추가: 파괴적 액션·경고색은 서피스 색이 아니라 신호라 모드가 바뀜어도 색을 유지하고 `inner` 만 대비에 맞춰 뒤집는다, 그 색의 반투명판도 같은 색조를 따른다 — dark/black 검증 중 순수 미러가 `interactive/primary-destructive/bg/default` 을 #ed3c3f → #fba7a8(파스텔 핑크)로 바꿔 '삭제' 버튼이 경고로 안 읽히는 문제가 드러남. 결과로 bg 는 warning-red/600 으로 유지하고 inner 만 흰색→검정으로 뒤집어 글자 대비가 3.95 → 5.32 로 오히려 개선됨 (사용자 승인)
+
+- **color-token-rule.md** §9 예외 표 — 3행 추가: ① 색 패밀리의 `dark-alpha`/`light-alpha` 는 명암 쌍이 아니라 아이덴티티 색 vs 옅은 틴트이므로 램프를 바꾸면 색 자체를 잃는다, ② `*-ghost` 유리 재질은 램프 방향을 유지하고 알파 대역만 낮춘다, ③ 모드와 무관한 배경(사진·지도) 위의 컴포넌트는 토큰이 아니라 §10 지역 오버라이드로 해결한다 — dark/black 검수에서 순수 미러가 outline/ghost-destructive 의 경고 빨강을 따뜻한 회색(#b2a3a3)으로 바꾸고, `white/*-ghost` 유리를 서피스보다 어둡게 만들어 스낵바가 통째로 사라지는 문제가 확인됨 (사용자 지적)
+
+- **color-token-rule.md** §9 — "기본 서피스를 가장 먼저 못 박는다" 절 신설: `white/bg/base` 가 기본 서피스이고 `dark`/`darker`/`darkest` 는 올라온 요소 뒤를 누르는 물러난 배경이며, 이름이 가리키는 방향(물러난다=어두워진다)은 모드와 무관하게 유지된다는 점, 이 네 값이 나머지 전부의 기준이라 가장 먼저 확정해야 한다는 점, 검정 근처에서 대비가 압축되어 다크에서는 가장 깊은 두 단계가 구분되지 않으므로 좁은 총 폭 안에서 단계 간격은 균등해야 '한 단계 더'가 작동하므로 중간 단계를 primitive 에 추가한다는 점, 총 폭이 모자라면 면이 아니라 테두리·그림자로 표현해야 한다는 점을 명시 — 다크 작업 중 서피스 값을 두 번 바꾸었고 그때마다 테두리·텍스트·disabled 가 연쇄로 틀어졌음. 또 `dark` 가 `base` 보다 밝아진 시점에 바텀시트가 뒤 배경보다 어두워져 깊이가 뒤집히는 문제가 발생 (사용자 결정)
+
+- **color-primitive** `neutral/default/850`(#191f21)·`925`(#0f1315) 2개 추가 — 다크 서피스 사다리의 단계 간격이 기존 램프(800/900/950/1000)로는 1.23/1.08/1.07 로 기울어져 첫 단계가 전부 담당하고 나머지 두 단계는 구분되지 않았음. 두 단계를 넣어 1.12/1.12/1.12 로 균등화 (`white/bg/dark`→850, `darker`→925). 라이트 모드에는 사용처가 없어 영향 없음 (사용자 승인)
+
+- **component-structure-rule.md** §1 2단계 테스트 앞 「사전 확인」·복합 템플릿 설명, §7 오류 행, **FIGMA-GUIDEBOOK.md** 2단계 요약 — 템플릿·패턴 인스턴스를 담은 컴포넌트는 1단계(색 소유)를 건너뛰고 2단계로 판정 — 자기 색 없이 템플릿을 배치만 하는 `btn-layout` 이 1단계에서 스켈레톤으로 오판됨 (사용자 승인)
+- **shape-token-rule.md** §0 체크리스트 4번, §5 신설 — 인스턴스 크기는 메인이 그 치수를 정의(토큰·FILL·HUG)했으면 바꾸지 않고, 리터럴이면 사용처가 자유롭게 정한다 — 디자이너 의도를 기준으로 하는 사용자 규칙을 룰북으로 옮김 (사용자 승인)
+- **component-structure-rule.md** §1 사전 확인 재작성·중첩 규칙·스켈레톤 색 글머리, §7 오류 행, **FIGMA-GUIDEBOOK.md** 판별 0번·중첩 요약 — 스켈레톤 안에 부품인 빌딩블록 패턴(`.` 접두사)을 허용. 사전 확인은 템플릿·퍼블리시 패턴을 담거나 자신이 빌딩블록이 아니면서 패턴을 담은 경우로 좁힘 — 로딩 lottie·공용 placeholder 이미지 같은 부품을 예외 목록 없이 스켈레톤에 넣기 위함 (사용자 승인)
+
+## 2026-11-01
+
+- **component-structure-rule.md** §1 패턴 설명·2단계 테스트, **FIGMA-GUIDEBOOK.md** 2단계 요약 — 고정된 콘텐츠를 켜고 끄기만 하는 표시 boolean 은 "수정 가능한 콘텐츠"가 아님을 명시 — `.gnb-layout`(show-* 만 노출) 레이어 판정 공백. 결과로 `.gnb-layout` → `.pattern-gnb-layout` (사용자 승인)
+- **component-structure-rule.md** §3 핵심 스키마·슬래시 규칙·추가 규칙 6, §7 — 패턴의 슬래시는 특정 템플릿을 활용한 패턴(`{template}/pattern-{name}`)에만 쓰고, 템플릿 없이 만든 패턴은 `pattern-{family}-{name}` 으로 명시 — `.gnb-item-bg` 를 패턴으로 바꿀 때 슬래시 사용 기준이 문서에 없었음 (사용자 승인)
+- **component-structure-rule.md** §3 — "활용한 템플릿" 정의 추가: 패턴의 바깥 틀이 되는 템플릿, 중첩된 템플릿은 해당 없음 — 템플릿을 여럿 담은 패턴의 슬래시 앞 판단 기준 (사용자 승인)
+- **design-to-dev-rule.md** §2·§3, **section-layout-rule.md** §3, **FIGMA-GUIDEBOOK.md** 이름 규칙 — 위 변경에 맞춰 표 행 이름·슬래시 설명·pattern 줄 배치 문구 갱신 (사용자 승인)
+- **annotation-rule.md 신설** — Figma 캔버스 주석 규칙: variant 브래킷(위·왼쪽만, `{속성}:` 두 줄 라벨, 바깥 = 덜 자주 바뀌는 속성, 기본 간격은 참고값이고 겹침 방지가 우선), `address-platter` 4 variant 와 `.address-anchor`(UI 이름과 같은 텍스트, 인스턴스로 가리킴), 레이어 주석 = annotation(카테고리 없음), 컴포넌트 전체 = spec(주제 옆 같은 섹션), 예시 = 주석 섹션(fill 없음 + dashed stroke `#000000` 2 / 8·8 / OUTSIDE) — 주석 관례가 어디에도 없어 GNB 작업 중 anchor 누락·브래킷 아래 배치·platter 가림이 생김 (사용자 승인)
+- **section-layout-rule.md** 헤더·§1·§2·§3·§5·§7 — "메모 섹션"을 "주석 섹션"으로, 판별 기준을 "배경 투명" → "fill 없음 + dashed stroke", 주석 정의를 `annotation-rule.md` 참조로. §7 에서 붙어 깨져 있던 두 행 분리 — 위와 같음 (사용자 승인)
+- **docs/README.md, GUIDEBOOK.md, FIGMA-GUIDEBOOK.md §4·§12, 루트 CLAUDE.md, qa-reporter.md #14** — 룰북 10개 → 11개, 라우터·목록·요약·검사 근거에 `annotation-rule.md` 추가
+
+## 2026-10-31
+
+- **liquid-glass-rule.md 삭제** — 최상위 `liquid-glass` 컬렉션(supported/unsupported 스위치)은 디자인 토큰이 아님. 유리 효과 값(`effects/liquid-glass/*`, effect-token-rule.md §3)은 유지
+- **effect-token-rule.md** 헤더·§0-1·§3·§5 — 스위치 컬렉션과 `liquid-glass-rule.md` 참조 삭제 — 위와 같음
+- **color-token-rule.md** 헤더 — 관련 룰북에서 `liquid-glass-rule.md` 삭제 — 위와 같음
+- **collections.json / to-dtcg.mjs** — `expected` 를 추출 대상 전체 목록(allowlist)으로 정의. 그 밖의 Figma 컬렉션은 추출을 멈추지 않고 건너뜀. `liquid-glass` 항목 삭제, `language` 는 `nonTokenPipelines` 로 이동 — 토큰이 아닌 컬렉션을 Figma 에 추가해도 추출이 멈추지 않게
+- **design-tokens.json / build-theme.mjs** — 최상위 `liquid-glass` 노드와 `data-liquid-glass` 매핑 삭제
+- **docs/README.md, GUIDEBOOK.md, FIGMA-GUIDEBOOK.md, 루트 CLAUDE.md, TOKENS.md** — 룰북 11개 → 10개, liquid-glass 스위치 관련 행·문단 삭제, 추출 대상 정책 반영
+
+## 2026-10-30
+
+- **language-rule.md** 헤더·§0·§2·§4·§5·§6·§7, §8 신설 — 제목 "토큰" → "변수", 이름 형식 `{섹션 경로}/{레이어}/{6자 ID}` 와 코드 번역 키 = 6자 ID, 추출 원본 = `figma-dump.js` 덤프, `--` = 미번역, 변수 생성·연결은 사람이 전용 도구로 하고 Claude 는 찾기·번역 제안·기존 값 수정만, 번역 테이블(`i18n-table`) 검사 제외. `action/next` 식 예시 삭제 — 실제 Figma 작업 방식(도구가 이름을 자동 생성, 테이블로 번역 검토)과 달랐음. 특정 도구 이름은 룰북에 넣지 않고 GUIDEBOOK 에 둠
+- **룰북 8개 제목** — "(공통 룰북)" 삭제 — 뜻이 정의된 곳이 없어 판단 근거로 쓸 수 없었음
+- **language-rule.md §4·§7** — "파일 경로·라이브러리 미정" 을 실제 구성으로 교체: `to-i18n.mjs` 추출, `src/i18n/locales/{언어}.json` + `index.json`, 외부 라이브러리 없이 `src/i18n` 의 `t()` 로 소비 — i18n 추출 파이프라인이 만들어졌음
+- **color-token-rule.md §2 표·§5** — 스케일 어휘 `low/lower/high/higher` 를 실제 이름 `lightest/lighter/light/base/dark/darker/darkest` 로 교체, 그룹 불일치 예시를 `black/inner/lower` → `black/inner/base` 로 교체 (FIGMA-GUIDEBOOK §5 요약 동반 수정) — design-tokens.json 부트스트랩 후 rulebook:verify 에서 실재하지 않는 이름으로 드러남
+
 ## 2026-10-26
 
 - **style-rule.md → text-style-rule.md 이름 변경** — 파일명이 Text Style 이 아닌 Figma 스타일 전반(Effect Style 등)을 다루는 것처럼 읽혔음. 참조하는 룰북(typography-token-rule·icon-frame-rule·component-structure-rule), docs/README.md·GUIDEBOOK.md·FIGMA-GUIDEBOOK.md, figma-implementer 에이전트, tokens/extract·build-theme 주석과 collections.json 갱신

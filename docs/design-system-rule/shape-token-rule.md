@@ -1,4 +1,4 @@
-# Shape Token 적용 규칙 (공통 룰북)
+# Shape Token 적용 규칙
 
 > **다루는 것** — spacing / radius 토큰 선택. 숫자 스텝 전에 의미 기반 토큰(`surface-margin`·`viewport-margin` 등) 을 먼저 확인. 아이콘 크기는 별도 `icon-frame` 컬렉션 (§3).
 > **관련 룰북** — `color-token-rule.md`, `icon-frame-rule.md`
@@ -13,6 +13,7 @@
 1. `shape-primitive` / `shape-semantic` 두 컬렉션이 있는지 확인한다 (이 프로젝트는 **2단계 구조**).
 2. 아이콘 크기가 필요하면 `shape-*`가 아니라 `icon-frame-*` 컴포넌트를 쓴다 (§3).
 3. 값은 항상 `design-tokens.json`에서 조회한다.
+4. 인스턴스의 크기를 바꿨다면, 메인이 그 치수를 정의(토큰·FILL·HUG)하지 않은 경우인가 → §5
 
 ## 1. 2단계 구조 — `shape-primitive` → `shape-semantic`
 
@@ -55,3 +56,17 @@ shape-semantic   ← 의미 있는 이름으로 재포장된 토큰. 전부 shap
 | 완전히 동그란/캡슐형 요소 | `radius-full` |
 | 텍스트 옆에 나란히 놓는 아이콘 | `icon-frame-rule.md` — 같은 카테고리의 `icon-frame-*` + 모드 `size-{텍스트 스텝}` |
 | 텍스트 없이 단독으로 쓰는 아이콘 | `icon-frame-standalone` (`icon-frame-rule.md`) |
+
+---
+
+## 5. 인스턴스의 크기 — 메인이 정의했는지가 기준
+
+인스턴스의 width·height·min/max 를 바꿔도 되는지는 **메인 컴포넌트가 그 치수를 의도적으로 정의했는지**로 정한다.
+
+| 메인 컴포넌트의 그 치수 | 뜻 | 인스턴스에서 |
+|---|---|---|
+| `size/*` 토큰 바인딩, 또는 FILL / HUG | 디자이너가 정의함 | 바꾸지 않는다 (다른 토큰·sizing 으로 덮어쓰지 않음) |
+| 리터럴 숫자 | 정의하지 않음 — 사용처가 정할 자리 | 자유: `size/*` 토큰 바인딩, FILL, HUG 어느 것이든 |
+
+- 치수마다 따로 본다. 예: 버튼 스켈레톤의 width 는 리터럴(사용처가 HUG·FILL·고정 토큰 중 선택), min-width 는 `size/*` 바인딩(바꾸지 않음).
+- 그래서 메인에서 의도한 치수는 반드시 토큰이나 FILL/HUG 로 표시한다 — 리터럴로 두면 "정하지 않음"으로 읽힌다.

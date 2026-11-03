@@ -14,6 +14,7 @@
    - [C. 컴포넌트 작업](#c-컴포넌트-작업)
    - [D. QA / 릴리스 전 검증](#d-qa--릴리스-전-검증)
    - [E. 최초 셋업 (부트스트랩)](#e-최초-셋업-부트스트랩)
+   - [F. Figma 직접 편집 (Claude 에게 맡기기)](#f-figma-직접-편집-claude-에게-맡기기)
 3. [폴더 구조와 파일별 역할](#3-폴더-구조와-파일별-역할)
    - [A. 프로젝트 루트](#a-프로젝트-루트)
    - [B. `docs/` — 문서](#b-docs--문서)
@@ -39,6 +40,8 @@ Figma 디자인 시스템을 React 컴포넌트로 옮기는 프로젝트다. �
 - Figma 파일 접근 권한
 - Claude Code 설치 (이미 되어 있어야 함)
 - Figma MCP 연결 (`/mcp` 로 확인)
+
+작업 대상 Figma 파일은 루트 `CLAUDE.md` 의 **"Figma 파일"** 섹션에 적혀 있다. 프롬프트에 URL 을 안 붙이면 Claude 는 이 파일을 대상으로 한다. 파일이 바뀌면 그 표만 고친다.
 
 첫 세팅이면 **토큰 부트스트랩** 을 먼저 Claude 에게 요청해야 한다 (프롬프트는 [2-E-1](#e-1-토큰-부트스트랩) 참고 — 사용자가 직접 명령을 실행할 필요는 없다). `tokens/design-tokens.json` 이 없으면 이후 모든 작업이 무의미하다.
 
@@ -217,52 +220,36 @@ high-contrast 모드를 새로 만들었어. 반영해줘.
 
 ---
 
-#### A-7. `language` 토큰의 값 변경 (예: "다음" → "계속하기")
+#### A-7. `language` 변수의 값 변경 (예: "다음" → "계속하기")
 
-**언제**: Figma 에서 `language` 컬렉션의 특정 토큰 값을 다른 문자열로 바꿈. 예: 토큰 `action/next` 의 korean 모드 값을 "다음" → "계속하기" 로 변경.
+**언제**: Figma 에서 `language` 컬렉션의 특정 변수 값을 다른 문자열로 바꿈. 예: 변수 `…/jpb5aj` 의 Korean 모드 값을 "텍스트 노드" → "본문" 으로 변경.
 
-**중요**: 이 작업은 시각 토큰([A-1](#a-1-토큰-값만-바뀜)~[A-6](#a-6-새-모드-추가)) 과 파이프라인이 다름:
+**중요**: `language` 변수는 디자인 토큰이 아니다. 시각 토큰([A-1](#a-1-토큰-값만-바뀜)~[A-6](#a-6-새-모드-추가)) 과 파이프라인이 다름:
 - 시각 토큰: `design-tokens.json` → `theme.css` 로 흐름
-- language 토큰: 별도 i18n 파일 (`tokens/i18n/*.json`) 로 흐름 (i18n = 국제화, internationalization)
+- language 변수: `figma-dump.js` 덤프 → 언어별 i18n 파일 (키 = 변수명 끝 6자 ID) 로 흐름 (i18n = 국제화, internationalization)
 
-**전제**: i18n 인프라(라이브러리 설치, `to-i18n.mjs` 스크립트, i18n 파일들) 가 세팅되어 있어야 함. 없으면 먼저 [E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때) 진행.
+**전제**: 없음. 추출 스크립트(`npm run i18n:extract`)와 번역 함수(`src/i18n`)가 이미 있다 ([E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때)).
 
 **프롬프트 예시:**
 ```
-Figma 에서 language 토큰 몇 개 값이 바뀌었어. 반영해줘.
-```
-
-또는 특정 토큰만:
-```
-Figma 에서 action/next 를 "다음" → "계속하기" 로 바꿨어. 반영해줘.
+Figma 에서 language 변수 몇 개 값이 바뀌었어. 반영해줘.
 ```
 
 **자동으로 벌어지는 일:**
 - Claude 가 `figma-dump.js` 로 language 컬렉션을 재추출
-- `sync-tokens` 스킬이 값 변경 감지 → "⚠️ 값 변경" 리포트 (before → after)
-- 승인 후 Claude 가 `to-i18n.mjs` 를 실행해서 `tokens/i18n/*.json` 갱신
-- 앱 리로드 시 새 문자열이 표시됨
-- **컴포넌트 코드는 한 줄도 안 건드림** — 컴포넌트는 토큰 ID (`action/next`) 를 이름으로 부르니까, 이름 뒤의 문자열만 바뀌면 자동 반영
+- 바뀐 값을 6자 ID · 언어 모드별로 before → after 보고. `--`(미번역)·빈 값은 따로 누락으로 보고
+- 승인 후 `npm run i18n:extract` 로 `src/i18n/locales/` 갱신. Figma 에 언어 모드가 늘면 파일도 자동으로 늘어난다
+- **컴포넌트 코드는 한 줄도 안 건드림** — 컴포넌트는 6자 ID 로 문자열을 부르니까, 값만 바뀌면 자동 반영
+
+`sync-tokens` / `/check-tokens` 는 `design-tokens.json` 기준이라 language 변수 변경을 잡지 않는다.
 
 **사용자 후속 액션:**
-- Plan 단계에서 어떤 토큰이 어떻게 바뀌었는지 diff 확인 후 승인
+- diff 확인 후 승인
 - 앱 실행 또는 Storybook 열어서 새 문자열이 실제로 나오는지 확인
 - 영향 큰 문자열 변경(랜딩 카피 등) 은 관계자 리뷰 후 반영
 
-**여러 언어에 동시에 값이 바뀌었을 때:**
-Figma 에서 여러 언어 모드 값을 함께 편집했을 수 있음. sync-tokens 리포트에 언어 모드별로 diff 가 나옴:
-```
-⚠️ 값 변경 — action/next
-  korean:  "다음" → "계속하기"
-  english: "Next" → "Continue"
-```
-각 언어별로 승인 여부 결정 가능.
-
-**한 언어만 값을 바꿨을 때 (흔한 케이스):**
-예: 한국어만 "다음" → "계속하기", 영어는 그대로 "Next". sync-tokens 가 정확히 감지하고 바뀐 언어만 리포트.
-
 **하지 말 것:**
-- `tokens/i18n/*.json` 을 직접 편집 → 다음 재추출에 덮어써짐. **Figma 를 먼저 바꾸고 재추출** 원칙 유지
+- i18n 파일을 직접 편집 → 다음 재추출에 덮어써짐. **Figma 를 먼저 바꾸고 재추출** 원칙 유지
 - 컴포넌트 코드에서 문자열을 임시로 하드코딩해서 교체 → 하드코딩 원칙 위배
 
 ---
@@ -402,33 +389,35 @@ Button 컴포넌트에 새 size 추가된 걸 반영해줘: <Figma URL>
 
 ---
 
-#### C-5. 컴포넌트에 다국어 텍스트(`language` 토큰)가 있을 때
+#### C-5. 컴포넌트에 다국어 텍스트(`language` 변수)가 있을 때
 
-**언제**: Figma 컴포넌트의 text prop 이나 텍스트 노드에 `language` 컬렉션의 토큰이 참조로 걸려 있을 때 (예: 하드코딩된 "다음" 이 아니라 `action/next` 토큰이 걸림).
+**언제**: Figma 컴포넌트의 text prop 이나 텍스트 노드에 `language` 컬렉션의 변수가 참조로 걸려 있을 때 (예: 하드코딩된 "다음" 이 아니라 `…/jpb5aj` 변수가 걸림).
 
-**전제**: i18n 인프라(라이브러리, `to-i18n.mjs`, i18n 파일, 앱의 i18n Provider) 가 세팅되어 있어야 매끄럽게 돌아감. 없으면 [E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때) 부터 진행.
+**전제**: 없음. 번역 함수 `t(id, 언어)` 가 `src/i18n` 에 있다 ([E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때)).
 
 **프롬프트 예시:**
 ```
 이 Figma 컴포넌트 구현해줘: <URL>
 ```
 
-특별한 프롬프트가 필요 없음. 일반 Figma 구현 요청과 같음 — `figma-implementer` 가 language 토큰을 자동으로 감지함.
+특별한 프롬프트가 필요 없음. 일반 Figma 구현 요청과 같음 — `figma-implementer` 가 language 변수를 자동으로 감지함.
 
 **자동으로 벌어지는 일:**
-- `figma-implementer` 가 Figma 노드를 읽으면서 text prop 에 걸린 `language` 토큰을 감지
+- `figma-implementer` 가 Figma 노드를 읽으면서 text prop 에 걸린 `language` 변수를 감지
 - `language-rule.md` 를 자동으로 Read → 원칙 파악
-- 코드에 하드코딩된 문자열 대신 번역 함수 사용:
+- 코드에 하드코딩된 문자열 대신 번역 함수 사용. 키는 변수명 끝의 6자 ID:
   ```
-  // 나쁨: <Text>다음</Text>
-  // 좋음: <Text>{t('action.next')}</Text>
+  // 나쁨: <Text>텍스트 노드</Text>
+  // 나쁨: <Text>{t('section-section-2/layer-frame-3/jpb5aj')}</Text>   ← 경로는 바뀔 수 있음
+  // 좋음: <Text>{t('jpb5aj')}</Text>
   ```
-- Plan 단계에서 "이 컴포넌트는 language 토큰 `action/next` 를 참조합니다" 라고 보고
+- Plan 단계에서 "이 컴포넌트는 language 변수 `jpb5aj` 를 참조합니다" 라고 보고
+- 값이 `--`(미번역) 인 언어가 있으면 Plan 에 적음
 
 **사용자 후속 액션 (필수):**
-- Plan 에서 참조하는 language 토큰 목록 확인 후 승인
+- Plan 에서 참조하는 language 변수 목록 확인 후 승인
 - 완료 후 브라우저에서 언어 전환해보고 실제로 문자열이 바뀌는지 확인
-- 참조된 토큰이 i18n 파일에 실제로 있는지 확인 (없으면 Claude 가 알려주고 추가 요청함)
+- 참조된 ID 가 i18n 파일에 실제로 있는지 확인 (없으면 Claude 가 알려줌)
 
 **주의 — 하드코딩 감지의 한계:**
 현재 rikaride 의 자동 검사(`check-design-tokens.mjs`, `verify-design`) 는 하드코딩된 색상·치수는 잡지만 **하드코딩된 문자열은 잡지 않음.** 이유: aria-label, 개발자 툴팁, 로그 메시지처럼 정당한 하드코딩 케이스도 많아서 일괄 금지가 어려움.
@@ -474,6 +463,36 @@ QA 돌려줘, Figma 원본이랑 비교까지.
 
 ---
 
+#### D-3. Figma 구조 검사
+
+**언제**: Figma 에서 컴포넌트·화면을 만들거나 고친 뒤 (사람이 했든 Claude 가 했든). 코드와는 무관하게 **Figma 파일 자체**가 룰북을 따르는지 본다.
+
+**프롬프트 예시:**
+```
+/figma-audit https://www.figma.com/design/...?node-id=123-456
+```
+
+또는:
+```
+온보딩 섹션 Figma 검사해줘.
+```
+
+**자동으로 벌어지는 일:**
+`qa-reporter` 에이전트가 Figma 구조 5항목만 검사:
+- 이름 — 컴포넌트 이름(`component-structure-rule.md` §3)과 Text Style 이름(`text-style-rule.md` §2)이 규칙을 따르는가
+- 3계층 판별 — 스켈레톤/템플릿/패턴 판별과 중첩이 맞는가
+- 섹션 배치 — 위치와 섹션 이름이 규칙대로인가 (`section-layout-rule.md`)
+- 변수 바인딩 — 색·간격 등에 리터럴 값이나 primitive 변수가 직접 들어가 있지 않은가
+- 하드코딩 텍스트 — `language` 변수에 바인딩 안 된 텍스트 노드가 있는가 (번역 테이블은 제외), 값이 `--`(미번역) 인 모드가 있는가
+
+문제가 있으면 노드 이름과 nodeId 까지 적어서 보고한다. **고치지는 않는다.**
+
+**사용자 후속 액션:**
+- 범위 없이 부르면 어느 페이지·섹션을 볼지 되묻는다. 파일 전체는 크니까 범위를 지정하는 게 빠르다
+- 보고된 문제를 직접 고치거나, [F](#f-figma-직접-편집-claude-에게-맡기기) 방식으로 Claude 에게 수정을 맡긴다
+
+---
+
 ### E. 최초 셋업 (부트스트랩)
 
 #### E-1. 토큰 부트스트랩
@@ -504,31 +523,140 @@ docs/TOKENS.md 절차대로 토큰 부트스트랩 해줘. 이 Figma 파일 씀:
 
 #### E-2. i18n 인프라 셋업 (language 컬렉션이 있을 때)
 
-**언제**: `language` 컬렉션이 있는 Figma 파일을 처음 부트스트랩할 때. [E-1](#e-1-토큰-부트스트랩) 과 독립된 별개 작업.
+**상태: 셋업됨.** 다시 할 일은 없고, Figma 의 language 컬렉션이 바뀌면 재추출만 한다 ([A-7](#a-7-language-변수의-값-변경-예-다음--계속하기)).
 
-**부트스트랩 시 결정할 것 (Claude 가 시작 시 물어봄):**
-- 어떤 i18n 라이브러리를 쓸지 (react-i18next / react-intl / lingui 등). **기본 추천: react-i18next**
-- i18n 파일 경로 (예: `tokens/i18n/{언어}.json`)
-- `to-i18n.mjs` 스크립트 위치 (이번 세션에서 `to-dtcg.mjs` 와 별개로 분리하기로 결정됨)
+| 무엇 | 어디 |
+|---|---|
+| 추출 스크립트 | `tokens/extract/to-i18n.mjs` (`npm run i18n:extract`). 입력은 `figma-dump.js` 의 language 덤프 |
+| 언어 파일 | `src/i18n/locales/{언어}.json` — 키 = 변수명 끝 6자 ID. Figma 모드 하나당 파일 하나 |
+| 언어 목록 | `src/i18n/locales/index.json` — 기본 언어와 언어 목록. 프로토타입의 언어 설정 메뉴가 이걸 읽는다 |
+| 번역 함수 | `src/i18n/index.ts` 의 `t(id, 언어)`. 외부 라이브러리 없이 직접 만든 함수 (프로토타입이라 충분) |
+
+`--`·빈 값은 파일에 넣지 않고 추출할 때 누락으로 보고한다. 앱에서는 기본 언어 문자열로 대체된다.
+
+**사용자 후속 액션:**
+- 앱에서 언어를 바꿀 때 typeface-semantic 모드도 함께 바뀌는지 확인 (동기 전환 원칙 — `language-rule.md` §3)
+
+---
+
+### F. Figma 직접 편집 (Claude 에게 맡기기)
+
+A~E 가 "Figma 를 읽어서 코드에 반영" 이라면, 여기는 **Claude 가 Figma 파일 자체를 고치는** 작업이다. `figma-editor` 에이전트가 맡는다.
+
+#### F-0. 공통 흐름 — 먼저 읽을 것
+
+모든 F 작업은 같은 순서로 진행된다:
+
+1. 프롬프트를 받은 Claude(메인 세션)가 룰북을 읽고 **계획을 보고** — 대상 섹션·노드, 만들거나 바꿀 것과 3계층 판별 근거, 쓸 변수 이름, 영향받는 범위, 되돌리는 방법
+2. **사용자가 승인**
+3. `figma-editor` 가 승인된 범위만 Figma 에서 편집
+4. 편집 결과 보고 (편집한 노드, 바뀐 변수, 못 한 것, 후속 작업)
+5. 필요하면 [D-3](#d-3-figma-구조-검사) 로 검사
+
+`figma-editor` 는 사용자에게 직접 질문하지 못한다. 그래서 질문·승인은 전부 1~2 단계에서 끝내야 하고, 계획에 없는 판단이 필요해지면 편집을 멈추고 돌아와서 보고한다. 계획에 없는 변수는 만들지도 지우지도 않는다.
+
+**사용자 후속 액션 (공통):**
+- 계획 단계에서 대상 섹션과 변수 이름이 의도와 맞는지 확인 후 승인
+- 편집 후 Figma 에서 결과를 눈으로 확인. 마음에 안 들면 Figma 버전 기록(Version history) 이나 계획의 "되돌리기 방법" 으로 복구
+- 실패 보고가 오면 "이미 편집된 노드" 목록을 확인 — 파일이 반쯤 바뀐 상태일 수 있다
+
+---
+
+#### F-1. 디자인 시스템 수정 (Figma + 코드 토큰 동시 갱신)
+
+**언제**: 변수 값·이름을 바꾸거나 컴포넌트 구조를 고치고, 그 결과를 `tokens/design-tokens.json` 에도 반영해야 할 때.
 
 **프롬프트 예시:**
 ```
-docs/design-system-rule/language-rule.md 를 참고해서 이 프로젝트에 i18n
-인프라를 셋업해줘. 라이브러리는 react-i18next, i18n 파일은
-tokens/i18n/{언어}.json 에 두자.
+interactive/primary/bg/default 값을 바꾸고 싶어. Figma 고치고 토큰도 반영해줘.
 ```
 
 **자동으로 벌어지는 일:**
-- 승인 후:
-  - i18n 라이브러리 설치 (`npm install`)
-  - `to-i18n.mjs` 스크립트 작성 (Figma language 컬렉션 → i18n 파일 추출용)
-  - i18n Provider 를 React 앱에 연결 (예: `main.tsx`)
-  - Figma 의 language 컬렉션 추출 → 초기 i18n 파일 생성
+- 계획 승인 후 `figma-editor` 가 **Figma 를 먼저** 고친다 (Figma 가 원본이라서)
+- 이어서 `token-checker` 가 재추출 → 바뀐 토큰을 before → after 로 보고 → 승인 후 `design-tokens.json` 갱신 + `tokens:build`
+- 이름 변경·삭제가 있었으면 `design-reviewer` 로 코드 영향까지 스캔
+
+**사용자 후속 액션 (필수):**
+- 계획 승인 + 토큰 diff 승인, **두 번 승인한다**
+- 이름 변경이면 룰북에 옛 이름이 남았는지 `npm run rulebook:verify` 로 확인 ([A-2](#a-2-토큰-이름-변경-rename) 참고)
+
+---
+
+#### F-2. Figma 에 컴포넌트 만들기
+
+**언제**: 새 버튼·카드 같은 컴포넌트를 Figma 에 만들고 싶을 때.
+
+**프롬프트 예시:**
+```
+Buttons 페이지의 btn-ghost 섹션에 pattern-go-back 패턴을 만들어줘.
+```
+
+**자동으로 벌어지는 일:**
+- 계획에서 레이어(스켈레톤/템플릿/패턴) 판별 근거, 룰북 네이밍을 적용한 이름, 놓을 섹션, 쓸 변수를 보고
+- 승인 후 `figma-editor` 가 생성 → 스크린샷으로 확인
+- 코드로는 옮기지 않는다. 코드가 필요하면 이어서 [C-1](#c-1-figma-에서-새-컴포넌트를-만들고-코드로-옮김)
+
+---
+
+#### F-3. 기존 디자인 시스템으로 새 화면 만들기
+
+**언제**: 새 화면이 필요할 때. 가장 복잡한 작업이다 — 기존 컴포넌트 재사용, 확장, 신규 제작이 섞인다.
+
+**프롬프트 예시:**
+```
+라이더 온보딩 첫 화면을 만들어줘. 상단 진행 표시, 안내 문구, 다음 버튼.
+```
+
+**자동으로 벌어지는 일:**
+1. Claude 가 파일의 기존 컴포넌트를 조사
+2. 화면의 요소마다 **재사용 / 확장 / 신규** 를 나눈 표를 계획에 담아 보고
+3. 승인 후 신규·확장 컴포넌트부터 하나씩 처리 ([F-2](#f-2-figma-에-컴포넌트-만들기) 와 같은 방식)
+4. 컴포넌트가 다 준비되면 화면 조립
 
 **사용자 후속 액션:**
-- 앱 실행해서 언어 전환이 실제로 되는지 확인
-- typeface-semantic 모드도 함께 전환되는지 확인 (동기 전환 원칙 — `language-rule.md` §3)
-- (선택) Claude 에게 `language-rule.md` 에 실전 방식(라이브러리·파일 경로) 을 §8 로 추가하라고 지시하면 룰북과 실전이 정합됨
+- **분류표가 핵심 승인 포인트.** "이건 기존 걸로 충분" / "이건 확장 말고 새로" 같은 판단을 여기서 한다
+- 큰 화면은 한 번에 맡기기보다 영역 단위로 나눠 요청하는 게 결과가 안정적이다
+
+---
+
+#### F-4. 하드코딩된 Figma 텍스트를 i18n 으로 바꾸기
+
+**언제**: Figma 텍스트 노드에 "다음" 같은 문자열이 직접 쓰여 있어서 `language` 변수로 바꾸고 싶을 때.
+
+**누가 무엇을 하나:**
+
+| 일 | 누가 |
+|---|---|
+| 하드코딩 텍스트 찾기 | Claude (`/figma-audit`) |
+| 언어별 번역 제안 | Claude |
+| 변수 생성 · 텍스트 노드 연결 · 번역 테이블 | **사람이 i18n 플러그인으로** |
+| 이미 있는 변수의 `--`(미번역)·틀린 값 채우기 | Claude (`figma-editor`, 승인 후) 또는 사람 |
+
+변수 생성·연결을 Claude 에게 맡기지 않는 이유: 플러그인이 변수 이름(`{섹션 경로}/{레이어}/{6자 ID}`)을 붙이면서 key 레이어 같은 자기 내부 데이터를 같이 기록하는데, 이 데이터는 플러그인만 쓸 수 있다. Claude 가 `use_figma` 로 만들면 플러그인이 그 변수를 제대로 관리하지 못한다 (`language-rule.md` §5).
+
+**1단계 — 찾기 + 번역 제안 (Claude):**
+```
+/figma-audit <온보딩 섹션 URL>
+하드코딩 텍스트만 보고, 각 문자열의 영어 번역도 제안해줘.
+```
+번역 테이블(`i18n-table`) 안의 텍스트와 헤더는 검사에서 빠진다.
+
+**2단계 — 변수 생성·연결 (사람, i18n 플러그인 `CG-figma-plugins/i18n`):**
+1. 텍스트 레이어 선택 → "토큰 생성하기"
+2. 기본 모드 값은 레이어 텍스트로 채워져 있음. 나머지 모드에 1단계에서 받은 번역 입력 (모르면 비워 두면 `--`)
+3. "생성 및 적용" → 변수 생성·연결이 한 번에 됨
+4. 필요하면 화면 옆에 번역 테이블을 붙여 검토
+
+**3단계 — 미번역 채우기 (선택, Claude):**
+```
+온보딩 섹션 language 변수 중 English 가 -- 인 것들 번역 채워줘.
+```
+계획(변수 ID · before → after) 승인 후 `figma-editor` 가 값만 바꾼다. 이름·연결은 건드리지 않는다.
+
+**사용자 후속 액션:**
+- 번역은 Claude 가 제안한 값이니 검토 필요
+- 섹션이나 페이지 단위로 `language` 모드를 바꿔 레이아웃이 깨지지 않는지 확인
+- 코드용 i18n 파일로 뽑는 건 [E-2](#e-2-i18n-인프라-셋업-language-컬렉션이-있을-때) 의 인프라가 필요하다
 
 ---
 
@@ -552,7 +680,7 @@ rikaride/
 
 폴더별 상세: [3-B `docs/`](#b-docs--문서) · [3-C `tokens/`](#c-tokens--토큰-파이프라인) · [3-D `src/`](#d-src--소스-코드) · [3-E `.claude/`](#e-claude--claude-code-전용-설정)
 
-**CLAUDE.md** 는 Claude 가 프로젝트에 처음 접근할 때 반드시 읽는 파일이다. 이 프로젝트의 전반적인 규칙(토큰 하드코딩 금지, 컴포넌트 4파일 구조 등) 이 여기에 요약되어 있고, 상세 규칙은 `docs/` 로 경로만 가리킨다.
+**CLAUDE.md** 는 Claude 가 프로젝트에 처음 접근할 때 반드시 읽는 파일이다. 이 프로젝트의 전반적인 규칙(토큰 하드코딩 금지, 컴포넌트 4파일 구조 등) 이 여기에 요약되어 있고, 상세 규칙은 `docs/` 로 경로만 가리킨다. 작업 대상 **Figma 파일 URL 도 여기 "Figma 파일" 섹션에 한 곳만** 적는다.
 
 **package.json** 의 스크립트 중 자주 쓸 것:
 
@@ -585,11 +713,11 @@ docs/
     ├── text-style-rule.md
     ├── effect-token-rule.md
     ├── icon-frame-rule.md
-    ├── liquid-glass-rule.md
     ├── language-rule.md
     ├── component-structure-rule.md
     ├── section-layout-rule.md
     ├── design-to-dev-rule.md
+    ├── annotation-rule.md
     └── CHANGELOG.md
 ```
 
@@ -605,17 +733,17 @@ docs/
 
 | 룰북 | 다루는 것 |
 |---|---|
-| `color-token-rule.md` | 색상 토큰의 그룹·역할·상태 3분해, 모드 오버라이드 |
+| `color-token-rule.md` | 색상 토큰의 그룹·역할·상태 3분해(그룹 3종), `styles` 그룹, 모드 축과 다크모드 값 산출, 모드 오버라이드 |
 | `shape-token-rule.md` | 간격·radius·아이콘 크기 토큰. 의미 기반 토큰 우선 |
 | `typography-token-rule.md` | 폰트 패밀리·굵기·크기·행간 변수 구조 |
 | `text-style-rule.md` | 디자이너가 실제로 쓰는 완성 프리셋(Text Style) |
-| `effect-token-rule.md` | 그림자·블러·유리 효과 시각적 정의 |
+| `effect-token-rule.md` | 그림자·블러·유리 효과·그라디언트 색상 스타일의 시각적 정의와 색 출처 |
 | `icon-frame-rule.md` | `icon-frame-*` 컴포넌트와 `icon-frame` 컬렉션 — 텍스트 카테고리·스텝 매칭 규칙 |
-| `liquid-glass-rule.md` | 최상위 `liquid-glass` 컬렉션(supported/unsupported). 플랫폼별 유리 효과 지원 스위치 |
-| `language-rule.md` | `language` 컬렉션. 다국어 i18n 문자열, 텍스트 노드/text prop 에만 적용 |
+| `language-rule.md` | `language` 컬렉션. 다국어 i18n 문자열(디자인 토큰 아님), 텍스트 노드/text prop 에만 적용, 코드 키는 변수명 끝 6자 ID |
 | `component-structure-rule.md` | 스켈레톤/템플릿/패턴 3계층 판별 규칙 |
 | `section-layout-rule.md` | Figma 페이지 안의 섹션 구성(컴포넌트 레이아웃 / 페이지 레이아웃)과 기존 섹션을 읽는 법 |
 | `design-to-dev-rule.md` | Figma↔코드 변환 규칙 — 이름 변환 알고리즘 + 스켈레톤/템플릿 속성 재선언 처리 |
+| `annotation-rule.md` | Figma 캔버스 주석 — variant 브래킷, 주소(platter·anchor), annotation, spec, 주석 섹션 |
 
 **CHANGELOG.md** 는 룰북 편집 이력을 기록한다. 사용자·Claude 누가 편집했든 남긴다.
 
@@ -687,8 +815,8 @@ src/
 .claude/
 ├── CLAUDE.md               ← 작업 프로세스 (7단계) + 룰북 편집 프로토콜
 ├── settings.json           ← 훅 연결 + 파일 접근 권한 설정
-├── agents/                 ← 특정 작업 전문 AI 서브프로세스 (4개)
-├── commands/               ← 슬래시 명령 정의 (6개)
+├── agents/                 ← 특정 작업 전문 AI 서브프로세스 (5개)
+├── commands/               ← 슬래시 명령 정의 (7개)
 ├── skills/                 ← 재사용 가능한 절차 묶음 (3개)
 └── hooks/                  ← 파일 저장 시 자동 실행되는 검사 (4개)
 ```
@@ -706,7 +834,8 @@ src/
 | `figma-implementer` | Figma URL 을 받아 5단계로 컴포넌트를 구현. 룰북을 강제로 Read 하고 계획을 승인받은 뒤 4파일 세트 생성 |
 | `token-checker` | Figma 변수와 `tokens/design-tokens.json` 을 비교. 값 변경·rename·신규·삭제·이름 체계 불일치 4~5분류 보고. 승인 시 자동 수정 |
 | `design-reviewer` | 코드 전체 스캔. 하드코딩·존재하지 않는 변수 참조·primitive 참조·그룹 불일치·4파일 누락 검출. Figma MCP 는 쓰지 않음 |
-| `qa-reporter` | 전체 QA 리포트 생성. 5단계 절차로 코드 검사 9항목 + 옵션으로 Figma 원본 비교까지 |
+| `figma-editor` | 승인된 계획대로 **Figma 파일을 직접 편집**. 변수·컴포넌트 수정, 컴포넌트 생성, 화면 조립, 기존 `language` 변수의 번역 값 채우기 (변수 생성·연결은 사람이 플러그인으로). 사용자에게 직접 묻지 않으므로 계획 승인은 메인 세션이 먼저 받는다 ([2-F](#f-figma-직접-편집-claude-에게-맡기기)) |
+| `qa-reporter` | 전체 QA 리포트 생성. 5단계 절차로 코드 검사 9항목 + 옵션으로 Figma 원본 비교 2항목, Figma 구조 검사 5항목까지 |
 
 #### E-2. `commands/` — 슬래시 명령
 
@@ -720,6 +849,7 @@ src/
 | `/gen-story` | 지정한 컴포넌트에 스토리 생성 |
 | `/gen-all-stories` | 스토리 없는 컴포넌트에 일괄 생성 |
 | `/implement-figma` | `figma-implementer` 에이전트에 위임 |
+| `/figma-audit` | `qa-reporter` 에 Figma 구조 검사(5항목)만 위임 ([2-D-3](#d-3-figma-구조-검사)) |
 
 #### E-3. `skills/` — 스킬
 
@@ -754,9 +884,12 @@ src/
 | Figma 파일 붙였는데 추출이 안 됨 | 컬렉션 이름이 룰북 전제와 다름 | `tokens:verify` 결과대로 세 가지 중 선택 (Figma 이름 수정 / 룰북 수정 / 룰북 적용 안 함) |
 | rename 후 코드 여러 곳이 조용히 깨짐 | 옛 유틸 클래스가 남아있음 | `design-reviewer` 로 스캔 |
 | 룰북이 낡은 토큰 이름을 언급 | 룰북 편집 놓침 | `npm run rulebook:verify` 로 조기 감지 |
-| 컴포넌트에 하드코딩된 UI 문자열이 남아있음 | 자동 검사가 텍스트는 안 잡음 | 사람 리뷰. 리팩터링 시 `language` 토큰으로 교체 ([2-C-5](#c-5-컴포넌트에-다국어-텍스트language-토큰가-있을-때) 참고) |
+| 컴포넌트에 하드코딩된 UI 문자열이 남아있음 | 자동 검사가 텍스트는 안 잡음 | 사람 리뷰. 리팩터링 시 `language` 변수의 6자 ID 로 교체 ([2-C-5](#c-5-컴포넌트에-다국어-텍스트language-변수가-있을-때) 참고) |
+| Figma 텍스트 노드에 문자열이 하드코딩돼 있음 | `language` 변수에 바인딩하지 않고 직접 입력 | `/figma-audit` 으로 찾고 i18n 플러그인으로 연결 ([2-F-4](#f-4-하드코딩된-figma-텍스트를-i18n-으로-바꾸기)) |
+| Figma 컴포넌트 이름·섹션 위치가 룰북과 다름 | 네이밍 스키마·섹션 규칙을 놓침 | `/figma-audit` 으로 확인 ([FIGMA-GUIDEBOOK §2, §4](FIGMA-GUIDEBOOK.md#2-이름-붙이기)) |
 | 앱에서 언어 전환했는데 폰트가 안 바뀜 | typeface-semantic 모드 전환 로직 누락 | language 모드와 typeface-semantic 모드를 동시에 전환 (`language-rule.md` §3) |
-| language 토큰 값을 바꿨는데 화면에 안 뜸 | `to-i18n.mjs` 재실행 안 함 or 앱 리로드 안 함 | `/check-tokens` 로 확인 후 재추출 ([2-A-7](#a-7-language-토큰의-값-변경-예-다음--계속하기) 참고) |
+| language 변수 값을 바꿨는데 화면에 안 뜸 | i18n 파일 재추출 안 함 or 앱 리로드 안 함 | 재추출 요청 ([2-A-7](#a-7-language-변수의-값-변경-예-다음--계속하기) 참고). `/check-tokens` 는 language 를 안 봄 |
+| 앱에 `--` 가 그대로 보임 / 문자열이 비어 있음 | 그 언어가 미번역 | Figma 에서 해당 모드 값 채우기 ([2-F-4](#f-4-하드코딩된-figma-텍스트를-i18n-으로-바꾸기) 3단계) 후 재추출 |
 | 인스턴스의 재선언된 속성(예: `size`)과 실제 렌더링이 다름 | 속성 패널 최상단이 아니라 중첩된 스켈레톤 그룹의 속성을 직접 바꿈 | 최상단 값만 원래 의도대로 되돌리고, 중첩 그룹은 건드리지 않기 ([FIGMA-GUIDEBOOK §3](FIGMA-GUIDEBOOK.md#3-스켈레톤-속성을-템플릿이-다시-써야-할-때) 참고) |
 
 ---

@@ -1,4 +1,4 @@
-# Typography Token 적용 규칙 (공통 룰북)
+# Typography Token 적용 규칙
 
 > **다루는 것** — font-family / weight / size / line-height 변수 구조. 카테고리(display · headline · body · magazine) 별 지원 굵기 비대칭.
 > **관련 룰북** — `text-style-rule.md` (완성 프리셋), `language-rule.md` (동기 전환), `icon-frame-rule.md` (카테고리·스텝 매칭, `line-height/*` 참조)

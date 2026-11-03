@@ -18,7 +18,7 @@
 
 _(미작성: 이 제품이 사용자에게 어떤 인상을 줘야 하는가. 형용사 3~5개와 그 이유)_
 
-> `color-semantic` 에 여러 브랜드 모드가 있다면(`light/black`, `light/govt-navy` 등) 이 프로젝트가 **어느 브랜드에 해당하는지**와 그 이유를 여기 적는다. 모드 이름 목록 자체는 `design-tokens.json` 에 있다.
+> `color-semantic` 에 여러 브랜드 모드가 있다면(`light/rikaride`, `light/govt-navy` 등) 이 프로젝트가 **어느 브랜드에 해당하는지**와 그 이유를 여기 적는다. 모드 이름 목록 자체는 `design-tokens.json` 에 있다.
 
 ## 핵심 철학
 

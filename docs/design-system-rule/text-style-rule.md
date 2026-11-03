@@ -1,4 +1,4 @@
-# Text Style 적용 규칙 (공통 룰북)
+# Text Style 적용 규칙
 
 > **다루는 것** — 디자이너가 텍스트 노드에 실제로 적용하는 완성 프리셋(Text Style). 이름 `{카테고리}/{굵기}/{스텝}`.
 > **관련 룰북** — `typography-token-rule.md` (밑단 변수)
@@ -43,7 +43,7 @@ Text Style 하나는 5개 속성(`font-family`, `font-weight`, `font-size`, `lin
 
 ## 5. `letter-spacing`은 변수가 아니라 리터럴, 그리고 전부 기본값
 
-이 프로젝트의 모든 Text Style은 `letter-spacing`이 변수 바인딩 없이 리터럴 값으로만 존재하며, 지금까지는 전부 "커스텀 자간 없음(기본값)" 상태입니다. 즉 이 디자인 시스템은 현재 자간을 조정해서 쓰지 않습니다. 그렇다고 이 속성을 생략하지 말고, **5개 속성 전부(family/weight/size/line-height/letter-spacing)를 빠짐없이 개별 적용**하세요 — 나중에 특정 스타일에 자간이 추가될 수도 있고, 생략하면 그 변경을 놓치게 됩니다. `text-case`/`text-decoration`도 마찬가지로 지금은 전부 기본값이지만 명시적으로 적용해두는 게 안전합니다.
+`letter-spacing` 은 변수에 바인딩되지 않고 Text Style 안에 리터럴 값으로 들어 있습니다. 값이 기본값(커스텀 자간 없음)이더라도 **5개 속성 전부(family/weight/size/line-height/letter-spacing)를 빠짐없이 개별 적용**하세요 — 생략하면 어떤 스타일에 자간이 지정돼 있을 때 그 값을 놓칩니다. `text-case`/`text-decoration` 도 같습니다: 기본값이어도 명시적으로 적용합니다.
 
 ## 6. 치트시트
 
