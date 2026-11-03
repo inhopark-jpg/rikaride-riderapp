@@ -7,7 +7,8 @@
 | 파일 | 역할 |
 |---|---|
 | `figma-dump.js` | Figma Plugin API 스니펫. node로 실행하지 않고 `use_figma` MCP로 실행합니다 |
-| `to-dtcg.mjs` | `raw/*.json` → `tokens/design-tokens.json` 변환 + 검증 |
+| `to-dtcg.mjs` | `raw/*.json` → `tokens/design-tokens.json` 변환 + 검증. `language` 와 변수 0개 칸막이 컬렉션은 건너뜀 |
+| `to-i18n.mjs` | `raw/vars.language.json` → `src/i18n/locales/*.json` (언어별, 키 = 6자 ID). `language-rule.md` §4 |
 | `collections.json` | 룰북이 전제하는 컬렉션/경로 이름. 대조 기준입니다 |
 | `raw/` | 덤프 원본 (생성물, git에 올리지 않음) |
 
@@ -35,12 +36,17 @@
 
 6. npm run tokens:build
    → src/styles/theme.css 생성
+
+7. npm run i18n:extract
+   → src/i18n/locales/ 생성. 미번역(--)·빈 값은 넣지 않고 목록으로 출력한다
 ```
+
+응답이 커서 압축 형식으로 받은 경우에도 `raw/` 에는 위 형식 그대로 펼쳐서 저장한다 — 두 스크립트는 이 형식만 읽는다.
 
 ## 이 스크립트가 잡아주는 실수
 
 - **응답 잘림**: step1이 보고한 `variableCount`와 실제로 받은 변수 개수를 대조합니다. 다르면 변환을 중단합니다. Figma MCP 응답에는 크기 제한이 있어서, 큰 컬렉션은 조용히 일부만 돌아옵니다.
-- **이름 체계 불일치**: `collections.json`의 `expected`와 대조합니다. 룰북들이 "토큰 이름 자체가 다르면 이 룰북을 적용하지 마세요"라고 명시하고 있어서, 다른 이름을 억지로 매핑하면 안 됩니다.
+- **이름 체계 불일치**: `collections.json`의 `expected`와 대조합니다. `expected`가 추출 대상의 전체 목록이고, 그 밖의 Figma 컬렉션은 토큰이 아니므로 건너뜁니다. 룰북들이 "토큰 이름 자체가 다르면 이 룰북을 적용하지 마세요"라고 명시하고 있어서, 다른 이름을 억지로 매핑하면 안 됩니다.
 - **풀리지 않은 alias**: `VARIABLE_ALIAS`는 변수 id만 들고 있습니다. 모든 컬렉션을 다 덤프한 뒤에야 id→경로를 풀 수 있으므로, 컬렉션 하나만 덤프하고 변환하면 실패합니다.
 - **모드 누락**: `valuesByMode`를 모드 이름으로 바꿔 전부 기록합니다. color-token-rule.md §9가 경고하는 "새 모드에 일부 토큰만 값이 비어있는" 상황은 생성된 json에서 해당 토큰의 `modeValues`에 그 모드 키가 없는 것으로 드러납니다.
 

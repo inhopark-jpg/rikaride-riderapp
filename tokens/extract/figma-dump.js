@@ -107,3 +107,33 @@ export const step4_dumpEffectStyles = async () => {
     boundVariables: s.boundVariables ?? {},
   }))
 }
+
+/* ---------------------------------------------------------------------------
+ * step 5 — 색상(Paint) Style. gradient 전용입니다.
+ *
+ * effect-token-rule.md §5: 그라디언트는 이 프로젝트에서 유일하게 Variable 이 아닌
+ * 토큰 리소스입니다 — 각도·스톱 위치를 포함한 페인트 전체라 변수 하나에 못 담아서,
+ * 스톱 색만 color-semantic 의 styles/gradient/* 를 참조합니다.
+ * 스톱의 boundVariables 를 반드시 같이 받아야 그 alias 관계를 코드까지 이어갈 수 있습니다 —
+ * 색만 받으면 모드가 바뀌어도 안 따라오는 리터럴이 됩니다.
+ * ------------------------------------------------------------------------ */
+export const step5_dumpPaintStyles = async () => {
+  const styles = await figma.getLocalPaintStylesAsync()
+  return styles.map((s) => ({
+    id: s.id,
+    name: s.name,
+    paints: s.paints.map((p) => ({
+      type: p.type,
+      opacity: p.opacity,
+      gradientTransform: p.gradientTransform ?? null,
+      // SOLID 면 color + boundVariables.color, GRADIENT 면 스톱마다 따로 들고 있다
+      color: p.color ?? null,
+      boundVariables: p.boundVariables ?? {},
+      gradientStops: (p.gradientStops ?? []).map((st) => ({
+        position: st.position,
+        color: st.color,
+        boundVariables: st.boundVariables ?? {},
+      })),
+    })),
+  }))
+}

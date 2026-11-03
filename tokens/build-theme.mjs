@@ -197,7 +197,7 @@ const ALIAS_RE = /^\{([^}]+)\}$/
  * DTCG alias 를 최종 값까지 펼친다. 모드가 지정되면 그 모드의 값을 우선 사용한다.
  * 순환 참조는 에러로 잡는다.
  */
-function resolveValue(value, root, mode, seen = new Set()) {
+function resolveValue(value, root, mode, collection, pathToVar, seen = new Set()) {
   if (typeof value !== 'string') return value
   const m = value.match(ALIAS_RE)
   if (!m) return value
@@ -214,7 +214,20 @@ function resolveValue(value, root, mode, seen = new Set()) {
     errors.push(`alias 대상을 찾을 수 없습니다: {${target}}`)
     return null
   }
-  return resolveValue(valueForMode(node, mode), root, mode, seen)
+
+  // 다른 컬렉션의 "방출되는" 토큰을 가리키면 값을 펼치지 않고 var() 참조로 둔다.
+  // 컬렉션마다 모드 축이 달라서(effects 는 `Mode 1` 하나, color-semantic 은 명도×브랜드),
+  // 여기서 리터럴로 펼치면 참조하는 쪽 모드 이름을 대상 컬렉션에서 못 찾아 기본 모드 값으로 굳는다.
+  // 그러면 [data-theme] 를 바꿔도 그림자 색만 라이트 값에 남는다 (effect-token-rule.md §1).
+  const targetCollection = target.split('.')[0]
+  if (targetCollection !== collection && NAMESPACE_MAP[targetCollection]?.emit) {
+    const varName = pathToVar?.get(target)
+    if (varName) return `var(${varName})`
+    errors.push(`컬렉션을 넘는 alias 의 대상 변수명을 찾지 못했습니다: {${target}}`)
+    return null
+  }
+
+  return resolveValue(valueForMode(node, mode), root, mode, collection, pathToVar, seen)
 }
 
 /** 토큰 노드에서 해당 모드의 원시 값을 꺼낸다. 없으면 기본 $value. */
@@ -283,6 +296,10 @@ function main() {
   const vars = new Map()
   const owner = new Map() // 충돌 검사용: varName → 최초 소유 경로
 
+  // 1차 패스 — 경로 → CSS 변수명을 먼저 전부 채운다.
+  // 값 계산보다 반드시 먼저 해야 한다: 컬렉션을 넘는 alias 를 var() 참조로 내보내려면
+  // 그 시점에 대상의 변수명을 이미 알고 있어야 한다 (resolveValue 참고).
+  const plan = []
   for (const collection of collections) {
     const rule = NAMESPACE_MAP[collection]
     if (!rule) {
@@ -305,16 +322,26 @@ function main() {
       }
       owner.set(mapped.varName, dotted)
       pathToVar.set(dotted, mapped.varName)
-
-      const byMode = new Map()
-      const modeList = modes.length ? modes : [null]
-      for (const mode of modeList) {
-        const raw = resolveValue(valueForMode(token, mode), root, mode)
-        const formatted = formatValue(raw, token.$type)
-        if (formatted != null) byMode.set(mode, formatted)
-      }
-      vars.set(mapped.varName, { ...mapped, collection, byMode, defaultMode, modeAttr: rule.modeAttr })
+      plan.push({ collection, rule, modes, defaultMode, token, mapped })
     }
+  }
+
+  // 2차 패스 — 모드별 값 계산
+  for (const p of plan) {
+    const byMode = new Map()
+    const modeList = p.modes.length ? p.modes : [null]
+    for (const mode of modeList) {
+      const raw = resolveValue(valueForMode(p.token, mode), root, mode, p.collection, pathToVar)
+      const formatted = formatValue(raw, p.token.$type)
+      if (formatted != null) byMode.set(mode, formatted)
+    }
+    vars.set(p.mapped.varName, {
+      ...p.mapped,
+      collection: p.collection,
+      byMode,
+      defaultMode: p.defaultMode,
+      modeAttr: p.rule.modeAttr,
+    })
   }
 
   if (errors.length) {
@@ -345,6 +372,26 @@ function main() {
       `--shadow-${level}`,
       SHADOW_FIELDS.map((f) => `var(--shadow-${level}-${f})`).join(' '),
     ])
+  }
+
+  // --- 그라디언트 색상 스타일 → CSS linear-gradient ------------------------
+  // 스톱 색이 color-semantic 의 var() 를 참조하므로 [data-theme] 전환을 그대로 따라온다.
+  // 여기서 색을 리터럴로 박으면 다크모드에서 그라디언트만 라이트로 남는다
+  // (effect-token-rule.md §5).
+  const gradients = []
+  for (const [styleName, def] of Object.entries(root.$paintStyles ?? {})) {
+    const stops = []
+    for (const st of def.stops ?? []) {
+      const m = String(st.color).match(ALIAS_RE)
+      const varName = m ? pathToVar.get(m[1]) : null
+      if (m && !varName) {
+        warnings.push(`색상 스타일 "${styleName}" 의 스톱이 가리키는 ${m[1]} 가 방출되지 않습니다 — 리터럴로 남습니다.`)
+      }
+      const color = varName ? `var(${varName})` : String(st.color)
+      stops.push(`${color} ${Math.round(st.position * 1000) / 10}%`)
+    }
+    if (!stops.length) continue
+    gradients.push([`--${slug(styleName)}`, `linear-gradient(${def.angle ?? 180}deg, ${stops.join(', ')})`])
   }
 
   // --- font-size 와 line-height 짝 방출 -----------------------------------
@@ -380,6 +427,11 @@ function main() {
   if (composedShadows.length) {
     L.push('  /* shadow 합성 — 개별 5필드를 var() 로 참조한다 (effect-token-rule.md §1) */')
     for (const [n, v] of composedShadows) L.push(`  ${n}: ${v};`)
+    L.push('')
+  }
+  if (gradients.length) {
+    L.push('  /* 그라디언트 색상 스타일 — 스톱 색은 color-semantic var() 라 모드를 따라간다 (effect-token-rule.md §5) */')
+    for (const [n, v] of gradients.sort((a, b) => a[0].localeCompare(b[0]))) L.push(`  ${n}: ${v};`)
     L.push('')
   }
   if (pairedLineHeights.length) {
@@ -459,7 +511,7 @@ function main() {
   writeFileSync(OUT, L.join('\n'))
 
   const modeCount = [...axes.values()].reduce((n, m) => n + m.size, 0)
-  console.log(`✅ theme.css 생성 — 변수 ${vars.size}개, 모드 ${modeCount}개, Text Style ${styleNames.length}개`)
+  console.log(`✅ theme.css 생성 — 변수 ${vars.size}개, 모드 ${modeCount}개, Text Style ${styleNames.length}개, 그라디언트 ${gradients.length}개`)
   if (warnings.length) {
     console.warn(`\n⚠️  경고 ${warnings.length}건:`)
     for (const w of warnings) console.warn(`   • ${w}`)
