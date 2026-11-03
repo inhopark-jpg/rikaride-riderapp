@@ -35,11 +35,25 @@ npm run tokens:verify
 
 `tokens/extract/collections.json` 의 `expected` 와 대조해서, 다르면 스크립트가 **추출을 중단한다.** 중단되면 그대로 사용자에게 보고한다 — 비슷한 이름으로 억지 매핑하지 않는다.
 
+`expected` 가 디자인 토큰 추출 대상의 **전체 목록**이다. Figma 에 그 밖의 컬렉션이 있어도 토큰이 아니므로 추출을 멈추지 않고 건너뛴다 (대조 결과에 "토큰 아님, 건너뜀" 으로 표시된다). 사용자가 새 토큰 컬렉션이라고 명시한 경우에만 `expected` 에 추가한다.
+
 ### 2. 컬렉션 단위로 덤프한다
 
 Figma MCP 응답에는 크기 제한이 있다. 한 번에 다 받으면 큰 컬렉션은 **조용히 잘려서** 일부만 들어온다. 컬렉션마다 따로 받고, 변수가 많으면 `SLICE` 로 더 나눈다.
 
 `to-dtcg.mjs` 가 step1이 보고한 `variableCount` 와 실제 받은 개수를 대조해서 다르면 중단한다.
+
+### 2-1. 스타일 리소스도 함께 덤프한다
+
+변수만 받으면 안 된다. 레이어에 실제로 적용되는 건 Style 쪽이고, 변수는 그 Style 이 참조하는 값이다.
+
+```
+step3_dumpTextStyles  → raw/text-styles.json
+step4_dumpEffectStyles → raw/effect-styles.json
+step5_dumpPaintStyles  → raw/paint-styles.json
+```
+
+`step5` 는 **그라디언트 색상 스타일**이다 (`effect-token-rule.md` §5). 이 프로젝트에서 유일하게 Variable 이 아닌 토큰 리소스라, 변수 덤프만 받으면 통째로 빠진다. 스톱의 `boundVariables` 를 반드시 같이 받아야 한다 — 색만 받으면 모드를 안 따라오는 리터럴이 되고, 다크모드에서 그라디언트만 라이트로 남는다.
 
 ### 3. 변환하고 빌드한다
 
@@ -47,6 +61,8 @@ Figma MCP 응답에는 크기 제한이 있다. 한 번에 다 받으면 큰 컬
 npm run tokens:extract    # raw/*.json → design-tokens.json
 npm run tokens:build      # → src/styles/theme.css
 ```
+
+`tokens:build` 는 **컬렉션을 넘는 alias 를 리터럴로 펼치지 않고 `var()` 참조로 내보낸다.** 컬렉션마다 모드 축이 달라서(예: `effects` 는 `Mode 1` 하나, `color-semantic` 은 명도×브랜드) 펼쳐버리면 참조하는 쪽 모드에 맞는 값을 못 찾고 기본 모드 값으로 굳는다. 그림자 색(`color-semantic` 의 `styles/shadow/*` 참조)과 그라디언트 스톱이 여기에 해당한다 — `[data-theme]` 를 바꿔도 그것만 안 따라오면 이 변환을 의심한다.
 
 ### 4. 보고 형식
 
@@ -63,6 +79,7 @@ npm run tokens:build      # → src/styles/theme.css
 
    총 leaf 토큰: 349
    Text Style:    18
+   Paint Style:    8
 ```
 
 ---
@@ -112,6 +129,32 @@ git diff tokens/design-tokens.json | grep -E '^[+-].*\$value'
 토큰을 업데이트한 뒤에는 `design-reviewer` 로 코드 전체를 다시 스캔한다. 이름 변경·삭제가 있었다면 반드시 돌린다.
 
 ---
+
+## 색상 토큰 감사 — `npm run tokens:audit`
+
+값이 Figma와 일치하는지(`tokens:verify`)와, 그 값이 **실제로 쓸 수 있는 값인지**는 다른 문제다.
+감사는 후자를 본다 — `light/{브랜드}` 와 `dark/{브랜드}` 를 짝으로 놓고, 라이트에서 성립하던 관계가
+다크에서도 성립하는지 검사한다. 대비는 토큰 하나의 성질이 아니라 **토큰과 그 토큰이 놓이는 면 사이의 관계**라서,
+각 토큰이 어떤 면 위에 놓이는지를 먼저 정해야 한다. 그 판정표가 `tokens/audit-rules.json` 의 `contextRules` 다.
+
+모드 이름은 어디에도 하드코딩하지 않는다. `design-tokens.json` 의 `com.figma.modes` 에서
+`light/X` 와 `dark/X` 가 짝으로 있는 브랜드를 찾아 그 쌍마다 돌리므로, 브랜드가 늘거나 모드 이름이 바뀌어도
+이 스크립트는 고치지 않아도 된다. 다크 모드 짝이 없는 브랜드는 목록으로 알려준다.
+
+| 구분 | 무엇을 보는가 | 종료 코드 |
+|---|---|---|
+| **결함** | 모드 값 누락, 요소가 자기 면에 묻힘(테두리·잉크가 면과 같은 색), interactive 의 두 상태가 같은 색 | 1 (실패) |
+| **확인 필요** | 붕괴·방향 뒤집힘·대비 약화·과하게 세짐·색이 쨍해짐·사다리 방향·사다리 해상도·잉크 조합 | 0 |
+
+- `--strict` — 확인 필요 항목이 있어도 실패시킨다
+- `--quiet` — 종류마다 3건만 보여준다
+
+**결함이 의도된 것이면** `tokens/audit-rules.json` 의 `accepted` 에 이유와 함께 추가한다.
+지우지 말고 왜 괜찮은지를 남겨야, 다음에 같은 걸 또 조사하지 않는다.
+
+> 색감(chroma) 검사가 따로 있는 이유: 색 패밀리의 램프는 명도 램프가 아니라 채도 램프다.
+> 그래서 램프 위치를 미러링하면 라이트에서 옅던 경고색이 다크에서 쨍한 빨강이 된다.
+> "절제돼 보이는가"는 대비가 아니라 색감으로 읽히므로 대비 검사로는 안 잡힌다.
 
 ## 자주 틀리는 것
 

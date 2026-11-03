@@ -13,6 +13,8 @@
     "tokens:build": "node tokens/build-theme.mjs",
     "tokens:verify": "node tokens/extract/to-dtcg.mjs --verify",
     "tokens:extract": "node tokens/extract/to-dtcg.mjs",
+    "tokens:audit": "node tokens/audit-tokens.mjs",
+    "i18n:extract": "node tokens/extract/to-i18n.mjs",
     "rulebook:verify": "node tokens/verify-rulebook.mjs",
     "predev": "npm run tokens:build",
     "prebuild": "npm run tokens:build",
@@ -25,17 +27,17 @@
   },
   "devDependencies": {
     "@storybook/addon-designs": "8.2.1",
-    "@storybook/addon-essentials": "8.6.18",
-    "@storybook/react": "8.6.18",
-    "@storybook/react-vite": "8.6.18",
+    "@storybook/addon-essentials": "8.6.19",
+    "@storybook/react": "8.6.19",
+    "@storybook/react-vite": "8.6.19",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "24.10.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.2.0",
-    "storybook": "8.6.18",
+    "storybook": "8.6.19",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
-    "vite": "6.4.3"
+    "vite": "6.4.5"
   }
 }

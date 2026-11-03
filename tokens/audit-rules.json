@@ -1,0 +1,168 @@
+{
+  "$comment": [
+    "색상 토큰 감사(`npm run tokens:audit`)가 쓰는 판정 규칙입니다.",
+    "",
+    "감사가 푸는 문제: 대비는 '토큰 하나'의 성질이 아니라 '토큰과 그 토큰이 놓이는 면' 사이의 관계입니다.",
+    "그래서 토큰 값만 봐서는 아무것도 알 수 없고, 각 토큰이 실제로 어떤 면 위에 놓이는지를 먼저 정해야 합니다.",
+    "그걸 토큰 이름({그룹}/{역할}/{상태|스케일}, color-token-rule.md §1)만으로 기계적으로 판정하는 표가 contextRules 입니다.",
+    "",
+    "모드 이름은 여기 적지 않습니다 — design-tokens.json 의 com.figma.modes 에서",
+    "`light/{브랜드}` 와 `dark/{브랜드}` 가 짝으로 존재하는 브랜드를 찾아 그 쌍마다 돌립니다.",
+    "브랜드가 늘거나 모드 이름이 바뀌어도 이 파일은 고치지 않아도 됩니다."
+  ],
+
+  "page": "white/bg/dark",
+  "surface": "white/bg/base",
+  "$pageComment": "page = 화면 배경, surface = 그 위에 떠 있는 기본 면 (color-token-rule.md §9 '기본 서피스')",
+
+  "contextRules": [
+    {
+      "id": "surface-on-page",
+      "match": { "token": "{surface}" },
+      "context": ["{page}"],
+      "why": "떠 있는 기본 면은 그 뒤 배경과 구분돼야 깊이가 성립한다"
+    },
+    {
+      "id": "elevation-ladder",
+      "match": { "prefix": "white/bg/" },
+      "context": ["{surface}"],
+      "why": "고도 사다리의 각 단계는 기본 면을 기준으로 잰다"
+    },
+    {
+      "id": "style-resource",
+      "match": { "prefix": "styles/" },
+      "context": ["{surface}"],
+      "why": "그림자·그라디언트 색은 Style 이 소비하지만, 보이는 곳은 결국 기본 면 위다 (§2-1)"
+    },
+    {
+      "id": "fill-on-surface",
+      "match": { "role": "bg" },
+      "context": ["{surface}"],
+      "why": "면은 그 면이 놓이는 서피스 위에서 구분돼야 한다"
+    },
+    {
+      "id": "glass-fill-on-surface",
+      "match": { "role": ["bg-ghost", "bg-tint"] },
+      "context": ["{surface}"],
+      "why": "반투명 면은 서피스 위에서 잰다. -ghost 는 모드와 무관하게 고정이라 이 측정이 맞고, -tint 는 바탕이 모드와 무관한 곳에 쓰여 따로 제외한다 (contrastExempt)"
+    },
+    {
+      "id": "glass-border-on-surface",
+      "match": { "role": ["border-ghost", "border-tint"] },
+      "context": ["{surface}"],
+      "why": "위와 같음"
+    },
+    {
+      "id": "interactive-state-pair",
+      "match": { "groupPrefix": "interactive/", "role": ["border", "inner"] },
+      "context": ["{group}/bg/{state}", "{group}/bg/default", "{surface}"],
+      "why": "interactive 는 상태가 곧 짝이다 — selected 잉크는 selected 면 위에 놓인다 (§3)"
+    },
+    {
+      "id": "noninteractive-group-surface",
+      "match": { "role": ["border", "inner"] },
+      "context": ["{group}/bg/base", "{surface}"],
+      "why": "non-interactive 의 스케일은 세기일 뿐 bg 와 짝이 아니다 — 그룹의 기본 면 위에서 잰다 (§5)"
+    },
+    {
+      "id": "fallback",
+      "match": { "any": true },
+      "context": ["{surface}"],
+      "why": "위 어디에도 걸리지 않으면 기본 면 위에 놓인다고 본다"
+    }
+  ],
+
+  "thresholds": {
+    "$comment": "대비 비율 기준(AA 본문 4.5 / 큰 글자·그래픽 3.0 / '보인다'의 하한 1.15)과, 색감이 몇 배 세지면 보고할지.",
+    "visible": 1.15,
+    "graphic": 3.0,
+    "text": 4.5,
+    "collapseDrop": 0.8,
+    "weakenDrop": 0.6,
+    "overshootGain": 2.5,
+    "chromaGain": 2.0,
+    "chromaFloor": 100
+  },
+
+  "dimStates": ["disabled", "placeholder"],
+  "$dimComment": "이 상태들은 '잘 안 보이는 것'이 목적이라 대비 검사에서 제외한다.",
+
+  "backdrops": {
+    "$comment": [
+      "유리(`*-ghost` / `*-floating`)는 반투명이라 바탕 없이는 색이 정해지지 않습니다.",
+      "앱 서피스는 토큰(`white/bg/base`)이 있어 일반 검사로 재지만, 사진·지도·배경화면은 토큰으로 표현할 수 없습니다.",
+      "그래서 실제 바탕을 대표하는 **고정색**을 여기 두고, glassChecks 가 그 위에서 유리를 잽니다.",
+      "값은 '대표적으로 이 정도'라는 뜻이고 정확한 색일 필요는 없습니다 — 바뀌면 검사 결과가 같이 움직입니다."
+    ],
+    "photo-light": { "color": "#e8e8e8", "label": "밝은 사진" },
+    "photo-mid": { "color": "#7a7a7a", "label": "중간톤 사진" },
+    "photo-dark": { "color": "#2b2f33", "label": "어두운 사진" },
+    "map-light": { "color": "#eef0f2", "label": "지도(라이트)" },
+    "map-dark": { "color": "#2a2e33", "label": "지도(다크)" },
+    "wallpaper": { "color": "#2e3270", "label": "배경화면" }
+  },
+
+  "glassChecks": [
+    {
+      "prefix": "white/bg-ghost/",
+      "on": ["photo-dark", "photo-mid", "map-dark"],
+      "ink": "white/inner/base",
+      "why": "앱 위에 떠 있는 밝은 유리. 어두운 바탕에서 면이 구분되고 그 위 잉크가 읽혀야 한다 (스낵바·다이얼로그가 실제로 이 잉크를 쓴다)"
+    },
+    {
+      "prefix": "white/border-ghost/",
+      "on": ["photo-dark", "photo-mid", "map-dark"],
+      "why": "위 면의 테두리. 바탕에서 구분되면 된다"
+    },
+    {
+      "prefix": "black/bg-ghost/",
+      "on": ["photo-light", "photo-mid", "map-light"],
+      "why": "밝은 바탕 위의 어두운 유리. 스크림 용도라 면이 바탕에서 구분되면 되고, 이 면 위에 글자를 올리는 쓰임은 없다"
+    },
+    {
+      "prefix": "white/bg-tint/",
+      "on": ["wallpaper"],
+      "ink": "white/inner/base",
+      "why": "모드를 따라가는 반투명. 배경화면 위에서 두 모드 모두 면이 보이고 글자가 읽혀야 한다 (§5)"
+    },
+    {
+      "prefix": "white/border-tint/",
+      "on": ["wallpaper"],
+      "why": "위 면의 테두리"
+    }
+  ],
+
+  "contrastExempt": [
+    {
+      "prefix": "white/bg-tint/",
+      "why": "모드를 따라가는 반투명. 바탕이 배경화면·OS 표면이라 토큰으로 표현할 수 없고, 앱 서피스 위에서 재면 라이트에서 항상 1.00 이 나와 검사가 무의미하다. 실제 바탕 위 스크린샷으로 검증한다."
+    },
+    {
+      "prefix": "white/border-tint/",
+      "why": "위와 같음."
+    }
+  ],
+
+  "accepted": [
+    {
+      "check": "identical",
+      "pair": "success/bg/base == success/border/base",
+      "why": "양쪽 모드 모두 같은 색이라 의도된 설계로 본다 — 테두리 없는 성공 서피스"
+    },
+    {
+      "check": "identical",
+      "pair": "interactive/secondary/bg/default == interactive/secondary/bg/disabled",
+      "why": "secondary 는 disabled 에서 면을 유지하고 테두리·잉크만 흐려진다 (§3 역할별 독립)"
+    },
+    {
+      "check": "identical",
+      "pair": "interactive/secondary-destructive/bg/default == interactive/secondary-destructive/bg/disabled",
+      "why": "위와 같음"
+    },
+    {
+      "check": "identical",
+      "pair": "interactive/outline/bg/selected == interactive/outline/bg/selected-brand",
+      "why": "두 선택 상태가 같은 면을 쓰고 잉크로만 갈린다"
+    }
+  ]
+}

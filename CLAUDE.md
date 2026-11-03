@@ -15,6 +15,7 @@ Figma 디자인 시스템을 코드로 옮기는 프로젝트다. **상세 규�
 | `npm run tokens:build` | `tokens/design-tokens.json` → `src/styles/theme.css` |
 | `npm run tokens:verify` | Figma 컬렉션 이름이 룰북 전제와 맞는지만 대조 |
 | `npm run tokens:extract` | Figma 덤프 → `design-tokens.json` |
+| `npm run tokens:audit` | 색상 토큰이 **두 모드에서 다 성립하는지** 검사 (결함 있으면 비정상 종료) |
 
 `dev` / `build` / `storybook` 앞에는 `tokens:build` 가 자동으로 붙는다. 토큰을 고친 뒤 따로 실행할 필요는 없다.
 
@@ -75,11 +76,34 @@ btn-ghost/pattern-go-back    → PatternBtnGhostGoBack.tsx
 | 상황 | 에이전트 |
 |---|---|
 | Figma URL 을 받아 컴포넌트/화면 구현 | `figma-implementer` |
+| Figma 에서 디자인 시스템 수정·컴포넌트 생성·화면 조립·기존 `language` 변수의 번역 값 채우기 | `figma-editor` — 메인이 계획 승인을 받은 뒤 위임. 변수가 바뀌었으면 이어서 `token-checker` |
 | Figma 토큰과 `design-tokens.json` 이 어긋난 것 같을 때 | `token-checker` |
 | 작업을 끝내고 전체 검사 | `qa-reporter` |
 | 코드 전체에서 하드코딩 찾기 | `design-reviewer` |
 
 에이전트는 **새 컨텍스트에서 시작한다.** 지금 세션에서 읽은 룰북 내용은 전달되지 않으므로, 에이전트가 스스로 `docs/README.md` 를 읽고 필요한 룰북을 Read 하게 되어 있다. 위임할 때 룰북 내용을 프롬프트에 복사해 넣지 마라 — 사본이 생기면 원본과 어긋난다.
+
+Figma 를 다루는 에이전트에 위임할 때는 **아래 "Figma 파일" 섹션의 fileKey 와 승인된 계획을 프롬프트에 넣는다.** 서브에이전트는 사용자에게 질문할 수 없으므로 승인은 항상 메인이 받는다.
+
+## Figma 파일
+
+이 워크스페이스의 작업 대상 파일이다. 디자인 시스템(변수·컴포넌트)과 화면이 한 파일에 있다. URL 에 다른 파일이 주어지지 않은 요청은 이 파일을 대상으로 한다. **URL 의 원본은 여기 한 곳이다** — 에이전트나 다른 문서에 복사하지 않는다.
+
+| 용도 | URL | fileKey |
+|---|---|---|
+| 메인 (디자인 시스템 + 화면) | https://www.figma.com/design/1ga1MZBmvVR9fybjbr1W0a/Rider-App | `1ga1MZBmvVR9fybjbr1W0a` |
+
+### 노드를 가리킬 때 (사용자에게 보이는 모든 보고)
+
+nodeId 만 적지 않는다 — 사용자는 `2705:12380` 을 보고 어떤 레이어인지 모른다. 다음 셋을 함께 적는다:
+
+1. **레이어 이름** — `.gnb-bar-item/pattern-ride`
+2. **위치** — 섹션·부모 (`ride 섹션 안, 셋 아래`)
+3. **링크** — 위 URL 뒤에 `?node-id=` + nodeId 의 `:` 를 `-` 로 바꾼 값. 예: `[.gnb-bar-item/pattern-ride](https://www.figma.com/design/1ga1MZBmvVR9fybjbr1W0a/Rider-App?node-id=2705-12380)`
+
+- 인스턴스 내부 레이어(id 가 `I` 로 시작)는 링크로 열리지 않을 수 있다. 가장 가까운 일반 노드의 링크에 경로(`부모 > 자식 > 레이어`)를 붙인다.
+- 같은 종류 노드가 많으면 대표 몇 개만 링크하고 개수를 적는다.
+- 서브에이전트도 이 형식으로 메인에 보고한다. 메인은 받은 보고를 이 형식으로 바꿔 사용자에게 전달한다.
 
 ## 룰북을 고치지 마라
 
