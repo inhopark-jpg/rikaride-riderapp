@@ -18,7 +18,7 @@ Figma 토큰과 `tokens/design-tokens.json` 을 비교한다.
 
 1. `docs/README.md` → `docs/TOKENS.md` 를 Read 한다
 2. `tokens/extract/figma-dump.js` 의 step1 을 실행해 컬렉션 목록을 받는다
-3. `npm run tokens:verify` 로 이름 체계를 먼저 대조한다
+3. `npm run tokens:verify` 로 이름 체계를 먼저 대조한다. "토큰 아님, 건너뜀" 으로 표시된 컬렉션은 비교 대상이 아니다
 4. 컬렉션별로 덤프해 현재 `design-tokens.json` 과 비교한다
 5. 아래 4분류로 보고한다
 
@@ -34,8 +34,8 @@ Figma 토큰과 `tokens/design-tokens.json` 을 비교한다.
 값 변경은 이렇게 적는다. 개수만 적지 않는다.
 
 ```
-color-semantic/interactive/primary/bg/default
-  light/black:      #2563eb → #1d4ed8
+color-semantic/interactive/primary/surface/default
+  light/rikaride:      #2563eb → #1d4ed8
   light/govt-navy:  변경 없음
 ```
 

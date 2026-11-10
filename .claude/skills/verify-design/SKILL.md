@@ -39,9 +39,9 @@ grep -rn 'primitive' src --include='*.tsx' --include='*.ts' --include='*.css'
 
 primitive 는 CSS 로 방출되지 않는다 (rikaride 정책). 참조하면 반드시 깨져 있다.
 
-### 4. 그룹 불일치 (색상)
+### 4. 글자·배경 대비 (색상)
 
-`color-token-rule.md` §5 — 배경과 텍스트가 다른 그룹을 쓰고 있으면 위반. 같은 그룹 안에서 스케일이 다른 건 정상. 이 검사는 룰북을 Read 한 뒤에만 정확히 판단 가능.
+`color-token-rule.md` §5 — 대비는 **권장 기준**. 글자·아이콘과 실제 배경(반투명이면 그 아래까지 합성한 색)의 대비가 기준에 못 미치면 위반이 아니라 "권장 미달"로 보고한다. 그룹이 다른 것은 지적하지 않는다. 모든 모드에서 잰다. 권장 기준은 `base` 에서 본문 4.5, 큰 글자·아이콘 3.0 이고 `low`~`lowest`·`disabled`·`placeholder` 는 제외. 바닥이 코드에서 정해지지 않는 자리(사진·지도·props 배경)는 위반이 아니라 확인 대상 (§8 3-1). 이 검사는 룰북을 Read 한 뒤에만 정확히 판단 가능.
 
 ## 제외 대상
 
@@ -60,7 +60,7 @@ primitive 는 CSS 로 방출되지 않는다 (rikaride 정책). 참조하면 반
 
 ```
 ❌ 깨진 참조 (스타일이 안 먹는 중)
-   src/components/Card/Card.tsx:18  var(--color-brand-bg-old)  → theme.css 에 없음
+   src/components/Card/Card.tsx:18  var(--color-surface-brand-elevation-old)  → theme.css 에 없음
 
 ❌ 하드코딩
    src/components/Card/Card.tsx:14  #f5f5f5  → 토큰으로 교체 필요
@@ -69,8 +69,9 @@ primitive 는 CSS 로 방출되지 않는다 (rikaride 정책). 참조하면 반
 ⚠️  primitive 참조
    src/components/Foo/Foo.tsx:8    var(--color-primitive-blue-500)
 
-⚠️  그룹 불일치 (color-token-rule.md §5)
-   src/components/Card/Card.tsx:22  bg-white-* 위에 text-black-*
+⚠️  대비 권장 미달 — 화면 확인 필요 (color-token-rule.md §5)
+   src/components/Card/Card.tsx:22  bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base
+                                    light 1.00 / dark 1.00 (기준 4.5)
 ```
 
 ## 하지 말 것

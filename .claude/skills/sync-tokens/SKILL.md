@@ -22,7 +22,7 @@ Figma 변수는 stable ID (`VariableID:xxx:yyy`) 를 가진다. `tokens/design-t
    - json 에만 있는 ID → 🗑️ 삭제
    - 같은 ID, 같은 경로 → 다음 단계(값 비교)로
 4. **값 비교.** 같은 토큰에 대해 값이 다르면 ⚠️ 값 변경.
-5. **이름 체계 확인.** 컬렉션 이름이나 최상위 head 가 룰북 전제(`tokens/extract/collections.json`) 와 다르면 🛑 이름 체계 불일치.
+5. **이름 체계 확인.** 컬렉션 이름이나 최상위 head 가 룰북 전제(`tokens/extract/collections.json`) 와 다르면 🛑 이름 체계 불일치. `expected` 에 없는 Figma 컬렉션은 토큰이 아니므로 비교하지 않는다 (불일치·신규 아님).
 6. 결과를 아래 **5분류** 로 보고.
 
 **fallback (구버전 json):** json 이 옛날 `to-dtcg.mjs` 로 만들어진 것이라 `com.figma.variableId` 필드가 없으면, 경로 기반 매칭으로 폴백한다. 이 경우 rename 은 "삭제 + 신규" 로 나눠 보고되므로 사용자가 눈으로 판단해야 한다. 다음 재추출 후에는 ID 가 채워져 자동 감지된다.
@@ -40,8 +40,8 @@ Figma 변수는 stable ID (`VariableID:xxx:yyy`) 를 가진다. `tokens/design-t
 값 변경은 이렇게 적는다 (개수만 적지 않음):
 
 ```
-color-semantic/interactive/primary/bg/default
-  light/black:      #2563eb → #1d4ed8
+color-semantic/interactive/primary/surface/default
+  light/rikaride:      #2563eb → #1d4ed8
   light/govt-navy:  변경 없음
 ```
 

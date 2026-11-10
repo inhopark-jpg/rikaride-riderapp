@@ -32,6 +32,7 @@ URL에서 `fileKey` 와 `node-id` 를 뽑는다. 다음이 불분명하면 **구
 3. **그 행에 적힌 문서를 전부 Read 한다.** 제목만 보고 내용을 추측하지 않는다.
    색을 쓰면 `color-token-rule.md`, 간격/아이콘이면 `shape-token-rule.md`,
    텍스트면 `typography-token-rule.md` + `text-style-rule.md`, 그림자/블러면 `effect-token-rule.md`.
+   텍스트에 `language` 변수가 바인딩되어 있으면 `language-rule.md` 도 읽는다.
 4. `get_design_context` 로 노드를 읽는다. 큰 화면이면 `get_metadata` 로 구조를 먼저 보고 나눠 읽는다.
 5. `get_variable_defs` 로 이 노드에 **실제로 바인딩된 변수 이름**을 확인한다.
 6. `tokens/design-tokens.json` 에서 그 토큰이 존재하는지 확인한다.
@@ -50,6 +51,7 @@ URL에서 `fileKey` 와 `node-id` 를 뽑는다. 다음이 불분명하면 **구
 파일:     만들 4파일 경로
 토큰:     쓸 토큰 이름 전부 (실제 이름. "적절한 색" 같은 건 계획이 아니다)
 모드:     이 컴포넌트가 자기 모드를 갖는가
+문자열:   language 변수가 걸린 텍스트의 번역 키(변수명 끝 6자 ID)와 미번역(--) 모드. 없으면 "없음"
 불확실:   확신이 없는 부분
 ```
 
@@ -60,6 +62,7 @@ URL에서 `fileKey` 와 `node-id` 를 뽑는다. 다음이 불분명하면 **구
 4파일을 만든다: `X.tsx` / `X.stories.tsx` / `types.ts` / `index.ts`
 
 - 토큰은 생성된 유틸 또는 `var(--...)` 로만 쓴다. 리터럴 금지
+- `language` 변수가 걸린 텍스트는 문자열을 하드코딩하지 않고 6자 ID 를 키로 쓴다. i18n 인프라가 아직 없으면 Plan 에서 보고하고 처리 방식을 승인받는다
 - 스켈레톤에 해당하는 컴포넌트는 **색상을 갖지 않는다** (`component-structure-rule.md` §1, 예외 없음)
 - 스토리는 CSF3, `parameters.design` 에 받은 Figma URL 을 넣는다
 - 상호작용이 있으면 play function 을 붙인다

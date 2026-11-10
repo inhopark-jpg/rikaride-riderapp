@@ -43,16 +43,21 @@ grep -rn 'primitive' src --include='*.tsx' --include='*.ts' --include='*.css'
 
 primitive 는 CSS 변수로 방출되지 않으므로 참조하면 반드시 깨져 있다.
 
-### 4. 그룹 불일치 (색상)
+### 4. 글자·배경 대비 (색상)
 
-`color-token-rule.md` §5 — 배경과 텍스트가 **다른 그룹**을 쓰고 있으면 위반이다. 같은 그룹 안에서 스케일이 다른 건 정상이니 지적하지 않는다.
+`color-token-rule.md` §5 — 대비는 **권장 기준**이다. 글자·아이콘과 실제 배경의 대비가 기준에 못 미치면 위반이 아니라 "권장 미달"로 보고하고, 사람이 화면을 보고 정한다. 그룹이 다른 것(`surface/brand/*` 위의 `on-surface/neutral/*`)은 지적하지 않는다.
+
+1. 글자·아이콘 색(`on-surface/*`, `interactive/*/on-surface/*`)이 쓰인 요소마다 **배경 스택**을 정한다 — 같은 요소나 가장 가까운 조상의 배경부터 바닥까지.
+2. 스택이 전부 불투명하면 `tokens/design-tokens.json` 의 모드별 값으로 대비를 계산한다. **모든 모드에서** 잰다.
+3. 스택에 반투명 면(`floating`·`overlay`, interactive 의 `floating`·`overlay-*`)이 있으면 그 아래까지 합성해서 잰다. 바닥이 코드에서 정해지지 않으면(사진·지도·props 로 받는 배경) 위반으로 단정하지 말고 **확인 대상**으로 적는다 (§8 3-1).
+4. 권장 기준은 `base` 에서 본문 4.5, 큰 글자·아이콘 3.0. `low`~`lowest` 와 `disabled`·`placeholder` 는 제외한다.
 
 ```
-위반:  bg-white-bg-base 와 text-black-inner-lower 가 같은 요소에
-정상:  bg-brand-bg-base 와 text-brand-inner-lightest
+정상:      bg-surface-brand-elevation-base 위 text-on-surface-neutral-default-base  (그룹은 달라도 모든 모드에서 기준 통과)
+권장 미달: bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base (라이트에서 흰 바탕에 흰 글자)
 ```
 
-이 검사는 룰북을 읽어야 정확히 할 수 있다. `color-token-rule.md` 를 Read 하고 §5 기준으로 판단한다.
+이 검사는 룰북을 읽어야 정확히 할 수 있다. `color-token-rule.md` 를 Read 하고 §5·§8 기준으로 판단한다.
 
 ### 5. 4파일 구조 위반
 
@@ -64,13 +69,17 @@ primitive 는 CSS 변수로 방출되지 않으므로 참조하면 반드시 깨
 
 ```
 ❌ 깨진 참조 (스타일이 안 먹는 중)
-   src/components/Card/Card.tsx:18  bg-brand-bg-old  → theme.css 에 --color-brand-bg-old 없음
+   src/components/Card/Card.tsx:18  bg-surface-brand-elevation-old  → theme.css 에 --color-surface-brand-elevation-old 없음
 
 ❌ 하드코딩
    src/components/Card/Card.tsx:14  #f5f5f5  → 토큰으로 교체 필요
 
-⚠️  그룹 불일치 (color-token-rule.md §5)
-   src/components/Card/Card.tsx:22  bg-white-* 위에 text-black-* 
+⚠️  대비 권장 미달 — 화면 확인 필요 (color-token-rule.md §5)
+   src/components/Card/Card.tsx:22  bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base
+                                    light 1.00 / dark 1.00 (기준 4.5)
+
+ℹ️  확인 대상 — 합성 배경 불명 (color-token-rule.md §8 3-1)
+   src/components/MapCard/MapCard.tsx:9  bg-surface-default-floating-low 위 text-on-surface-neutral-default-base — 바닥이 지도
 
 ℹ️  구조
    src/components/Card/  types.ts 없음
