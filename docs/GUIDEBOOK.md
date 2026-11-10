@@ -96,7 +96,7 @@ Figma 에서 색상 몇 개 값이 바뀌었어. 반영해줘.
 
 #### A-2. 토큰 이름 변경 (rename)
 
-**언제**: `interactive/primary/bg/base` → `interactive/primary/bg/default` 로 이름 통일하고 싶음.
+**언제**: `interactive/primary/surface/base` → `interactive/primary/surface/default` 로 이름 통일하고 싶음.
 
 **두 가지 순서 중 선택:**
 
@@ -134,7 +134,7 @@ Figma 에서 색상 몇 개 값이 바뀌었어. 반영해줘.
 
 #### A-3. 토큰 신규 추가
 
-**언제**: Figma 에 hover 상태용 `interactive/primary/bg/hover` 를 새로 추가.
+**언제**: Figma 에 hover 상태용 `interactive/primary/surface/hover` 를 새로 추가.
 
 **프롬프트 예시:**
 ```
@@ -153,7 +153,7 @@ Figma 에 hover 토큰 추가했어. 반영해줘.
 
 **사용자 후속 액션:**
 - 새 토큰이 실제로 필요한 것인지 판단 후 승인
-- 승인 후 새 유틸 클래스가 컴포넌트에서 즉시 사용 가능 (`bg-interactive-primary-bg-hover`)
+- 승인 후 새 유틸 클래스가 컴포넌트에서 즉시 사용 가능 (`bg-interactive-primary-surface-hover`)
 
 ---
 
@@ -266,7 +266,7 @@ Figma 에서 language 변수 몇 개 값이 바뀌었어. 반영해줘.
 3. `docs/design-system-rule/CHANGELOG.md` 에 한 줄 기록
 ```
 ## 2026-09-27
-- color-token-rule.md §5 — 그룹 불일치 판정 기준 완화 — 브랜드 확장 대응
+- color-token-rule.md §5 — 글자 대비 기준값 조정 — 브랜드 확장 대응
 ```
 4. `npm run rulebook:verify` 실행 (`design-tokens.json` 이 있을 때)
 
@@ -284,7 +284,7 @@ Figma 에서 language 변수 몇 개 값이 바뀌었어. 반영해줘.
 
 **프롬프트 예시:**
 ```
-color-token-rule.md §5 의 그룹 불일치 검사 기준을 완화하고 싶어.
+color-token-rule.md §5 의 글자 대비 기준값을 조정하고 싶어.
 룰북 편집 프로토콜대로 진행해줘.
 ```
 
@@ -568,7 +568,7 @@ A~E 가 "Figma 를 읽어서 코드에 반영" 이라면, 여기는 **Claude 가
 
 **프롬프트 예시:**
 ```
-interactive/primary/bg/default 값을 바꾸고 싶어. Figma 고치고 토큰도 반영해줘.
+interactive/primary/surface/default 값을 바꾸고 싶어. Figma 고치고 토큰도 반영해줘.
 ```
 
 **자동으로 벌어지는 일:**
@@ -733,7 +733,7 @@ docs/
 
 | 룰북 | 다루는 것 |
 |---|---|
-| `color-token-rule.md` | 색상 토큰의 그룹·역할·상태 3분해(그룹 3종), `styles` 그룹, 모드 축과 다크모드 값 산출, 모드 오버라이드 |
+| `color-token-rule.md` | 색상 토큰의 이름 구조({역할}/{그룹}/{맥락}/{스케일}), 면은 맥락으로·글자는 실제 배경과의 대비로 고르는 법, `styles` 그룹, 모드 축과 다크모드 값 산출, 모드 오버라이드 |
 | `shape-token-rule.md` | 간격·radius·아이콘 크기 토큰. 의미 기반 토큰 우선 |
 | `typography-token-rule.md` | 폰트 패밀리·굵기·크기·행간 변수 구조 |
 | `text-style-rule.md` | 디자이너가 실제로 쓰는 완성 프리셋(Text Style) |
@@ -833,7 +833,7 @@ src/
 |---|---|
 | `figma-implementer` | Figma URL 을 받아 5단계로 컴포넌트를 구현. 룰북을 강제로 Read 하고 계획을 승인받은 뒤 4파일 세트 생성 |
 | `token-checker` | Figma 변수와 `tokens/design-tokens.json` 을 비교. 값 변경·rename·신규·삭제·이름 체계 불일치 4~5분류 보고. 승인 시 자동 수정 |
-| `design-reviewer` | 코드 전체 스캔. 하드코딩·존재하지 않는 변수 참조·primitive 참조·그룹 불일치·4파일 누락 검출. Figma MCP 는 쓰지 않음 |
+| `design-reviewer` | 코드 전체 스캔. 하드코딩·존재하지 않는 변수 참조·primitive 참조·글자·배경 대비 권장 미달·4파일 누락 검출. Figma MCP 는 쓰지 않음 |
 | `figma-editor` | 승인된 계획대로 **Figma 파일을 직접 편집**. 변수·컴포넌트 수정, 컴포넌트 생성, 화면 조립, 기존 `language` 변수의 번역 값 채우기 (변수 생성·연결은 사람이 플러그인으로). 사용자에게 직접 묻지 않으므로 계획 승인은 메인 세션이 먼저 받는다 ([2-F](#f-figma-직접-편집-claude-에게-맡기기)) |
 | `qa-reporter` | 전체 QA 리포트 생성. 5단계 절차로 코드 검사 9항목 + 옵션으로 Figma 원본 비교 2항목, Figma 구조 검사 5항목까지 |
 

@@ -24,7 +24,7 @@ Figma Variables/Styles
 
 **이게 가장 먼저다.** 룰북들은 전부 이렇게 명시하고 있다:
 
-> 토큰 이름 자체가 다르면(예: `interactive/primary/bg/default` 대신 `button/main/background/base-color`) 이 룰북을 적용하지 마세요.
+> 토큰 이름 자체가 다르면(예: `interactive/primary/surface/default` 대신 `button/main/background/base-color`) 이 룰북을 적용하지 마세요.
 
 그러므로 값을 뽑기 전에 컬렉션 이름과 토큰 경로가 룰북 전제와 맞는지 먼저 대조한다.
 
@@ -107,7 +107,7 @@ git diff tokens/design-tokens.json | grep -E '^[+-].*\$value'
 
 ### Figma에는 있는데 이름 체계 자체가 다른 경우
 
-예: `interactive/primary/bg/default` 대신 `button/main/background/base-color`
+예: `interactive/primary/surface/default` 대신 `button/main/background/base-color`
 
 **작업을 멈추고 사용자에게 알린다.** 룰북이 전제하는 네이밍이 아니므로 그대로 적용하면 안 된다. 셋 중 하나를 사용자가 결정해야 한다:
 

@@ -30,7 +30,7 @@
 
 | 파일 | 한 줄 설명 |
 |---|---|
-| `color-token-rule.md` | 색상 토큰을 **그룹/역할/상태** 3분해로 고르는 법. 그룹 3종 — interactive(`default`), non-interactive(`base`), 그리고 Style 리소스가 소비하는 `styles`(그림자·그라디언트 색, 레이어에 직접 안 씀)가 각각 다른 어휘를 쓴다. `icon-frame`의 `negative` 레이어 규칙, 모드 축(명도 × 브랜드)과 다크모드 값 산출(미러링 + 예외), 모드가 서브트리 단위로 지역 오버라이드된다는 점까지 |
+| `color-token-rule.md` | 색상 토큰을 **{역할}/{그룹}/{맥락}/{스케일}** 로 고르는 법. 최상위마다 다른 어휘 — `surface`·`stroke`(맥락별 스케일, 기본값 `base`), `on-surface`(색·유형·강조 단계), `interactive`(상태, 기본값 `default`), `state-overlay`, 그리고 Style 리소스가 소비하는 `styles`(레이어에 직접 안 씀). **면은 맥락(elevation·floating·overlay)으로, 글자·아이콘은 뒤 배경까지 합성한 실제 배경과의 대비로 고른다** — 그룹 일치가 아니다. `icon-frame`의 `negative` 레이어 규칙, 모드 축(명도 × 브랜드)과 다크모드 값 산출(미러링 + 예외), 모드가 서브트리 단위로 지역 오버라이드된다는 점까지 |
 | `shape-token-rule.md` | spacing / radius. 숫자 스텝을 고르기 전에 `surface-margin`·`viewport-margin` 같은 **의미 기반 토큰이 있는지 먼저** 확인하라는 규칙. 아이콘 크기는 다루지 않고 `icon-frame-rule.md` 로 보낸다 |
 | `icon-frame-rule.md` | `icon-frame` 컬렉션과 `icon-frame-*` (5개) 컴포넌트. 모든 아이콘 배치는 `icon-frame-*` 을 거친다는 제약, 2층 구조(프레임 + icon-wrap), 텍스트 카테고리 → 컴포넌트·스텝 → `size-N` 모드 매칭, `icon-line-height` 가 텍스트 `line-height` 를 참조하는 관계 |
 | `typography-token-rule.md` | font-family / weight / size / line-height 변수 구조. 카테고리(display·headline·body·magazine)마다 **지원 굵기가 비대칭**이다. 모드 축이 "브랜드×언어"로 색상과 다르다 |
