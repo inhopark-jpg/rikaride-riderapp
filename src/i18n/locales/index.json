@@ -1,0 +1,14 @@
+{
+  "$description": "자동 생성. tokens/extract/to-i18n.mjs 가 Figma language 컬렉션에서 만듭니다. 직접 수정하지 마세요.",
+  "defaultLanguage": "korean",
+  "languages": [
+    {
+      "id": "korean",
+      "name": "Korean"
+    },
+    {
+      "id": "english",
+      "name": "English"
+    }
+  ]
+}
