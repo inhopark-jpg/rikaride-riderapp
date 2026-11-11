@@ -21,7 +21,7 @@
  *
  * 매핑 표:
  *   color-primitive      *방출 안 함*
- *   color-semantic       interactive/primary/bg/default → --color-interactive-primary-bg-default
+ *   color-semantic       interactive/primary/surface/default → --color-interactive-primary-surface-default
  *   shape-primitive      *방출 안 함*
  *   shape-semantic       spacing/surface-margin/base    → --spacing-surface-margin-base
  *                        radius/surface-radius/low      → --radius-surface-radius-low
