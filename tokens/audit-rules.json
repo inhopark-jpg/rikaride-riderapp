@@ -2,78 +2,102 @@
   "$comment": [
     "색상 토큰 감사(`npm run tokens:audit`)가 쓰는 판정 규칙입니다.",
     "",
-    "감사가 푸는 문제: 대비는 '토큰 하나'의 성질이 아니라 '토큰과 그 토큰이 놓이는 면' 사이의 관계입니다.",
-    "그래서 토큰 값만 봐서는 아무것도 알 수 없고, 각 토큰이 실제로 어떤 면 위에 놓이는지를 먼저 정해야 합니다.",
-    "그걸 토큰 이름({그룹}/{역할}/{상태|스케일}, color-token-rule.md §1)만으로 기계적으로 판정하는 표가 contextRules 입니다.",
+    "감사가 푸는 문제: 대비는 '토큰 하나'의 성질이 아니라 '토큰과 그 토큰이 놓이는 바탕' 사이의 관계입니다.",
+    "그래서 각 토큰이 실제로 어떤 바탕 위에 놓이는지를 먼저 정해야 하고, 그걸 토큰 이름만으로 기계적으로 정하는 표가 contextRules 입니다.",
+    "",
+    "이름 패턴: 세그먼트 단위로 맞춥니다. `*` 는 아무 세그먼트, `{x}` 는 그 세그먼트를 x 로 잡아 stack 안의 같은 자리에 채웁니다.",
+    "  surface·stroke·on-surface 는 {역할}/{그룹}/{맥락}/{스케일}, interactive 는 interactive/{변이}/{역할}/{상태} (color-token-rule.md §1).",
+    "stack: 바닥부터 위로 쌓는 바탕 레이어 목록입니다. 반투명 레이어는 그 아래에 합성됩니다.",
+    "  `{surface}`·`{page}` 는 아래 두 기준 토큰, `@이름` 은 backdrops 의 고정색입니다.",
+    "  stacks 는 후보 목록이고, 토큰이 전부 존재하는 첫 후보를 씁니다.",
+    "",
+    "대비는 권장 기준입니다 (color-token-rule.md §5). 대비 관련 검사는 전부 '확인 필요'이고 종료 코드를 바꾸지 않습니다.",
+    "'결함'(종료 코드 1)은 값이 비었거나 두 색이 똑같아져 구분이 사라진 경우뿐입니다.",
     "",
     "모드 이름은 여기 적지 않습니다 — design-tokens.json 의 com.figma.modes 에서",
-    "`light/{브랜드}` 와 `dark/{브랜드}` 가 짝으로 존재하는 브랜드를 찾아 그 쌍마다 돌립니다.",
-    "브랜드가 늘거나 모드 이름이 바뀌어도 이 파일은 고치지 않아도 됩니다."
+    "`light/{브랜드}` 와 `dark/{브랜드}` 가 짝으로 존재하는 브랜드를 찾아 그 쌍마다 돌립니다."
   ],
 
-  "page": "white/bg/dark",
-  "surface": "white/bg/base",
-  "$pageComment": "page = 화면 배경, surface = 그 위에 떠 있는 기본 면 (color-token-rule.md §9 '기본 서피스')",
+  "page": "surface/default/elevation/lower",
+  "surface": "surface/default/elevation/base",
+  "$pageComment": "page = 화면 배경(물러난 쪽), surface = 기준면 (color-token-rule.md §9 '기본 서피스를 가장 먼저 못 박는다')",
 
   "contextRules": [
-    {
-      "id": "surface-on-page",
-      "match": { "token": "{surface}" },
-      "context": ["{page}"],
-      "why": "떠 있는 기본 면은 그 뒤 배경과 구분돼야 깊이가 성립한다"
-    },
-    {
-      "id": "elevation-ladder",
-      "match": { "prefix": "white/bg/" },
-      "context": ["{surface}"],
-      "why": "고도 사다리의 각 단계는 기본 면을 기준으로 잰다"
-    },
-    {
-      "id": "style-resource",
-      "match": { "prefix": "styles/" },
-      "context": ["{surface}"],
-      "why": "그림자·그라디언트 색은 Style 이 소비하지만, 보이는 곳은 결국 기본 면 위다 (§2-1)"
-    },
-    {
-      "id": "fill-on-surface",
-      "match": { "role": "bg" },
-      "context": ["{surface}"],
-      "why": "면은 그 면이 놓이는 서피스 위에서 구분돼야 한다"
-    },
-    {
-      "id": "glass-fill-on-surface",
-      "match": { "role": ["bg-ghost", "bg-tint"] },
-      "context": ["{surface}"],
-      "why": "반투명 면은 서피스 위에서 잰다. -ghost 는 모드와 무관하게 고정이라 이 측정이 맞고, -tint 는 바탕이 모드와 무관한 곳에 쓰여 따로 제외한다 (contrastExempt)"
-    },
-    {
-      "id": "glass-border-on-surface",
-      "match": { "role": ["border-ghost", "border-tint"] },
-      "context": ["{surface}"],
-      "why": "위와 같음"
-    },
-    {
-      "id": "interactive-state-pair",
-      "match": { "groupPrefix": "interactive/", "role": ["border", "inner"] },
-      "context": ["{group}/bg/{state}", "{group}/bg/default", "{surface}"],
-      "why": "interactive 는 상태가 곧 짝이다 — selected 잉크는 selected 면 위에 놓인다 (§3)"
-    },
-    {
-      "id": "noninteractive-group-surface",
-      "match": { "role": ["border", "inner"] },
-      "context": ["{group}/bg/base", "{surface}"],
-      "why": "non-interactive 의 스케일은 세기일 뿐 bg 와 짝이 아니다 — 그룹의 기본 면 위에서 잰다 (§5)"
-    },
-    {
-      "id": "fallback",
-      "match": { "any": true },
-      "context": ["{surface}"],
-      "why": "위 어디에도 걸리지 않으면 기본 면 위에 놓인다고 본다"
-    }
+    { "id": "base-on-page", "match": "surface/default/elevation/base", "stacks": [["{page}"]],
+      "why": "기준면은 그 뒤 화면 배경과 구분돼야 깊이가 성립한다" },
+    { "id": "style-resource", "match": "styles/*/*", "stacks": [["{surface}"]],
+      "why": "그림자·그라디언트 색은 Style 이 소비하지만, 보이는 곳은 결국 기준면 위다 (§2-1)" },
+    { "id": "floating", "match": "surface/*/floating/*", "skip": "대표 바탕 검사(glassChecks)에서 잰다",
+      "why": "floating 은 아래에 있는 것 위에 떠 있는 반투명 면이라 앱 면 위에서만 재면 의미가 없다 (§5)" },
+    { "id": "floating-stroke", "match": "stroke/*/floating/*", "skip": "대표 바탕 검사(glassChecks)에서 잰다",
+      "why": "위 면의 테두리" },
+    { "id": "interactive-floating", "match": "interactive/*/surface/floating", "skip": "대표 바탕 검사(glassChecks)에서 잰다",
+      "why": "떠 있는 버튼 면. floating 과 같은 이유" },
+    { "id": "overlay-on-group", "match": "surface/{g}/overlay/*", "stacks": [["{surface}", "surface/{g}/elevation/base"]],
+      "why": "overlay 는 같은 그룹 elevation 면 위에서 보여야 한다 (§5 overlay 최소 조건)" },
+    { "id": "elevation", "match": "surface/*/elevation/*", "stacks": [["{surface}"]],
+      "why": "elevation 은 기준면을 기준으로 잰다 — default·inverse 는 위치 사다리, 색 그룹은 강조 세기 (§5)" },
+    { "id": "overlay-stroke", "match": "stroke/{g}/overlay/{s}", "stacks": [["{surface}", "surface/{g}/elevation/base", "surface/{g}/overlay/{s}"]],
+      "why": "overlay 테두리는 같은 단계 overlay 면에서 출발한다 (§5 stroke)" },
+    { "id": "elevation-stroke", "match": "stroke/{g}/elevation/*", "stacks": [["{surface}", "surface/{g}/elevation/base"]],
+      "why": "stroke elevation 은 surface 단계와 짝이 아니라 세기다 — 그룹의 기본 면 위에서 잰다 (§5 stroke)" },
+    { "id": "ink-default", "match": "on-surface/*/default/*", "stacks": [["{surface}"]],
+      "why": "default 잉크는 모드를 따라가는 배경 — 기준면 위에 놓인다 (§5 유형표)" },
+    { "id": "ink-inverse", "match": "on-surface/*/inverse/*", "stacks": [["surface/inverse/elevation/base"]],
+      "why": "inverse 잉크는 모드를 따라 반전된 배경 위에 놓인다 (§5 유형표)" },
+    { "id": "ink-fixed-dark", "match": "on-surface/*/fixed-dark/*", "stacks": [["@photo-light"]],
+      "why": "두 모드 모두 밝은 배경(밝은 사진·지도) 위의 어두운 잉크 (§5 유형표)" },
+    { "id": "ink-fixed-light", "match": "on-surface/*/fixed-light/*", "stacks": [["@photo-dark"]],
+      "why": "두 모드 모두 어두운 배경(어두운 사진·지도) 위의 밝은 잉크 (§5 유형표)" },
+    { "id": "interactive-surface", "match": "interactive/*/surface/*", "stacks": [["{surface}"]],
+      "why": "상호작용 면은 기준면 위에 놓인다" },
+    { "id": "interactive-ink", "match": "interactive/{v}/{r}/{st}",
+      "stacks": [["{surface}", "interactive/{v}/surface/{st}"], ["{surface}", "interactive/{v}/surface/default"], ["{surface}"]],
+      "why": "interactive 는 상태가 곧 짝이다 — selected 잉크는 selected 면 위에 놓인다. 같은 상태 면이 없으면 default 면, 면이 아예 없으면(ghost) 기준면 (§3)" },
+    { "id": "pressed-on-light", "match": "state-overlay/on-light/*", "stacks": [["@photo-light"]],
+      "why": "아래 배경의 밝기로 고른다 (§4) — 모드와 무관하게 밝은 바탕을 대표로 쓴다" },
+    { "id": "pressed-on-dark", "match": "state-overlay/on-dark/*", "stacks": [["@photo-dark"]],
+      "why": "위와 같음 — 모드와 무관하게 어두운 바탕" },
+    { "id": "pressed-on-brand", "match": "state-overlay/on-brand/*", "stacks": [["interactive/primary/surface/default"]],
+      "why": "모드에 따라 밝기가 바뀌는 브랜드 면 위의 눌림 덧칠 (§4)" },
+    { "id": "fallback", "match": "**", "stacks": [["{surface}"]],
+      "why": "위 어디에도 걸리지 않으면 기준면 위에 놓인다고 본다" }
   ],
 
+  "ladders": {
+    "$comment": "사다리는 재는 바탕에서 멀어지는 순서로 적는다 — 뒤로 갈수록 대비가 커져야 한다. origin: first 면 각 단계를 자기 바탕이 아니라 첫 단계와 비교한다(위치 사다리). direction: same 이면 두 모드에서 밝기 방향도 같아야 한다. 단계마다 바탕이 달라지는 사다리(stroke overlay 처럼 같은 단계 면 위에서 재는 것)는 순서를 말할 수 없어 넣지 않는다.",
+    "list": [
+      { "prefix": "surface/{g}/elevation/", "steps": ["base", "low", "lower"], "origin": "first", "direction": "same",
+        "why": "물러나는 쪽은 두 모드 모두 어두워진다 (§9). 올라오는 쪽은 모드마다 방향이 달라 방향은 보지 않는다" },
+      { "prefix": "surface/{g}/elevation/", "steps": ["base", "high", "higher", "highest"], "origin": "first" },
+      { "prefix": "surface/{g}/overlay/", "steps": ["base", "strong", "stronger", "strongest"] },
+      { "prefix": "stroke/{g}/elevation/", "steps": ["base", "high", "higher", "highest"] },
+      { "prefix": "on-surface/{c}/{t}/", "steps": ["lowest", "lower", "low", "base"] }
+    ]
+  },
+
+  "inkTypes": [
+    "on-surface/neutral/default/base",
+    "on-surface/neutral/inverse/base",
+    "on-surface/neutral/fixed-dark/base",
+    "on-surface/neutral/fixed-light/base"
+  ],
+  "$inkTypesComment": "'읽히는 글자 유형이 있는가' 검사가 대보는 네 유형 (§5). 하나도 모든 모드에서 권장 기준을 넘지 못하면 §10 모드 고정 검토 대상이다.",
+
+  "readableSurfaces": ["surface/*/elevation/*", "surface/*/overlay/*"],
+  "$readableComment": "불투명 면·overlay 는 자기 바탕(contextRules) 위에서, floating 은 glassChecks 의 대표 바탕 위에서 잰다.",
+
+  "inkChecks": [
+    "on-surface/*/*/base",
+    "interactive/*/on-surface/default",
+    "interactive/*/on-surface/selected",
+    "interactive/*/on-surface/selected-brand",
+    "interactive/*/on-surface/brand"
+  ],
+  "$inkChecksComment": "자기 바탕(contextRules) 위에서 본문 권장 기준(4.5)을 재는 잉크. low~lowest·disabled·placeholder·subtle 은 의도적으로 약해서 넣지 않는다 (§5·§8).",
+
   "thresholds": {
-    "$comment": "대비 비율 기준(AA 본문 4.5 / 큰 글자·그래픽 3.0 / '보인다'의 하한 1.15)과, 색감이 몇 배 세지면 보고할지.",
+    "$comment": "대비 비율 권장 기준(본문 4.5 / 큰 글자·그래픽 3.0 / '보인다'의 하한 1.15)과, 색감이 몇 배 세지면 보고할지.",
     "visible": 1.15,
     "graphic": 3.0,
     "text": 4.5,
@@ -84,84 +108,59 @@
     "chromaFloor": 100
   },
 
+  "stateSet": ["default", "selected", "selected-brand", "disabled"],
+  "$stateSetComment": "서로 전환되는 interactive 상태. 이 안의 두 상태가 surface·stroke·on-surface 전부에서 같으면 구분이 사라진 것이다 (§3 — 역할마다 독립적으로 바뀔 수 있으므로 한 역할만 같은 건 정상). 없는 역할은 default 를, default 도 없으면 '색 없음'을 쓴다. floating·overlay-*·subtle·placeholder·brand 는 상태라기보다 쓰이는 자리·잉크 변형이라 비교하지 않는다.",
+
   "dimStates": ["disabled", "placeholder"],
   "$dimComment": "이 상태들은 '잘 안 보이는 것'이 목적이라 대비 검사에서 제외한다.",
 
   "backdrops": {
     "$comment": [
-      "유리(`*-ghost` / `*-floating`)는 반투명이라 바탕 없이는 색이 정해지지 않습니다.",
-      "앱 서피스는 토큰(`white/bg/base`)이 있어 일반 검사로 재지만, 사진·지도·배경화면은 토큰으로 표현할 수 없습니다.",
-      "그래서 실제 바탕을 대표하는 **고정색**을 여기 두고, glassChecks 가 그 위에서 유리를 잽니다.",
+      "사진·지도처럼 토큰으로 표현할 수 없는 바탕을 대표하는 **고정색**입니다. 디자인 토큰이 아니라 측정용 가정값입니다.",
       "값은 '대표적으로 이 정도'라는 뜻이고 정확한 색일 필요는 없습니다 — 바뀌면 검사 결과가 같이 움직입니다."
     ],
     "photo-light": { "color": "#e8e8e8", "label": "밝은 사진" },
     "photo-mid": { "color": "#7a7a7a", "label": "중간톤 사진" },
     "photo-dark": { "color": "#2b2f33", "label": "어두운 사진" },
     "map-light": { "color": "#eef0f2", "label": "지도(라이트)" },
-    "map-dark": { "color": "#2a2e33", "label": "지도(다크)" },
-    "wallpaper": { "color": "#2e3270", "label": "배경화면" }
+    "map-dark": { "color": "#2a2e33", "label": "지도(다크)" }
   },
 
   "glassChecks": [
-    {
-      "prefix": "white/bg-ghost/",
+    { "faces": "surface/default/floating/{s}", "stroke": "stroke/default/floating/{s}",
       "on": ["photo-dark", "photo-mid", "map-dark"],
-      "ink": "white/inner/base",
-      "why": "앱 위에 떠 있는 밝은 유리. 어두운 바탕에서 면이 구분되고 그 위 잉크가 읽혀야 한다 (스낵바·다이얼로그가 실제로 이 잉크를 쓴다)"
-    },
-    {
-      "prefix": "white/border-ghost/",
-      "on": ["photo-dark", "photo-mid", "map-dark"],
-      "why": "위 면의 테두리. 바탕에서 구분되면 된다"
-    },
-    {
-      "prefix": "black/bg-ghost/",
+      "why": "두 모드 모두 흰 알파 (§5) — 어두운 바탕 위에서 면이 구분되고 그 위 글자가 읽혀야 한다" },
+    { "faces": "surface/inverse/floating/{s}", "stroke": "stroke/inverse/floating/{s}",
       "on": ["photo-light", "photo-mid", "map-light"],
-      "why": "밝은 바탕 위의 어두운 유리. 스크림 용도라 면이 바탕에서 구분되면 되고, 이 면 위에 글자를 올리는 쓰임은 없다"
-    },
-    {
-      "prefix": "white/bg-tint/",
-      "on": ["wallpaper"],
-      "ink": "white/inner/base",
-      "why": "모드를 따라가는 반투명. 배경화면 위에서 두 모드 모두 면이 보이고 글자가 읽혀야 한다 (§5)"
-    },
-    {
-      "prefix": "white/border-tint/",
-      "on": ["wallpaper"],
-      "why": "위 면의 테두리"
-    }
-  ],
-
-  "contrastExempt": [
-    {
-      "prefix": "white/bg-tint/",
-      "why": "모드를 따라가는 반투명. 바탕이 배경화면·OS 표면이라 토큰으로 표현할 수 없고, 앱 서피스 위에서 재면 라이트에서 항상 1.00 이 나와 검사가 무의미하다. 실제 바탕 위 스크린샷으로 검증한다."
-    },
-    {
-      "prefix": "white/border-tint/",
-      "why": "위와 같음."
-    }
+      "why": "라이트 검정 알파, 다크 회색 알파 (§5) — 밝은 바탕 위에서 구분돼야 한다" },
+    { "faces": "surface/{g}/floating/{s}", "stroke": "stroke/{g}/floating/{s}",
+      "where": { "g": ["brand", "success", "error", "warning", "info"] },
+      "on": ["photo-light", "photo-dark", "map-light"],
+      "why": "색 그룹은 main-alpha 로 두 모드 고정 (§5) — 밝은·어두운 바탕 어디서든 색 면으로 보여야 한다" },
+    { "faces": "interactive/{v}/surface/floating",
+      "on": ["map-light", "map-dark", "photo-mid"],
+      "why": "지도 위에 떠 있는 버튼 면" }
   ],
 
   "accepted": [
     {
       "check": "identical",
-      "pair": "success/bg/base == success/border/base",
-      "why": "양쪽 모드 모두 같은 색이라 의도된 설계로 본다 — 테두리 없는 성공 서피스"
+      "pair": "surface/success/elevation/base == stroke/success/elevation/base",
+      "why": "테두리 없는 성공 서피스 — 옛 success/bg/base == success/border/base 를 새 이름으로 옮긴 것"
     },
     {
       "check": "identical",
-      "pair": "interactive/secondary/bg/default == interactive/secondary/bg/disabled",
+      "pair": "interactive/secondary/surface/default == interactive/secondary/surface/disabled",
       "why": "secondary 는 disabled 에서 면을 유지하고 테두리·잉크만 흐려진다 (§3 역할별 독립)"
     },
     {
       "check": "identical",
-      "pair": "interactive/secondary-destructive/bg/default == interactive/secondary-destructive/bg/disabled",
+      "pair": "interactive/secondary-destructive/surface/default == interactive/secondary-destructive/surface/disabled",
       "why": "위와 같음"
     },
     {
       "check": "identical",
-      "pair": "interactive/outline/bg/selected == interactive/outline/bg/selected-brand",
+      "pair": "interactive/outline/surface/selected == interactive/outline/surface/selected-brand",
       "why": "두 선택 상태가 같은 면을 쓰고 잉크로만 갈린다"
     }
   ]
