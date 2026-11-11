@@ -15,12 +15,19 @@
       "heads": []
     },
     "color-semantic": {
-      "rulebook": "color-token-rule.md §1-§6",
+      "rulebook": "color-token-rule.md §1-§10",
       "emit": true,
-      "heads": ["interactive", "brand", "white", "black", "success", "error", "warning", "info", "styles"],
+      "heads": [
+        "surface",
+        "stroke",
+        "on-surface",
+        "interactive",
+        "state-overlay",
+        "styles"
+      ],
       "modeNamePattern": "^(light|dark)/[a-z0-9-]+$",
       "modeNote": "명도/브랜드 2단 구조. 모드 하나 = 명도 하나 x 브랜드 하나. color-token-rule.md §9 참고.",
-      "headNote": "styles 는 레이어에 바인딩하지 않고 Effect/Paint Style 이 소비하는 색(shadow / gradient)입니다. color-token-rule.md §2-1 — 레이어별 색 선택 판정(§3-§8) 대상이 아니고, 레이어가 직접 물고 있으면 위반입니다. 이 그룹이 color-semantic 안에 있는 이유는 effects 컬렉션과 색상 스타일에 모드 축이 없어서입니다."
+      "headNote": "surface · stroke · on-surface 는 {역할}/{그룹}/{맥락}/{스케일} 구조입니다 (color-token-rule.md §1·§2). 면은 맥락(elevation·floating·overlay)으로, 글자·아이콘은 실제 배경과의 대비로 고릅니다 (§5). interactive 는 {변이}/{surface|stroke|on-surface}/{상태} 로 상호작용 컴포넌트 전용입니다 (§3). state-overlay 는 버튼 변이가 아니라 상태를 덧칠하는 레이어라 interactive 밖에 있습니다 (§4). styles 는 레이어에 바인딩하지 않고 Effect/Paint Style 이 소비하는 색(shadow / gradient)입니다 (§2-1) — 레이어별 색 선택 판정(§3-§8) 대상이 아니고, 레이어가 직접 물고 있으면 위반입니다. 이 그룹이 color-semantic 안에 있는 이유는 effects 컬렉션과 색상 스타일에 모드 축이 없어서입니다."
     },
     "shape-primitive": {
       "rulebook": "shape-token-rule.md §1",
@@ -30,12 +37,19 @@
     "shape-semantic": {
       "rulebook": "shape-token-rule.md §1-§2",
       "emit": true,
-      "heads": ["spacing", "radius", "size"]
+      "heads": [
+        "spacing",
+        "radius",
+        "size"
+      ]
     },
     "icon-frame": {
       "rulebook": "icon-frame-rule.md",
       "emit": true,
-      "heads": ["icon-size", "icon-line-height"],
+      "heads": [
+        "icon-size",
+        "icon-line-height"
+      ],
       "modeNamePattern": "^size-[0-9]+$",
       "modeNote": "색상 테마와 무관한 축. 모드 size-N 은 짝지어진 텍스트의 스텝 번호. icon-line-height/{카테고리} 는 typeface-semantic line-height 를 참조합니다."
     },
@@ -47,13 +61,22 @@
     "typeface-semantic": {
       "rulebook": "typography-token-rule.md §1-§3",
       "emit": true,
-      "heads": ["font-family", "font-weight", "font-size", "line-height"],
+      "heads": [
+        "font-family",
+        "font-weight",
+        "font-size",
+        "line-height"
+      ],
       "modeNote": "브랜드×언어 조합. 색상 모드와 다른 축입니다 (§3)."
     },
     "effects": {
       "rulebook": "effect-token-rule.md §0-§3",
       "emit": true,
-      "heads": ["shadow", "background-blur", "liquid-glass"]
+      "heads": [
+        "shadow",
+        "background-blur",
+        "liquid-glass"
+      ]
     }
   },
   "nonTokenPipelines": {
