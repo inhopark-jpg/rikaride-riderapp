@@ -142,26 +142,5 @@
       "why": "지도 위에 떠 있는 버튼 면" }
   ],
 
-  "accepted": [
-    {
-      "check": "identical",
-      "pair": "surface/success/elevation/base == stroke/success/elevation/base",
-      "why": "테두리 없는 성공 서피스 — 옛 success/bg/base == success/border/base 를 새 이름으로 옮긴 것"
-    },
-    {
-      "check": "identical",
-      "pair": "interactive/secondary/surface/default == interactive/secondary/surface/disabled",
-      "why": "secondary 는 disabled 에서 면을 유지하고 테두리·잉크만 흐려진다 (§3 역할별 독립)"
-    },
-    {
-      "check": "identical",
-      "pair": "interactive/secondary-destructive/surface/default == interactive/secondary-destructive/surface/disabled",
-      "why": "위와 같음"
-    },
-    {
-      "check": "identical",
-      "pair": "interactive/outline/surface/selected == interactive/outline/surface/selected-brand",
-      "why": "두 선택 상태가 같은 면을 쓰고 잉크로만 갈린다"
-    }
-  ]
+  "accepted": []
 }
