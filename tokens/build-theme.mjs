@@ -22,6 +22,7 @@
  * 매핑 표:
  *   color-primitive      *방출 안 함*
  *   color-semantic       interactive/primary/surface/default → --color-interactive-primary-surface-default
+ *                        state/disabled/global (불투명도) → --opacity-state-disabled-global
  *   shape-primitive      *방출 안 함*
  *   shape-semantic       spacing/surface-margin/base    → --spacing-surface-margin-base
  *                        radius/surface-radius/low      → --radius-surface-radius-low
@@ -73,7 +74,9 @@ const OUT = resolve(ROOT, 'src/styles/theme.css')
 /** 컬렉션 → 방출 규칙. emit:false 면 alias 해석에만 쓰고 CSS 로 내지 않는다. */
 const NAMESPACE_MAP = {
   'color-primitive': { emit: false },
-  'color-semantic': { emit: true, ns: 'color', modeAttr: 'data-theme' },
+  // 색이 아닌 불투명도 변수(state/disabled/global)는 --color-* 에 두면 bg-/text- 유틸이 생겨 버린다.
+  // $type 이 number 인 것만 --opacity-* 로 보내 opacity-* 유틸이 되게 한다 (color-token-rule.md §4).
+  'color-semantic': { emit: true, ns: 'color', byType: { number: 'opacity' }, modeAttr: 'data-theme' },
   'shape-primitive': { emit: false },
   'shape-semantic': { emit: true, ns: null, byHead: { spacing: 'spacing', radius: 'radius', size: 'spacing' } },
   'typeface-primitive': { emit: false },
@@ -118,7 +121,7 @@ const NAMESPACE_MAP = {
 
 /** Tailwind 가 유틸을 생성하는 네임스페이스. 나머지는 var() 로만 쓰인다. */
 const UTILITY_NAMESPACES = new Set([
-  'color', 'spacing', 'radius', 'font', 'font-weight', 'text', 'leading', 'shadow', 'blur',
+  'color', 'opacity', 'spacing', 'radius', 'font', 'font-weight', 'text', 'leading', 'shadow', 'blur',
 ])
 
 const warnings = []
@@ -136,8 +139,9 @@ function slug(s) {
  * 토큰 경로 → { varName, ns } 또는 null(방출 안 함).
  * @param {string} collection 최상위 컬렉션 이름
  * @param {string[]} segs 컬렉션 아래 경로 세그먼트
+ * @param {string} [type] 토큰의 $type — byType 이 있는 컬렉션에서만 본다
  */
-function mapName(collection, segs) {
+function mapName(collection, segs, type) {
   const rule = NAMESPACE_MAP[collection]
   if (!rule) {
     warnings.push(`알 수 없는 컬렉션 "${collection}" — 방출하지 않고 건너뜁니다.`)
@@ -145,7 +149,7 @@ function mapName(collection, segs) {
   }
   if (!rule.emit) return null
 
-  let ns = rule.ns
+  let ns = rule.byType?.[type] ?? rule.ns
   let rest = segs
 
   if (rule.byHead) {
@@ -312,7 +316,7 @@ function main() {
 
     for (const { path, token } of flatten(root[collection])) {
       const dotted = [collection, ...path].join('.')
-      const mapped = mapName(collection, path)
+      const mapped = mapName(collection, path, token.$type)
       if (!mapped) continue
 
       const prev = owner.get(mapped.varName)

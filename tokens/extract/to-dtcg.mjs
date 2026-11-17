@@ -109,14 +109,21 @@ function gradientAngle(t) {
   return Math.round(deg * 10) / 10
 }
 
-function dtcgType(collectionName, head, resolvedType) {
+function dtcgType(collectionName, head, resolvedType, scopes = []) {
   if (resolvedType === 'COLOR') return 'color'
   if (resolvedType === 'STRING') return head === 'font-family' ? 'fontFamily' : 'string'
   if (resolvedType === 'BOOLEAN') return 'boolean'
   // FLOAT
   if (head === 'font-weight') return 'number' // px 를 붙이면 안 된다
+  if (isOpacity(scopes)) return 'number' // 불투명도 — 0~1 로 바꿔 담는다 (toOpacity)
   return 'dimension'
 }
+
+/** OPACITY 스코프만 가진 FLOAT 은 불투명도다 (color-semantic 의 state/disabled/global, color-token-rule.md §4). */
+const isOpacity = (scopes = []) => scopes.length > 0 && scopes.every((s) => s === 'OPACITY')
+
+/** Figma 불투명도 변수는 0~100 이고 CSS opacity 는 0~1 이다. */
+const toOpacity = (n) => Number((n / 100).toFixed(4))
 
 /* -------------------------------------------------------------------------
  * 3. 변환
@@ -201,7 +208,8 @@ function main() {
     for (const v of variables) {
       const segs = v.name.split('/')
       const head = segs[0]
-      const type = dtcgType(c.name, head, v.resolvedType)
+      const type = dtcgType(c.name, head, v.resolvedType, v.scopes)
+      const opacity = v.resolvedType === 'FLOAT' && isOpacity(v.scopes)
 
       const modeValues = {}
       for (const [modeId, raw] of Object.entries(v.valuesByMode)) {
@@ -226,7 +234,7 @@ function main() {
         } else if (raw && typeof raw === 'object' && 'r' in raw) {
           modeValues[mn] = figmaColorToCss(raw)
         } else {
-          modeValues[mn] = raw
+          modeValues[mn] = opacity && typeof raw === 'number' ? toOpacity(raw) : raw
         }
       }
 

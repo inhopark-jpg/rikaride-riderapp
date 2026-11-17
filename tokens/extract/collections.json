@@ -20,14 +20,14 @@
       "heads": [
         "surface",
         "stroke",
-        "on-surface",
+        "inner",
         "interactive",
-        "state-overlay",
+        "state",
         "styles"
       ],
       "modeNamePattern": "^(light|dark)/[a-z0-9-]+$",
       "modeNote": "명도/브랜드 2단 구조. 모드 하나 = 명도 하나 x 브랜드 하나. color-token-rule.md §9 참고.",
-      "headNote": "surface · stroke · on-surface 는 {역할}/{그룹}/{맥락}/{스케일} 구조입니다 (color-token-rule.md §1·§2). 면은 맥락(elevation·floating·overlay)으로, 글자·아이콘은 실제 배경과의 대비로 고릅니다 (§5). interactive 는 {변이}/{surface|stroke|on-surface}/{상태} 로 상호작용 컴포넌트 전용입니다 (§3). state-overlay 는 버튼 변이가 아니라 상태를 덧칠하는 레이어라 interactive 밖에 있습니다 (§4). styles 는 레이어에 바인딩하지 않고 Effect/Paint Style 이 소비하는 색(shadow / gradient)입니다 (§2-1) — 레이어별 색 선택 판정(§3-§8) 대상이 아니고, 레이어가 직접 물고 있으면 위반입니다. 이 그룹이 color-semantic 안에 있는 이유는 effects 컬렉션과 색상 스타일에 모드 축이 없어서입니다."
+      "headNote": "surface · stroke · inner 는 {역할}/{그룹}/{맥락}/{스케일} 구조이고, 그룹(neutral·brand·success·error·warning·info)과 맥락(default·inverse·fixed-deep·fixed-pale)을 세 역할이 공유합니다 (color-token-rule.md §1·§2). 면은 맥락과 단계(불투명 base~lowest, 반투명 high~highest)로, 선·글자·아이콘은 실제 배경과의 대비로 고릅니다 (§5). interactive 는 {변이}/{surface|stroke|inner}/{상태} 로 상호작용 컴포넌트 전용입니다 (§3). state 는 버튼 변이가 아니라 상태를 덧칠하는 레이어라 interactive 밖에 있습니다 (§4). styles 는 레이어에 바인딩하지 않고 Effect/Paint Style 이 소비하는 색(shadow / gradient)입니다 (§2-1) — 레이어별 색 선택 판정(§3-§8) 대상이 아니고, 레이어가 직접 물고 있으면 위반입니다. 이 그룹이 color-semantic 안에 있는 이유는 effects 컬렉션과 색상 스타일에 모드 축이 없어서입니다."
     },
     "shape-primitive": {
       "rulebook": "shape-token-rule.md §1",

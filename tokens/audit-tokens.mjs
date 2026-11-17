@@ -34,7 +34,9 @@ const flat = (o, p = [], out = {}) => {
   }
   return out
 }
-const SEM = flat(T['color-semantic'])
+const ALL = flat(T['color-semantic'])
+// 불투명도 같은 색이 아닌 토큰(state/disabled/global)은 모드 누락만 보고 대비 검사에서는 뺀다
+const SEM = Object.fromEntries(Object.entries(ALL).filter(([, v]) => v.$type === 'color'))
 const NAMES = Object.keys(SEM)
 const node = (dotted) => dotted.split('.').reduce((a, k) => (a == null ? a : a[k]), T)
 
@@ -52,7 +54,7 @@ const resolve = (sem, mode) => {
 }
 
 // ── 이름 패턴 ────────────────────────────────────────────────────────────────
-// 세그먼트 단위. `*` 는 아무 세그먼트, `{x}` 는 그 세그먼트를 잡는다. `**` 는 전부.
+// 세그먼트 단위. `*` 는 아무 세그먼트, `{x}` 는 그 세그먼트를 잡는다, `(a|b)` 는 둘 중 하나. `**` 는 전부.
 const capture = (tpl, name) => {
   if (tpl === '**') return {}
   const a = tpl.split('/'), b = name.split('/')
@@ -60,6 +62,11 @@ const capture = (tpl, name) => {
   const cap = {}
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '*') continue
+    const alt = a[i].match(/^\((.+)\)$/)
+    if (alt) {
+      if (!alt[1].split('|').includes(b[i])) return null
+      continue
+    }
     const m = a[i].match(/^\{(\w+)\}$/)
     if (m) {
       if (cap[m[1]] !== undefined && cap[m[1]] !== b[i]) return null
@@ -71,8 +78,8 @@ const capture = (tpl, name) => {
   return cap
 }
 const { page: PAGE, surface: SURF, thresholds: TH, dimStates: DIM } = RULES
-const fill = (tpl, cap) => tpl.replace(/\{(\w+)\}/g, (all, k) =>
-  k === 'surface' ? SURF : k === 'page' ? PAGE : cap[k] ?? all)
+const fill = (tpl, cap, self) => tpl.replace(/\{(\w+)\}/g, (all, k) =>
+  k === 'surface' ? SURF : k === 'page' ? PAGE : k === 'self' ? self ?? all : cap[k] ?? all)
 const allowed = (cap, where) => !where || Object.entries(where).every(([k, vs]) => vs.includes(cap[k]))
 const matching = (tpl, where) => NAMES.filter((n) => { const c = capture(tpl, n); return c && allowed(c, where) })
 
@@ -127,7 +134,7 @@ function contextOf(sem) {
     if (!cap) continue
     if (rule.skip) return { skip: rule.skip, rule: rule.id }
     for (const cand of rule.stacks) {
-      const stack = cand.map((l) => fill(l, cap))
+      const stack = cand.map((l) => fill(l, cap, sem))
       if (stack.every((l) => isBackdrop(l) || SEM[l])) return { stack, rule: rule.id }
     }
     return null
@@ -160,13 +167,13 @@ const PAIRS = ALL_MODES.filter((m) => m.startsWith('light/'))
 const DARKLESS = ALL_MODES.filter((m) => m.startsWith('light/') && !ALL_MODES.includes('dark/' + m.slice(6)))
 
 // E. 모드 값 누락 — 이게 비면 나머지 검사가 전부 거짓음성이 된다. 가장 먼저 본다.
-for (const sem of NAMES) {
-  const mv = SEM[sem].$extensions?.['com.figma.modeValues'] ?? {}
+for (const sem of Object.keys(ALL)) {
+  const mv = ALL[sem].$extensions?.['com.figma.modeValues'] ?? {}
   const missing = ALL_MODES.filter((m) => mv[m] === undefined)
   if (missing.length) add('hard', '모드 누락', '-', `${sem} — ${missing.join(', ')}`)
 }
 
-/** 네 유형 중 모든 모드에서 본문 권장 기준을 넘는 것이 있는가 (§5). */
+/** 네 맥락 중 모든 모드에서 본문 권장 기준을 넘는 것이 있는가 (§5). */
 function readable(stack, modes) {
   const rows = RULES.inkTypes.filter((t) => SEM[t]).map((t) => {
     const rs = modes.map((m) => measure(t, stack, m)?.r ?? 0)
@@ -174,7 +181,7 @@ function readable(stack, modes) {
   }).sort((a, b) => b.min - a.min)
   return { ok: rows.some((x) => x.min >= TH.text), best: rows[0] }
 }
-const fmtBest = (b, modes) => `가장 나은 ${b.t.split('/').slice(2, 3)} ${b.rs.map((r) => r.toFixed(2)).join(' / ')} (${modes.length === 2 ? '라이트 / 다크' : modes.join(' / ')})`
+const fmtBest = (b, modes) => `가장 나은 ${b.t.split('/')[2]} ${b.rs.map((r) => r.toFixed(2)).join(' / ')} (${modes.length === 2 ? '라이트 / 다크' : modes.join(' / ')})`
 
 for (const { brand, light, dark } of PAIRS) {
   const modes = [light, dark]
@@ -215,24 +222,28 @@ for (const { brand, light, dark } of PAIRS) {
         `${x.sem}  색감 ${x.L.chroma} → ${x.D.chroma} (${gain.toFixed(1)}배)  ${x.L.tok} → ${x.D.tok}`)
   }
 
-  // H. 잉크 권장 대비 — 자기 바탕 위에서 본문 기준(4.5)에 못 미치는 잉크. 위반이 아니라 확인 대상 (§5·§8).
-  for (const sem of NAMES.filter((n) => RULES.inkChecks.some((p) => capture(p, n)))) {
+  // H. 잉크 권장 대비 — 자기 바탕 위에서 권장 기준에 못 미치는 잉크. 위반이 아니라 확인 대상 (§5·§8).
+  //    본문(neutral)은 4.5, 색 그룹 잉크는 아이콘·그래픽용이라 3.0 으로 잰다 (§5 4번).
+  //    수치는 반올림하지 않는다 — 4.47 은 4.5 미달이다 (§5 5번).
+  for (const sem of NAMES) {
+    const chk = RULES.inkChecks.find((p) => capture(p.match, sem))
     const c = CTX[sem]
-    if (!c || c.skip) continue
-    const bad = modes.map((m) => ({ m, x: measure(sem, c.stack, m) })).filter(({ x }) => x && x.r < TH.text)
+    if (!chk || !c || c.skip) continue
+    const min = TH[chk.min]
+    const bad = modes.map((m) => ({ m, x: measure(sem, c.stack, m) })).filter(({ x }) => x && x.r < min)
     if (bad.length)
       add('soft', '잉크 권장 대비 미달', brand,
-        `${sem} on ${c.stack.map(label).join(' + ')}  ${bad.map(({ m, x }) => `${modeLabel(m)} ${x.r.toFixed(2)}`).join(', ')} (권장 ${TH.text})`)
+        `${sem} on ${c.stack.map(label).join(' + ')}  ${bad.map(({ m, x }) => `${modeLabel(m)} ${x.r.toFixed(3)}`).join(', ')} (권장 ${min})`)
   }
 
-  // C. 읽히는 글자 유형이 있는가 — §5 「네 유형 중 어느 것도 모든 모드에서 기준을 넘지 못하면 모드 고정 검토」.
+  // C. 읽히는 글자 맥락이 있는가 — §5 「네 맥락 중 어느 것도 모든 모드에서 권장 기준을 넘지 못하면 모드 고정 검토」.
   for (const sem of NAMES.filter((n) => RULES.readableSurfaces.some((p) => capture(p, n)))) {
     const c = CTX[sem]
     if (!c || c.skip) continue
     const stack = top(c.stack) === sem ? c.stack : [...c.stack, sem]
     const { ok, best } = readable(stack, modes)
     if (!ok && best)
-      add('soft', '읽히는 글자 유형 없음', brand, `${sem} on ${c.stack.map(label).join(' + ')} — ${fmtBest(best, modes)} · §10 모드 고정 검토`)
+      add('soft', '읽히는 글자 맥락 없음', brand, `${sem} on ${c.stack.map(label).join(' + ')} — ${fmtBest(best, modes)} · §10 모드 고정 검토`)
   }
 
   // B. 동일색 — 같은 색이 되는 게 왜 문제인지는 자리마다 다르므로 세 종류로 나눈다.
@@ -243,7 +254,7 @@ for (const { brand, light, dark } of PAIRS) {
       const c = CTX[sem]
       if (!c || c.skip || isBackdrop(top(c.stack))) continue
       const under = top(c.stack)
-      if (under === sem || !/^(stroke|on-surface)\/|^interactive\/[^/]+\/(stroke|on-surface)\//.test(sem)) continue
+      if (under === sem || !/^(stroke|inner)\/|^interactive\/[^/]+\/(stroke|inner)\//.test(sem)) continue
       if (isClear(resolve(sem, mode)) || (measure(sem, c.stack, mode)?.r ?? 2) >= 1.01) continue
       if (acceptedPair(under, sem)) continue
       add('hard', '요소가 자기 면에 묻힘', brand, `[${mode}] ${sem} on ${under}  ${resolve(sem, mode)} / ${resolve(under, mode)}`)
@@ -256,12 +267,12 @@ for (const { brand, light, dark } of PAIRS) {
       return SEM[own] ? resolve(own, mode) : SEM[def] ? resolve(def, mode) : 'clear'
     }
     for (const v of variants) {
-      const states = RULES.stateSet.filter((st) => ['surface', 'stroke', 'on-surface'].some((r) => SEM[`interactive/${v}/${r}/${st}`]))
+      const states = RULES.stateSet.filter((st) => ['surface', 'stroke', 'inner'].some((r) => SEM[`interactive/${v}/${r}/${st}`]))
       for (let i = 0; i < states.length; i++) for (let j = i + 1; j < states.length; j++) {
         const a = states[i], b = states[j]
-        if (!['surface', 'stroke', 'on-surface'].every((r) => look(v, r, a) === look(v, r, b))) continue
+        if (!['surface', 'stroke', 'inner'].every((r) => look(v, r, a) === look(v, r, b))) continue
         if (acceptedPair(`interactive/${v}/${a}`, `interactive/${v}/${b}`)) continue
-        add('hard', '상태 구분 사라짐', brand, `[${mode}] interactive/${v} 의 ${a} == ${b} — surface·stroke·on-surface 전부 같음`)
+        add('hard', '상태 구분 사라짐', brand, `[${mode}] interactive/${v} 의 ${a} == ${b} — surface·stroke·inner 전부 같음`)
       }
     }
   }
@@ -269,12 +280,11 @@ for (const { brand, light, dark } of PAIRS) {
   // D. 사다리 — 규칙에 적힌 순서대로, 재는 바탕에서 멀어질수록 대비가 커져야 한다.
   //    D-1 역행: 한 모드 안에서 되돌아가면 "한 단계 더" 가 그 구간에서 반대로 작동한다.
   //    D-2 해상도: 두 단계가 같은 색이면 그 구간에서 단계가 아무 일도 하지 않는다 (결함은 아님).
-  //    D-3 방향: direction: same 인 사다리는 두 모드에서 밝기 방향도 같아야 한다.
+  //    D-3 방향: direction: darker 인 사다리는 모든 모드에서 끝 단계가 첫 단계보다 어두워야 한다.
   for (const lad of RULES.ladders.list) {
-    const prefixes = [...new Set(NAMES.map((n) => {
-      const cap = capture(lad.prefix + '*', n)
-      return cap ? fill(lad.prefix, cap) : null
-    }).filter(Boolean))]
+    // 접두사는 실제 이름에서 마지막 세그먼트만 떼어 만든다 — 패턴의 `(a|b)` 를 다시 채울 필요가 없다.
+    const prefixes = [...new Set(NAMES.filter((n) => capture(lad.prefix + '*', n))
+      .map((n) => n.split('/').slice(0, -1).join('/') + '/'))]
     for (const pre of prefixes) {
       const steps = lad.steps.map((s) => pre + s).filter((n) => SEM[n] && CTX[n] && !CTX[n].skip)
       if (steps.length < 2) continue
@@ -294,22 +304,45 @@ for (const { brand, light, dark } of PAIRS) {
           if (resolve(steps[k], mode) === resolve(steps[k - 1], mode))
             add('soft', '사다리 해상도', brand, `[${modeLabel(mode)}] ${steps[k - 1]} == ${steps[k]}  ${resolve(steps[k], mode)}`)
       }
-      if (lad.direction !== 'same') continue
+      if (lad.direction !== 'darker') continue
       const dir = (mode) => {
         const a = compose([...CTX[steps[0]].stack, steps[0]], mode), b = compose([...CTX[steps.at(-1)].stack, steps.at(-1)], mode)
         if (!a || !b || Math.abs(lum(b) - lum(a)) < 1e-4) return null
         return lum(b) < lum(a) ? '어두워짐' : '밝아짐'
       }
-      const dl = dir(light), dd = dir(dark)
-      if (dl && dd && dl !== dd)
-        add('soft', '사다리 방향', brand, `${pre}* 라이트 ${dl} → 다크 ${dd}  (${steps.map(short).join('>')})`)
+      for (const mode of modes) {
+        const d = dir(mode)
+        if (d && d !== '어두워짐')
+          add('soft', '사다리 방향', brand, `[${modeLabel(mode)}] ${pre}* ${d}  (${steps.map(short).join('>')}) — 물러난 쪽은 어두워져야 한다 (§9)`)
+      }
+    }
+  }
+
+  // I. 맥락 맞바꿈의 톤 — 다크 default 는 라이트 inverse 와, 다크 inverse 는 라이트 default 와 같은 톤이어야 한다.
+  //    값은 단계 단위로 조정할 수 있으므로(§9) 같은 값인지가 아니라 대비가 벌어졌는지를 본다.
+  //    반투명 값은 모드마다 다른 바탕에 합성하면 같은 값도 달라 보이므로, 둘 다 같은 중간톤 바탕에 합성해 비교한다.
+  const MID = parse(BACKDROPS['photo-mid']?.color ?? '#7a7a7a')
+  const onMid = (sem, mode) => { const c = parse(resolve(sem, mode)); return c ? over(c, MID) : null }
+  for (const sem of NAMES.filter((n) => (RULES.toneSwaps ?? []).some((p) => capture(p, n)))) {
+    const [role, g, ctx, step] = sem.split('/')
+    if (ctx === 'default' || ctx === 'inverse') {
+      const twin = `${role}/${g}/${ctx === 'default' ? 'inverse' : 'default'}/${step}`
+      if (!SEM[twin]) continue
+      const a = onMid(sem, dark), b = onMid(twin, light)
+      if (a && b && ratio(a, b) >= TH.toneSplit)
+        add('soft', '맞바꾼 맥락의 톤 갈라짐', brand,
+          `다크 ${sem} ${resolve(sem, dark)} ↔ 라이트 ${twin} ${resolve(twin, light)}  대비 ${ratio(a, b).toFixed(2)} (§9 「톤은 맞바꾼 그대로」)`)
+    } else if (ctx === 'fixed-deep' || ctx === 'fixed-pale') {
+      // J. 고정 맥락 — 라이트·다크가 바뀌어도 값이 그대로여야 한다 (§2).
+      if (resolve(sem, light) !== resolve(sem, dark))
+        add('soft', '고정 맥락이 모드를 따라감', brand, `${sem}  라이트 ${resolve(sem, light)} → 다크 ${resolve(sem, dark)} (§2 「fixed-* 는 값이 그대로」)`)
     }
   }
 
   // G. 반투명 면 × 대표 바탕 — floating 은 아래에 있는 것 위에 떠 있어서 앱 면 위에서만 재면
   //    라이트에서 늘 1.00 이 나와 아무것도 안 걸린다. 사진·지도를 고정색으로 두고 그 위에서 본다 —
   //    ① 사다리의 가장 잘 보이는 단계가 바탕에서 구분되는가
-  //    ② 면으로 성립하는 단계 위에 읽히는 글자 유형이 있는가 (C 와 같은 기준)
+  //    ② 면으로 성립하는 단계 위에 읽히는 글자 맥락이 있는가 (C 와 같은 기준)
   //    ③ 테두리 사다리의 가장 잘 보이는 단계가 그 면에서 구분되는가
   for (const chk of RULES.glassChecks ?? []) {
     const faces = matching(chk.faces, chk.where)
@@ -337,7 +370,7 @@ for (const { brand, light, dark } of PAIRS) {
           if (modes.some((m) => (measure(f, ['@' + bdId], m)?.r ?? 0) < TH.visible)) continue
           const { ok, best } = readable(['@' + bdId, f], modes)
           if (!ok && best)
-            add('soft', '읽히는 글자 유형 없음', brand, `${f} on ${bd.label} — ${fmtBest(best, modes)} · §10 모드 고정 검토`)
+            add('soft', '읽히는 글자 맥락 없음', brand, `${f} on ${bd.label} — ${fmtBest(best, modes)} · §10 모드 고정 검토`)
         }
       }
     }
