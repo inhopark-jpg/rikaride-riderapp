@@ -60,7 +60,7 @@ primitive 는 CSS 로 방출되지 않는다 (rikaride 정책). 참조하면 반
 
 ```
 ❌ 깨진 참조 (스타일이 안 먹는 중)
-   src/components/Card/Card.tsx:18  var(--color-surface-brand-elevation-old)  → theme.css 에 없음
+   src/components/Card/Card.tsx:18  var(--color-surface-brand-default-old)  → theme.css 에 없음
 
 ❌ 하드코딩
    src/components/Card/Card.tsx:14  #f5f5f5  → 토큰으로 교체 필요
@@ -70,7 +70,7 @@ primitive 는 CSS 로 방출되지 않는다 (rikaride 정책). 참조하면 반
    src/components/Foo/Foo.tsx:8    var(--color-primitive-blue-500)
 
 ⚠️  대비 권장 미달 — 화면 확인 필요 (color-token-rule.md §5)
-   src/components/Card/Card.tsx:22  bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base
+   src/components/Card/Card.tsx:22  bg-surface-neutral-default-base 위 text-inner-neutral-inverse-base
                                     light 1.00 / dark 1.00 (기준 4.5)
 ```
 

@@ -1,6 +1,6 @@
 # Color Token 적용 규칙
 
-> **다루는 것** — 색상 토큰의 이름 구조 `{역할}/{그룹}/{맥락}/{스케일}` 과 고르는 법. 역할 3종(`surface`·`stroke`·`on-surface`)과 별도 최상위 3종(`interactive`·`state-overlay`·`styles`), 면의 맥락 3종(elevation·floating·overlay), 글자·아이콘 유형 4종을 **실제 배경과의 대비**로 고르는 기준, 모드 축과 서브트리 지역 오버라이드까지.
+> **다루는 것** — 색상 토큰의 이름 구조 `{역할}/{그룹}/{맥락}/{스케일}` 과 고르는 법. 역할 3종(`surface`·`stroke`·`inner`)과 별도 최상위 3종(`interactive`·`state`·`styles`), 세 역할이 함께 쓰는 맥락 4종(`default`·`inverse`·`fixed-deep`·`fixed-pale`), 면의 불투명 단계와 반투명 단계, 글자·아이콘을 **실제 배경과의 대비**로 고르는 기준, 모드 축과 서브트리 지역 오버라이드까지.
 > **관련 룰북** — `shape-token-rule.md`, `typography-token-rule.md`, `icon-frame-rule.md`
 > **소비 제약** — primitive 컬렉션은 CSS 변수로 방출되지 않음. semantic 토큰만 사용.
 
@@ -17,7 +17,8 @@
 2-1. `styles` 그룹(그림자·그라디언트 색)은 레이어에 직접 바인딩하지 않는다 — §2-1 을 먼저 읽는다. §3~§8 의 판정 절차 대상이 아니다.
 3. 실제 값은 항상 `design-tokens.json`에서 조회한다.
 4. 새 컴포넌트에 색을 입힐 때든, 기존 컴포넌트의 색이 맞는지 검증할 때든 — 토큰 이름을 §1 의 `{역할}/{그룹}/{맥락}/{스케일}` 로 먼저 분해해서 생각한다.
-5. 면·테두리(`surface`·`stroke`)는 **맥락**(elevation·floating·overlay)과 단계로 고른다. 글자·아이콘(`on-surface`)은 면의 그룹을 따라가지 않고 **그 글자가 실제로 얹히는 배경과의 대비**로 고른다 — 반투명 면이면 그 뒤의 사진·지도·면까지 합성한 배경이다 (§5).
+5. 면(`surface`)은 **맥락**(모드에 따라 어떻게 움직이는가)과 **단계**(불투명 `base`~`lowest`, 반투명 `high`~`highest`)로 고른다. 글자·아이콘(`inner`)과 테두리(`stroke`)는 면의 그룹·맥락을 따라가지 않고 **그것이 실제로 얹히는 배경과의 대비**로 고른다 — 반투명 면이면 그 뒤의 사진·지도·면까지 합성한 배경이다 (§5).
+6. 본문처럼 읽어야 하는 텍스트는 `inner/neutral/*` 를 우선한다. 색 그룹 잉크는 아이콘·그래픽에 쓴다 (§5).
 
 ## 1. 2단계 구조 + 토큰 이름 구조: {역할} / {그룹} / {맥락} / {스케일}
 
@@ -33,14 +34,16 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 | 램프 | 기준색 | 주로 어디에 쓰이나 |
 |---|---|---|
 | `{패밀리}/default/{N}` | — (불투명 원색 사다리) | 불투명한 면·테두리·글자 |
-| `{패밀리}/main-alpha/{N}` | 그 패밀리의 main 보다 **1~2단계 진한 색** | 색 그룹의 반투명 면(floating, 라이트 overlay). main 그대로면 같은 그룹 elevation 면 위에서 구분이 안 돼서 한두 단계 진하게 잡았다 |
-| `{패밀리}/dark-alpha/{N}` | `{패밀리}/default/900` | 색이 남아 있는 어두운 반투명. 짙은 색 글자 사다리(`on-surface/{색}/…/low`~`lowest`) |
-| `{패밀리}/light-alpha/{N}` | `{패밀리}/default/200` | 색이 남아 있는 밝은 반투명. 다크 overlay, 밝은 색 글자 사다리 |
+| `{패밀리}/main-alpha/{N}` | 그 패밀리의 대표색 근처 단계 — 패밀리마다 다르다 (`(main)` 단계 그대로이거나 1~2단계 진하게) | 색 그룹의 진한(`deep`) 쪽 반투명 |
+| `{패밀리}/dark-alpha/{N}` | `{패밀리}/default/900` | 색이 남아 있는 짙은 반투명 |
+| `{패밀리}/light-alpha/{N}` | `{패밀리}/default/200` | 색이 남아 있는 연한(`pale`) 쪽 반투명 |
 | `neutral/dark-alpha/{N}` · `neutral/light-alpha/{N}` | 검정 · 흰색 | 무채색 반투명 |
-| `neutral/main-alpha/{N}` | `neutral/default/600` (main 보다 1단계 진한 회색) | 무채색 회색 반투명. 다크의 `surface/inverse/floating` |
+| `neutral/main-alpha/{N}` | `neutral/default/600` | 무채색 회색 반투명 |
 
 - 알파 램프의 단계 `N` 은 불투명도다 — `200` 은 20%, `50` 은 5%.
-- 패밀리는 `neutral` 과 색 패밀리(브랜드 후보와 의미색: `sky-blue`, `govt-navy`, `warning-red`, `success-green` …)다. 어떤 패밀리가 어떤 그룹이 되는지는 모드가 정한다 (§9).
+- 이름 끝에 ` (main)` 이 붙은 단계(예: `error-red/default/600 (main)`)가 그 패밀리의 대표색이다.
+- 패밀리는 `neutral` 과 색 패밀리(브랜드 후보와 의미색: `sky-blue`, `govt-navy`, `error-red`, `success-green` …)다. 어떤 패밀리가 어떤 그룹이 되는지는 모드가 정한다 (§9).
+- semantic 토큰의 어느 칸이 어느 램프를 쓰는지는 값의 문제라 이 문서에 적지 않는다 — `design-tokens.json` 을 본다.
 
 ### `color-semantic` 의 이름 구조
 
@@ -48,48 +51,60 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 {역할} / {그룹} / {맥락} / {스케일}
 ```
 
-| 세그먼트 | `surface` · `stroke` | `on-surface` |
-|---|---|---|
-| 역할 | `surface` = 면(배경·카드·시트·유리), `stroke` = 테두리·구분선 | 면 위에 얹는 **텍스트와 아이콘** (공용 — 따로 안 쪼갬) |
-| 그룹 | 면 계열: `default` · `inverse` · `brand` · `success` · `error` · `warning` · `info` | 색: `neutral` · `brand` · `success` · `error` · `warning` · `info` |
-| 맥락 | 면이 놓이는 방식: `elevation` · `floating` · `overlay` (§5) | 모드 동작 유형: `default` · `inverse` · `fixed-dark` · `fixed-light` (§5) |
-| 스케일 | 맥락마다 어휘가 다르다 (§2) | `base` · `low` · `lower` · `lowest` (§2) |
+| 세그먼트 | 값 |
+|---|---|
+| 역할 | `surface` = 면(배경·카드·시트·유리), `stroke` = 테두리·구분선, `inner` = 면 위에 얹는 **텍스트와 아이콘** (공용 — 따로 안 쪼갬) |
+| 그룹 | `neutral` · `brand` · `success` · `error` · `warning` · `info` — 세 역할 공통 |
+| 맥락 | `default` · `inverse` · `fixed-deep` · `fixed-pale` — 세 역할 공통. 진하기(톤)와 모드 동작 (§2) |
+| 스케일 | `surface` 는 `lowest` · `lower` · `low` · `base` · `high` · `higher` · `highest` 7단계, `stroke` · `inner` 는 `lowest` · `lower` · `low` · `base` 4단계 (§2) |
 
-> **같은 단어, 다른 자리.** `default`·`inverse` 가 `surface`·`stroke` 에서는 **그룹**(기준 면 계열과 그 명도 반전 계열)이고, `on-surface` 에서는 **유형**(모드를 따라가는 글자와 그 반전)입니다. 의도된 비대칭입니다 — 면은 "어느 계열의 면인가"가, 글자는 "모드가 바뀔 때 어떻게 움직이는가"가 먼저이기 때문입니다.
+> **`deep`·`pale` 은 밝기가 아니라 색의 진하기입니다.** `neutral` 에서는 진함 = 어두움, 연함 = 밝음이 겹치지만, 색 그룹에서는 진한 쪽 대표색이 그 자체로 밝을 수 있습니다(예: 노랑 계열). 그래서 맥락 이름만 보고 "진한 면이니 밝은 글자"처럼 짝을 정하지 않고, 대비를 잽니다 (§5).
+
+> **`surface` 의 맥락은 면의 톤, `stroke`·`inner` 의 맥락은 선·글자 자신의 톤입니다.** 그래서 같은 맥락 이름끼리 짝이 되지 않습니다 — 예: `surface/neutral/fixed-deep/*` 위에는 보통 `inner/neutral/fixed-pale/*` 가 맞습니다.
 
 이 구조를 따르지 않는 최상위가 셋 있습니다.
 
 | 최상위 | 이름 | 규칙 |
 |---|---|---|
-| `interactive` | `interactive/{변이}/{surface\|stroke\|on-surface}/{상태}` | §3 |
-| `state-overlay` | `state-overlay/{on-light\|on-dark\|on-brand}/pressed` | §4 |
+| `interactive` | `interactive/{변이}/{surface\|stroke\|inner}/{상태}` | §3 |
+| `state` | `state/pressed/{on-light\|on-dark\|on-brand}` (색), `state/disabled/global` (불투명도) | §4 |
 | `styles` | `styles/{shadow\|gradient}/*` | §2-1 — 레이어에 직접 쓰지 않는다 |
 
-**면과 글자는 같은 그룹일 필요가 없습니다.** `on-surface` 는 아래 깔린 `surface` 의 그룹을 따라가지 않습니다. 글자·아이콘이 **실제로 얹히는 배경과의 대비**로 색(`neutral`·`brand`…)과 유형을 고릅니다 (§5). `surface/brand/*` 위에 `on-surface/neutral/*` 를 쓰는 것도 정상입니다.
+**면과 글자는 같은 그룹일 필요가 없습니다.** `inner` 는 아래 깔린 `surface` 의 그룹을 따라가지 않습니다. 글자·아이콘이 **실제로 얹히는 배경과의 대비**로 그룹과 맥락을 고릅니다 (§5). `surface/brand/*` 위에 `inner/neutral/*` 를 쓰는 것도 정상입니다.
 
 ## 2. 최상위마다 다른 어휘를 쓴다
 
-| | `interactive` | `surface` · `stroke` | `on-surface` | `styles` |
+| | `interactive` | `surface` | `stroke` · `inner` | `styles` |
 |---|---|---|---|---|
-| 이름 | `interactive/{변이}/{역할}/{상태}` | `{역할}/{그룹}/{맥락}/{스케일}` | `on-surface/{색}/{유형}/{스케일}` | `styles/{역할}/{고정 목록}` |
-| 마지막 세그먼트 어휘 | **상태(state)**: `default`, `disabled`, `selected`, `selected-brand`, `floating`, `overlay-default`, `overlay-brand`, `subtle`, `placeholder`, `brand` (§3) | **맥락마다 다른 스케일** — 아래 표 | **강조 단계**: `base` · `low` · `lower` · `lowest` | 역할마다 고정 (§2-1) |
+| 이름 | `interactive/{변이}/{역할}/{상태}` | `surface/{그룹}/{맥락}/{스케일}` | `{역할}/{그룹}/{맥락}/{스케일}` | `styles/{역할}/{고정 목록}` |
+| 마지막 세그먼트 어휘 | **상태(state)**: `default`, `disabled`, `selected`, `selected-brand`, `floating`, `overlay-default`, `overlay-brand`, `subtle`, `placeholder`, `brand` (§3) | `lowest`~`base` (불투명) · `high`~`highest` (반투명) | `lowest`~`base` | 역할마다 고정 (§2-1) |
 | "기본값" 이름 | `default` | `base` | `base` | 없음 |
 | 레이어에 직접 바인딩하는가 | 예 | 예 | 예 | **아니오** (§2-1) |
 | §3~§8 판정 절차 대상 | 예 | 예 | 예 | **아니오** (§2-1) |
 
-### `surface` · `stroke` 의 맥락별 스케일
+### 맥락 4종 — 세 역할 공통
 
-| 맥락 | 그룹 | 스케일 (약 → 강) | 단계가 약속하는 것 |
+| 맥락 | 라이트 | 다크 | 모드에 따라 |
 |---|---|---|---|
-| `surface/*/elevation` | `default` · `inverse` | `lower` · `low` · **`base`** · `high` · `higher` | **위치.** `base` 가 기준면이고 `low` 쪽은 물러난 면(화면 바닥, 시트 뒤), `high` 쪽은 올라온 면이다. 다크에서는 `low` 쪽이 어두워지고 `high` 쪽이 밝아진다 (§9) |
-| `surface/*/elevation` | 색 그룹 (`brand`·`success`·`error`·`warning`·`info`) | **`base`** · `high` · `higher` · `highest` | **강조 세기.** 위로 갈수록 그 색이 진해진다. 방향(어두워지는지 밝아지는지)은 모드가 고른다 |
-| `stroke/*/elevation` | 전 그룹 | **`base`** · `high` · `higher` · `highest` | **테두리 세기.** 그 그룹 `surface/*/elevation/base` 를 기준으로 잰다. **surface 의 elevation 단계와 짝이 아니다** — `surface/default/elevation/lower`·`low`·`base` 어디에든 같은 stroke 를 쓸 수 있다 |
-| `surface` · `stroke` `/*/floating` | 전 그룹 | `lower` · `low` · **`base`** · `high` · `higher` | **불투명도.** 위로 갈수록 덜 비친다 |
-| `surface` · `stroke` `/*/overlay` | 전 그룹 | **`base`** · `strong` · `stronger` · `strongest` | **덧칠 세기.** 위로 갈수록 아래 면을 더 많이 가린다 |
+| `default` | 면은 연하게, 선·글자는 진하게 | 면은 진하게, 선·글자는 연하게 | 모드를 따라감 |
+| `inverse` | `default` 의 반대 | `default` 의 반대 | 모드를 따라 **반전** |
+| `fixed-deep` | 진하게 | 진하게 | 모드와 무관 |
+| `fixed-pale` | 연하게 | 연하게 | 모드와 무관 |
 
-- **`on-surface` 의 스케일**은 `base` 가 가장 강하고 `lowest` 가 가장 약합니다. `lowest` 는 장식·비활성 수준의 약한 대비가 의도된 단계입니다.
-- **어휘를 섞지 마세요.** elevation 에 `strong` 을 찾거나 overlay 에 `high` 를 기대하면 안 되고, `surface` 에 `default` 상태를 찾으면 안 됩니다. `default` 는 interactive 의 상태이거나 `surface`·`stroke` 의 그룹이거나 `on-surface` 의 유형입니다 (§1 「같은 단어, 다른 자리」).
-- 그룹마다 갖고 있는 단계가 다릅니다. elevation 의 경우 `default`·`inverse` 에는 `highest` 가 없고, 색 그룹에는 `lower`·`low` 가 없습니다. 없는 단계를 비슷한 이름으로 추측하지 말고 실제 목록을 확인하세요.
+- `fixed-deep`·`fixed-pale` 은 라이트·다크가 바뀌어도 값이 그대로입니다.
+- 다크 모드의 `default` 는 라이트 모드의 `inverse` 와, 다크 모드의 `inverse` 는 라이트 모드의 `default` 와 **같은 톤**입니다. 값은 서로를 출발점으로 삼고, 필요하면 조정합니다 (§9).
+
+### 스케일
+
+| 역할 | 단계 | 성질 | 단계가 약속하는 것 |
+|---|---|---|---|
+| `surface` | `base` · `low` · `lower` · `lowest` | 불투명 | **물러남.** `base` 가 기준면이고, 아래로 갈수록 물러난 면(화면 바닥, 시트 뒤)이다. 모든 그룹·맥락·모드에서 아래로 갈수록 어두워진다 (§9) |
+| `surface` | `high` · `higher` · `highest` | 반투명 | **가리는 정도.** 그 맥락 톤의 반투명 판이다. `high` 가 가장 많이 비치고 `highest` 가 가장 덜 비친다 |
+| `stroke` | `base` · `low` · `lower` · `lowest` | `base` 는 불투명, 나머지는 반투명 | **테두리 세기.** `base` 가 가장 진하다. **surface 의 단계와 짝이 아니다** — 면이 `base` 든 `lower` 든 필요한 세기를 고른다 |
+| `inner` | `base` · `low` · `lower` · `lowest` | `base` 는 불투명, 나머지는 반투명 | **강조 단계.** `base` 가 가장 강하고 `lowest` 는 장식·비활성 수준의 약한 대비가 의도된 단계다 |
+
+- **어휘를 섞지 마세요.** `stroke`·`inner` 에 `high` 를 찾으면 안 되고, `surface` 에 `default` 상태를 찾으면 안 됩니다. `default` 는 interactive 의 상태이거나 세 역할의 맥락입니다.
+- 모든 그룹·맥락이 같은 단계 목록을 갖습니다. 그래도 없는 이름을 비슷한 이름으로 추측하지 말고 실제 목록을 확인하세요.
 
 ## 2-1. `styles` 그룹 — 레이어가 아니라 Style 리소스가 소비한다
 
@@ -110,18 +125,18 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 
 > 이것은 "primitive 는 컴포넌트에서 쓰지 않는다"(§1)의 예외가 아니라 그 원칙의 연장입니다 — Style 도 primitive 를 직접 참조하지 않고 semantic 을 거칩니다.
 
-## 3. Interactive — `surface`/`stroke`/`on-surface`의 상태가 항상 같이 움직이지 않는다
+## 3. Interactive — `surface`/`stroke`/`inner`의 상태가 항상 같이 움직이지 않는다
 
-`interactive/{변이}/{surface|stroke|on-surface}/{상태}` 패턴이고, 변이는 `primary` > `secondary` > `outline` > `ghost` (+ 각각 `-destructive` 버전)입니다. 변이마다 갖고 있는 역할·상태가 다릅니다 — 예를 들어 `ghost` 에는 `surface/default` 가 없습니다.
+`interactive/{변이}/{surface|stroke|inner}/{상태}` 패턴이고, 변이는 `primary` > `secondary` > `outline` > `ghost` (+ 각각 `-destructive` 버전)입니다. 변이마다 갖고 있는 역할·상태가 다릅니다 — 예를 들어 `ghost` 에는 `surface/default` 가 없습니다.
 
-### ⚠️ 핵심 원칙: 세 역할(surface/stroke/on-surface)은 독립적으로 상태가 바뀔 수 있다
+### ⚠️ 핵심 원칙: 세 역할(surface/stroke/inner)은 독립적으로 상태가 바뀔 수 있다
 
-같은 컴포넌트라도 상태가 바뀔 때 **면(`surface`)은 그대로 두고 텍스트/아이콘(`on-surface`)만 상태를 반영**하는 경우가 있습니다 (예: disabled 상태에서 면은 `surface/default`를 유지한 채 `on-surface/disabled`만 적용되는 컴포넌트). **`surface`의 상태 접미사를 보고 `on-surface`도 같은 접미사일 거라고 가정하지 마세요** — 각 역할의 실제 상태는 아래 우선순위로 각각 독립적으로 판단합니다.
+같은 컴포넌트라도 상태가 바뀔 때 **면(`surface`)은 그대로 두고 텍스트/아이콘(`inner`)만 상태를 반영**하는 경우가 있습니다 (예: disabled 상태에서 면은 `surface/default`를 유지한 채 `inner/disabled`만 적용되는 컴포넌트). **`surface`의 상태 접미사를 보고 `inner`도 같은 접미사일 거라고 가정하지 마세요** — 각 역할의 실제 상태는 아래 우선순위로 각각 독립적으로 판단합니다.
 
 ### 어떤 변이/상태가 적용돼야 하는지 판단하는 우선순위
 
 1. **`surface/` 면 변수** — 가장 강한 신호. 변이는 거의 항상 여기서 확정.
-2. **컴포넌트 자체의 property**(`state`, `selected`, `disabled` 같은 Figma variant 속성) — 상태를 확정/보정. 특히 `surface`의 상태 접미사와 어울리는 `on-surface` 상태가 없을 때 이 신호를 우선한다.
+2. **컴포넌트 자체의 property**(`state`, `selected`, `disabled` 같은 Figma variant 속성) — 상태를 확정/보정. 특히 `surface`의 상태 접미사와 어울리는 `inner` 상태가 없을 때 이 신호를 우선한다.
 3. **`stroke/` 테두리 변수** (`surface`가 없을 때만) — 변이와 상태의 힌트.
 4. 그 외 바인딩된 변수 — 최후 수단, 변이만 참고.
 
@@ -129,120 +144,149 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 
 ### 요청한 상태의 토큰이 없을 때
 
-`interactive/{변이}/on-surface/{상태}`가 실제로 존재하지 않으면 `interactive/{변이}/on-surface/default`로 대체합니다 — **이건 정상적인 폴백이지, 문제가 아닙니다.**
+`interactive/{변이}/inner/{상태}`가 실제로 존재하지 않으면 `interactive/{변이}/inner/default`로 대체합니다 — **이건 정상적인 폴백이지, 문제가 아닙니다.**
 
 ### 상태 어휘
 
 | 상태 | 역할 | 뜻 |
 |---|---|---|
 | `default` · `disabled` · `selected` | 전 역할 | 기본·비활성·선택 |
-| `selected-brand` | `surface` · `on-surface` | 브랜드 색으로 표현하는 선택 |
+| `selected-brand` | `surface` · `inner` | 브랜드 색으로 표현하는 선택 |
 | `floating` | `surface` | 아래에 있는 것 위에 떠 있는 반투명 면 — 예: 플로팅 버튼·마커·툴팁 (blur 는 단서일 뿐 조건이 아니다, §5). `ghost` 에서는 부모 면 위를 흰색으로 연하게 덮는 용도도 겸한다 |
 | `overlay-default` | `surface` (`ghost` 계열) | 부모 면 위에 연하게 덮는 반투명 면. 라이트에서는 어둡게, 다크에서는 밝게 덮는다 |
 | `overlay-brand` | `surface` (`ghost`) | 부모 면 위를 브랜드 색으로 연하게 덮는 반투명 면 |
-| `subtle` | `on-surface` | 같은 컴포넌트 안의 **덜 강조된 보조** 텍스트/아이콘 |
-| `placeholder` | `on-surface` | 입력 필드의 placeholder |
-| `brand` | `on-surface` | 브랜드를 강조하는 텍스트/아이콘 |
+| `subtle` | `inner` | 같은 컴포넌트 안의 **덜 강조된 보조** 텍스트/아이콘 |
+| `placeholder` | `inner` | 입력 필드의 placeholder |
+| `brand` | `inner` | 브랜드를 강조하는 텍스트/아이콘 |
 
-이미 `on-surface/subtle`이 쓰여있는 자리에 상태 판단 결과가 `default`로 나오더라도, `subtle`을 `default`로 강제로 바꾸지 마세요 — 디자이너가 의도적으로 격을 낮춘 유효한 선택입니다.
+이미 `inner/subtle`이 쓰여있는 자리에 상태 판단 결과가 `default`로 나오더라도, `subtle`을 `default`로 강제로 바꾸지 마세요 — 디자이너가 의도적으로 격을 낮춘 유효한 선택입니다.
 
 `floating`·`overlay-default`·`overlay-brand` 처럼 **반투명한 interactive 면** 위의 글자도 §5 「글자·아이콘은 실제 배경과의 대비로 고른다」 를 따릅니다 — 그 면 뒤에 무엇이 비치는지(지도·사진·앱 면)로 대비가 달라집니다.
 
-### 최상위 선택 — 상호작용 여부가 먼저, 그 다음이 차용
+**interactive 토큰에는 `fixed-*` 맥락이 없습니다.** 모드와 무관하게 고정된 면 안에 버튼 같은 컴포넌트가 들어가면, 토큰을 바꾸지 말고 그 영역에 모드를 지정합니다 (§10 「`fixed-*` 와 모드 지정 중 무엇을 쓰나」).
 
-`interactive` 를 쓸지 `surface`·`stroke`·`on-surface` 를 쓸지는 **컴포넌트가 사용자와 상호작용하는가**로 먼저 갈립니다.
+### 최상위 선택 — 누를 수 있는지가 아니라 "색이 상태를 표현하는가"
 
-- **정적 컴포넌트**(사용자가 누르거나 조작하지 않는 것 — 배지, 마커, 장식 요소 등): 사실상 그래픽 요소로 보고 **처음부터 `surface`·`stroke`·`on-surface`** 를 씁니다. interactive 토큰을 우선 검토할 필요가 없습니다.
-- **상호작용 컴포넌트**(버튼, 체크박스, 스위치 등): `interactive/*` 가 1순위입니다. 단, 다음 두 경우에는 **해당 레이어에 한해** `surface`·`stroke`·`on-surface` 토큰을 빌려 쓸 수 있습니다.
-  1. 텍스트·아이콘이 아닌 그래픽 요소(스위치 knob, 트랙 등)라서 interactive 의 어느 역할에도 들어맞지 않을 때
-  2. 역할·상태는 맞지만 해당 interactive 토큰으로는 대비가 부족하거나 과해 적절한 색 조합이 나오지 않을 때
+`interactive` 를 쓸지 `surface`·`stroke`·`inner` 를 쓸지는 **그 UI 의 색이 상호작용 상태에 따라 바뀌는가**로 정합니다. 누를 수 있는지만으로 정하지 않습니다. pressed 는 판단에서 뺍니다 — 어느 쪽이든 `state/pressed/*` 를 덧칠하기 때문입니다 (§4).
+
+| UI | 판정 | 어떻게 |
+|---|---|---|
+| 버튼·칩·토글·입력·탭처럼 **상태가 색으로 정의되는 컨트롤** | **권장: `interactive`** | `interactive/*`. 아래 「차용」 조건에서만 레이어 단위로 빌린다 |
+| 카드·리스트 행·배너처럼 **누를 수 있지만 색이 바뀌는 상태가 pressed 뿐인 콘텐츠 그릇** | **권장: `surface`·`stroke`·`inner`** | 그릇과 내부 콘텐츠 모두. 눌림은 `state/pressed/*`, 비활성은 `state/disabled/global` (§4) |
+| 위 그릇에 **selected 처럼 색이 바뀌는 상태가 있을 때** | **괜찮음** | 상태를 표현하는 레이어(그릇의 면이나 테두리)만 `interactive` 의 해당 상태 토큰을 쓰고, 내부 콘텐츠는 `surface`·`stroke`·`inner` 로 둔다. 상태마다 배경이 바뀌므로 **안쪽 글자·아이콘 대비를 각 상태의 배경에서 다시 잰다** (§5) |
+| 상태 색을 `surface`·`stroke`·`inner` 단계로 직접 만들기 (예: selected 를 `surface/brand/default/low` 로) | **비권장** | `interactive` 의 상태 색은 브랜드 모드마다 따로 정해져 있다 — 직접 만들면 그 UI 만 브랜드의 상태 표현에서 벗어난다. 맞는 `interactive` 상태 토큰이 아예 없을 때만 예외로 하고 이유를 남긴다 |
+| 정적 요소(누르거나 조작하지 않는 것 — 배지, 마커, 장식 요소 등)에 `interactive` | **비권장** | 처음부터 `surface`·`stroke`·`inner` |
+
+**그릇 안의 컴포넌트 인스턴스는 그릇의 판정을 따르지 않습니다.** 카드 안의 버튼은 이미 만들어진 버튼 컴포넌트이고, 그 컴포넌트의 토큰은 그 컴포넌트가 정합니다. 위 판정은 그릇 자신의 레이어(면·테두리·직접 얹은 글자와 아이콘)에만 적용합니다.
+
+차용 — `interactive` 컨트롤 안에서 다음 두 경우에는 **해당 레이어에 한해** `surface`·`stroke`·`inner` 를 빌려 쓸 수 있습니다.
+
+1. 텍스트·아이콘이 아닌 그래픽 요소(스위치 knob, 트랙 등)라서 interactive 의 어느 역할에도 들어맞지 않을 때
+2. 역할·상태는 맞지만 해당 interactive 토큰으로는 대비가 부족하거나 과해 적절한 색 조합이 나오지 않을 때
 
 차용 규칙:
 
 - 빌린 레이어는 **그 레이어부터 새 컨텍스트**가 됩니다. 그 위의 글자·아이콘은 §5 의 대비 기준으로 고릅니다.
-- `surface`·`stroke`·`on-surface` 에는 상태 어휘(`default`/`disabled` 등)가 없으므로, 상태별 색은 **variant 마다 스케일을 명시적으로** 지정합니다. pressed 표현은 여전히 §4 의 `state-overlay` 를 씁니다.
+- `surface`·`stroke`·`inner` 에는 상태 어휘(`default`/`disabled` 등)가 없으므로, 상태별 색은 **variant 마다 스케일을 명시적으로** 지정합니다. pressed 표현은 여전히 §4 의 `state/pressed/*` 를 씁니다.
 - 상태 표현이 interactive 토큰으로 가능한데 취향으로 빌리지 않습니다.
 
-예: `pattern-switch` — on 트랙은 `interactive/ghost/surface/selected`, ghost 에 `surface/default` 가 없는 off 트랙과 disabled 트랙, 그리고 그래픽 요소인 knob 은 `surface/default/elevation/*` 에서 단계를 골라 빌린다.
+예: `pattern-switch` — on 트랙은 `interactive/ghost/surface/selected`, ghost 에 `surface/default` 가 없는 off 트랙과 disabled 트랙, 그리고 그래픽 요소인 knob 은 `surface/neutral/default/*` 에서 단계를 골라 빌린다.
 
-## 4. `state-overlay/{on-light|on-dark|on-brand}/pressed` — 베이스 색이 아니라 "덧칠" 레이어
+## 4. `state` — 베이스 색이 아니라 상태를 덧입히는 레이어
 
-| 토큰 | 용도 |
-|---|---|
-| `state-overlay/on-light/pressed` | **밝은 배경** 위에 얹는 어두운 반투명 오버레이 |
-| `state-overlay/on-dark/pressed` | **어두운 배경** 위에 얹는 밝은 반투명 오버레이 |
-| `state-overlay/on-brand/pressed` | **색상 모드에 따라 밝기가 바뀌는 배경** 위에 얹는 오버레이. 모드별로 밝은/어두운 반투명이 자동 선택됨 |
+`state` 는 `interactive` 와 `surface`·`stroke`·`inner` 어느 쪽에서도 쓸 수 있도록 최상위로 빠져 있습니다. 이름은 `state/{상태}/{대상}` 입니다.
 
-**이름은 오버레이 자신의 색이 아니라 그 아래 배경을 가리킵니다.** 밝은 배경에는 `on-light`, 어두운 배경에는 `on-dark` 를 씁니다. 같은 배경 토큰이 색상 모드에 따라 밝아지기도 어두워지기도 해서 하나로 고정할 수 없으면 `on-brand` 를 씁니다 — `on-light`/`on-dark` 를 고정하면 일부 모드에서 오버레이 방향이 배경과 반대가 되어 눌림이 보이지 않습니다.
+| 토큰 | 종류 | 용도 |
+|---|---|---|
+| `state/pressed/on-light` | 색 | **앱 기본 면**(`default` 맥락의 면 — 라이트 모드에서 밝은 면) 위에 얹는 눌림 오버레이 |
+| `state/pressed/on-dark` | 색 | **반대 톤 면**(`inverse` 맥락의 면 — 라이트 모드에서 진한 면) 위에 얹는 눌림 오버레이 |
+| `state/pressed/on-brand` | 색 | **브랜드 대표색(main) 면** 위에 얹는 눌림 오버레이. 브랜드마다 대표색의 밝기가 달라 브랜드 모드별로 밝은/어두운 덧칠이 정해진다 |
+| `state/disabled/global` | 불투명도 | 비활성 상태를 레이어 **불투명도(opacity)** 로 표현. 그 레이어와 자손 전체가 함께 흐려진다 |
+
+### pressed
+
+**대상 이름(`on-light`·`on-dark`·`on-brand`)은 오버레이 자신의 색이 아니라 그 아래 면을 가리킵니다.** `on-light`·`on-dark` 의 light/dark 는 **라이트 모드에서의** 면 밝기로 붙인 이름입니다. 다크 모드에서는 덮이는 면(`default`·`inverse`)의 톤이 맞바뀌므로 덧칠 방향도 함께 바뀝니다 — 다크의 `on-light` 는 진해진 기본 면 위라 밝게 덧칠합니다. 그래서 이름의 light/dark 를 지금 화면의 밝기로 읽지 말고, **어느 면 위인가**로 고릅니다.
+
+모드와 무관하게 고정된 면(`fixed-*`, 사진·지도) 위에서는 `on-light`·`on-dark` 어느 쪽도 두 모드에서 맞지 않습니다. 그 영역에 모드를 지정해서(§10) 맞춥니다.
 
 이 토큰은 그 자체로 하나의 "베이스 색상"이 아니라, **이미 칠해진 면 위에 겹쳐서 눌림 상태를 표현하는 2차 레이어**입니다. 컴포넌트의 변이/상태를 판단할 때 이 토큰은 **판단 대상에서 제외**하세요 — 이걸 기준으로 변이나 상태를 추론하면 안 됩니다. 판단은 항상 그 아래 깔린 면(`surface`) 변수로 합니다.
 
 이 프로젝트엔 `hover` 오버레이가 없고 `pressed`만 있습니다 (모바일 앱이라 마우스 hover 개념이 약해서일 가능성이 높습니다).
 
-> 면의 맥락 `overlay`(§5)와 이름이 겹치지만 다른 것입니다. `surface/*/overlay/*` 는 면 위에 영역을 구분해 덧칠하는 **정적인 면**이고, `state-overlay` 는 **눌림 상태**를 표현하는 2차 레이어입니다.
+### disabled
 
-## 5. `surface` · `stroke` · `on-surface` — 면은 맥락으로, 글자는 실제 배경과의 대비로 고른다
+`state/disabled/global` 은 색이 아니라 **불투명도 값**입니다. fill·stroke 가 아니라 레이어의 opacity 에 바인딩합니다.
 
-### 면의 맥락 3종
+- 쓰는 곳: 색 상태 토큰이 없는 쪽 — `surface`·`stroke`·`inner` 로 만든 그릇(카드 등) 전체를 비활성으로 보여야 할 때 (§3 「최상위 선택」). 비활성으로 보일 범위의 **가장 바깥 레이어 하나**에 겁니다. 안쪽에 또 걸면 겹쳐서 더 흐려집니다.
+- `interactive` 컨트롤은 자기 `disabled` 색 토큰을 씁니다. 같은 레이어에 `disabled` 색 토큰과 이 불투명도를 함께 걸지 않습니다 — 두 번 흐려집니다.
+- 흐려진 그릇 안의 글자 대비는 비활성 상태라 §5 권장 기준을 적용하지 않습니다 (`disabled` 잉크와 같은 취급).
 
-| 맥락 | 무엇인가 | 모드에 따라 | 어디에 쓰나 |
-|---|---|---|---|
-| `elevation` | **불투명 면.** `default`·`inverse` 는 위치 사다리(물러남 ↔ 올라옴), 색 그룹은 강조 세기 | 모드를 따라감 | 화면 배경, 시트·카드, 배지·배너 같은 정적 면 |
-| `floating` | 아래에 있는 것 위에 **떠 있는 반투명 면** | 그룹마다 다르다 — 아래 | 예: 스낵바, GNB, 다이얼로그, 플로팅 버튼 |
-| `overlay` | 같은 그룹의 elevation 면 위에 **덧칠하는 반투명 판** | 모드를 따라감 — 놓이는 면과 같이 뒤집힘 | 면 안에서 영역을 구분하거나 강조하는 블록 |
+> interactive 이름의 마지막 세그먼트 `{상태}`(`default`·`disabled`·`selected` 등)와 다른 것입니다. 그건 상태마다 따로 정한 **색 값**이고, `state` 그룹은 이미 칠해진 면 위에 **상태를 덧입히는** 2차 레이어입니다.
 
-**floating 을 가르는 기준은 "아래에 있는 것 위에 떠 있는가"입니다.** 아래가 무엇인지는 따지지 않습니다. background-blur·liquid-glass 가 함께 쓰였다면 floating 이라고 추정할 근거가 되지만, 그게 조건은 아닙니다. 효과 없이 반투명 면만 떠 있어도 floating 이고, 반대로 blur 가 걸려 있다고 해서 무조건 floating 인 것도 아닙니다.
+## 5. `surface` · `stroke` · `inner` — 면은 맥락과 단계로, 선과 글자는 실제 배경과의 대비로 고른다
 
-**floating 의 모드 동작은 그룹마다 다릅니다.**
+### 면 고르기 — 맥락과 단계
 
-| 그룹 | 동작 |
+**맥락은 "이 면이 모드에 따라 어떻게 움직여야 하는가"로 고릅니다.**
+
+| 이 면은… | 맥락 |
 |---|---|
-| `surface/default/floating` | **두 모드 모두 흰 알파.** 다크에서는 알파만 낮춘다 (§9 「반투명 재질」) |
-| `surface/inverse/floating` | 라이트에서는 검정 알파(`neutral/dark-alpha`), 다크에서는 회색 알파(`neutral/main-alpha`) — **모드를 따라 바뀐다** |
-| 색 그룹의 floating | **그 색 그대로 고정** (`{패밀리}/main-alpha`, 두 모드 동일). 뒤집으면 색 자체를 잃는다 (§9) |
+| 앱과 같이 모드를 따라 뒤집혀야 한다 (화면 배경, 시트, 카드, 배지·배너 같은 정적 면) | `default` |
+| 모드를 따라 뒤집히되, 기준 면과 반대 톤이어야 한다 (어두운 배너·툴팁 등) | `inverse` |
+| 모드와 무관하게 늘 진하거나 늘 연해야 한다 (사진·지도 위의 면, 다크에서도 밝게 남는 다이얼로그 등) | `fixed-deep` · `fixed-pale` |
 
-**overlay 는 같은 그룹 elevation 면 위에서 보여야 합니다.** `surface/{그룹}/overlay/base` 를 `surface/{그룹}/elevation/base` 위에 놓았을 때 구분이 되는 것이 이 맥락의 최소 조건입니다. `default` overlay 는 라이트에서 어둡게, 다크에서 밝게 덮고, `inverse` overlay 는 그 반대입니다.
+**단계는 "아래에 있는 것이 비쳐야 하는가"로 먼저 가릅니다.**
 
-**같은 그룹 안에서 스케일 선택은 디자이너 재량입니다.** 어느 단계를 쓰든 규칙 위반이 아닙니다.
+- 비치지 않는 면 → 불투명 단계(`base`~`lowest`). `base` 가 기준면이고, 올라온 요소 뒤에서 물러나야 하는 면은 `low` 쪽으로 내립니다.
+- 아래에 있는 것(면·사진·지도) 위에 떠 있거나 덧칠하는 면 → 반투명 단계(`high`~`highest`). 예: 스낵바, GNB, 다이얼로그, 플로팅 버튼, 면 안에서 영역을 구분하는 덧칠 블록. 떠 있는 요소는 필요하면 그림자(`shadow/*`)나 `stroke` 를 보태 구분합니다.
+- 반투명 세 단계 중에서는 **그 위에 얹힐 텍스트의 가독성**을 보고 고릅니다. 덜 비칠수록(`highest` 쪽) 뒤 배경의 영향이 줄어 대비가 안정됩니다 (아래 「글자·아이콘은 실제 배경과의 대비로 고른다」).
+- background-blur·liquid-glass 가 함께 쓰였다면 반투명 단계라고 추정할 근거가 되지만, 그게 조건은 아닙니다. 효과 없이 반투명 면만 떠 있어도 반투명 단계이고, 반대로 blur 가 걸려 있다고 해서 무조건 반투명 단계인 것도 아닙니다.
 
-### `stroke` — 면과 같은 맥락을 따라가되, elevation 은 짝이 아니다
+**같은 그룹·맥락 안에서 스케일 선택은 디자이너 재량입니다.** 어느 단계를 쓰든 규칙 위반이 아닙니다.
 
-- `stroke/{그룹}/elevation/*` 은 4단계 세기(§2)이고 **surface elevation 단계와 짝이 아닙니다.** 면이 `lower` 든 `base` 든 필요한 테두리 세기를 고릅니다.
-- `stroke/{그룹}/floating/*`·`overlay/*` 는 같은 맥락 면의 테두리입니다. 면과 같은 단계 이름에서 출발합니다.
+### `stroke` — 실제 배경 위에서 보이는 맥락을, 면 단계와 상관없이 고른다
 
-### `on-surface` 의 유형 4종
+- `stroke` 의 맥락은 선 자신의 톤입니다. 글자와 같은 방식으로, **선이 실제로 놓인 배경**(반투명이면 합성한 배경) 위에서 보이는 맥락을 고릅니다.
+- 단계는 테두리 세기이고 **surface 단계와 짝이 아닙니다.** 면이 `base` 든 `lower` 든 필요한 세기를 고릅니다.
+- 테두리에는 권장 대비 수치를 두지 않습니다. 대신 배경에 **묻혀서 안 보이는지**를 봅니다 (`npm run tokens:audit` 이 대표 조합을 잽니다).
 
-| 유형 | 라이트 | 다크 | 맞는 배경 |
+### `inner` 의 맥락 4종
+
+| 맥락 | 라이트 | 다크 | 출발점이 되는 배경 (`neutral` 기준) |
 |---|---|---|---|
-| `default` | 어두운 잉크 | 밝은 잉크 | 모드를 따라가는 배경 — 기준 면(`surface/default/elevation/*`)과 그 위의 overlay |
-| `inverse` | 밝은 잉크 | 어두운 잉크 | 모드를 따라 **반전된** 배경 — `surface/inverse/*`, 색 그룹의 진한 단계 |
-| `fixed-dark` | 어두운 잉크 | 어두운 잉크 | **두 모드 모두 밝은** 배경 — 밝은 사진·지도, 다크에서도 밝게 남는 면 |
-| `fixed-light` | 밝은 잉크 | 밝은 잉크 | **두 모드 모두 어두운** 배경 — 어두운·중간톤 사진, 지도(다크) |
+| `default` | 진한 잉크 | 연한 잉크 | 모드를 따라가는 연한 면 — `surface/neutral/default/*` |
+| `inverse` | 연한 잉크 | 진한 잉크 | 모드를 따라 반전된 면 — `surface/neutral/inverse/*` |
+| `fixed-deep` | 진한 잉크 | 진한 잉크 | **두 모드 모두 연한** 배경 — 밝은 사진·지도, `surface/*/fixed-pale/*` |
+| `fixed-pale` | 연한 잉크 | 연한 잉크 | **두 모드 모두 진한** 배경 — 어두운·중간톤 사진, `surface/*/fixed-deep/*` |
 
-`fixed-dark`·`fixed-light` 의 값은 각각 라이트 모드의 `default`·`inverse` 값과 같고, 모드가 바뀌어도 그대로입니다.
+이 표는 출발점입니다. 색 그룹에서는 진한 면이 실제로는 밝을 수 있어서(§1 「`deep`·`pale` 은 밝기가 아니라 색의 진하기」) 표의 짝이 맞지 않는 자리가 있습니다. 결정은 아래 대비로 합니다.
 
 ### 글자·아이콘은 실제 배경과의 대비로 고른다
 
 **누가 고르든 기준은 하나입니다 — 그 글자·아이콘이 얹힌 배경과의 대비.** 면의 그룹, 토큰 이름, 감으로 고르지 않습니다.
 
-1. **실제 배경을 먼저 정한다.** 글자 바로 아래 면이 불투명하면 그 면이고, 반투명(`floating`·`overlay`, interactive 의 `floating`·`overlay-*`)이면 **그 뒤에 비치는 것까지 합성한 색**입니다. 같은 `surface/default/overlay/strong` 이라도 밝은 elevation 위에 있을 때와 어두운 사진 위에 있을 때 배경이 다르고, 맞는 글자도 다릅니다.
+1. **실제 배경을 먼저 정한다.** 글자 바로 아래 면이 불투명하면 그 면이고, 반투명(`surface` 의 `high`~`highest`, interactive 의 `floating`·`overlay-*`)이면 **그 뒤에 비치는 것까지 합성한 색**입니다. 같은 `surface/neutral/default/higher` 라도 밝은 면 위에 있을 때와 어두운 사진 위에 있을 때 배경이 다르고, 맞는 글자도 다릅니다.
 2. **모든 모드에서 잰다.** 배경과 글자 중 한쪽만 모드를 따라가면 한 모드에서 깨집니다.
-3. **유형을 고른다.**
+3. **맥락을 고른다.**
    - 배경 전체(면 + 비치는 것)가 모드를 따라가면 → `default` 또는 `inverse` 중 대비가 맞는 쪽.
-   - 배경이 모드와 무관하게 밝거나 어두우면(사진·지도 위, 또는 두 모드 모두 밝게 남는 진한 overlay) → `fixed-dark` 또는 `fixed-light`.
-   - 투명에 가까운 면(`floating/lower`·`low` 등)은 뒤 배경이 대비를 정하고, 불투명에 가까운 면은 면 색이 정합니다. 같은 사다리 안에서도 단계에 따라 유형이 달라질 수 있습니다.
-4. **색도 같은 기준으로 고른다.** 면이 `brand` 라고 글자가 `brand` 일 필요는 없습니다. 색 글자가 대비를 못 맞추면 `neutral` 을 씁니다.
+   - 배경이 모드와 무관하게 진하거나 연하면(사진·지도 위, `fixed-*` 면) → `fixed-deep` 또는 `fixed-pale` 중 대비가 맞는 쪽.
+   - 많이 비치는 면(`high`)은 뒤 배경이 대비를 정하고, 덜 비치는 면(`highest`)은 면 색이 정합니다. 같은 사다리 안에서도 단계에 따라 맞는 맥락이 달라질 수 있습니다.
+4. **그룹을 고른다 — 본문은 `neutral`, 색 그룹은 아이콘·그래픽.**
+   - 본문처럼 읽어야 하는 텍스트는 `inner/neutral/*` 를 씁니다. 색 그룹 면 위에서도 대비를 맞추기 가장 쉬운 그룹입니다.
+   - 색 그룹 잉크(`inner/{brand|success|error|warning|info}/*`)는 아이콘·그래픽에 씁니다. 같은 색 면 위에서는 아래 권장 기준에 못 미치는 경우가 많고, 그래픽에서는 그걸 감수합니다.
+   - 면이 `brand` 라고 글자가 `brand` 일 필요는 없습니다.
 5. **권장 기준**: 본문 텍스트 4.5 이상, 큰 글자·아이콘 3.0 이상 (`base` 단계 기준). 이 수치를 넘기는 것을 권장하지만, 위반을 가르는 선은 아닙니다. 수치는 통과해도 눈으로는 어색하거나, 미달이어도 충분히 읽히는 경우가 있습니다. 최종 판단은 실제 화면을 보고 합니다. `low`~`lowest` 는 의도적으로 약한 단계라 이 기준을 적용하지 않습니다.
+   - **수치는 반올림하지 않습니다.** 4.47 은 4.5 미달입니다. 접근성 인증을 받아야 하는 화면이면 기준보다 조금 여유를 두고 맞춥니다.
 
 예:
 
 | 배경 | 고른 글자 |
 |---|---|
-| 밝은 `surface/default/elevation/low` 위의 `surface/default/overlay/strong` | `on-surface/neutral/default/base` — 면과 글자가 같이 모드를 따라간다 |
-| 어두운 회색 사진 위의 같은 `surface/default/overlay/strong` | `on-surface/neutral/fixed-light/base` — 두 모드 모두 읽힌다 |
-| 중간톤 사진 위의 `surface/*/floating/lower`·`low` | `on-surface/neutral/fixed-light/base` — 거의 투명해서 사진이 배경이다 |
+| 연한 `surface/neutral/default/base` 위의 `surface/neutral/default/highest` | `inner/neutral/default/base` — 면과 글자가 같이 모드를 따라간다 |
+| 어두운 사진 위의 `surface/neutral/fixed-deep/higher` | `inner/neutral/fixed-pale/base` — 두 모드 모두 진한 배경이다 |
+| 중간톤 사진 위의 `surface/*/*/high` | `inner/neutral/fixed-pale/base` — 거의 투명해서 사진이 배경이다 |
 
-**하나의 토큰으로 모든 배경을 덮으려 하지 마세요.** 배경이 다른 자리마다 다시 고릅니다. 네 유형 중 어느 것도 모든 모드에서 권장 기준을 넘지 못하고 눈으로 봐도 읽기 어려우면 — 예를 들어 사진 위 floating 처럼 면의 불투명도는 모드마다 다른데 바탕은 그대로여서 합성 배경이 모드마다 반대로 움직이면 — 그 서브트리를 한쪽 모드로 고정하는 것을 검토합니다 (§10).
+**하나의 토큰으로 모든 배경을 덮으려 하지 마세요.** 배경이 다른 자리마다 다시 고릅니다. 네 맥락 중 어느 것도 모든 모드에서 권장 기준을 넘지 못하고 눈으로 봐도 읽기 어려우면 — 예를 들어 사진 위 반투명 면처럼 면의 불투명도는 모드마다 다른데 바탕은 그대로여서 합성 배경이 모드마다 반대로 움직이면 — 그 서브트리를 한쪽 모드로 고정하는 것을 검토합니다 (§10).
 
 **검증에서 대비 미달은 위반이 아니라 "권장 미달"입니다.** 면과 글자의 그룹이 다른 것도 위반이 아닙니다. 수치를 맞추려고 같은 자리를 계속 고치지 마세요. 권장 미달인 자리는 보고하고, 사람이 화면을 보고 정합니다. 고른 조합은 `npm run tokens:audit` 로도 확인하세요.
 
@@ -252,23 +296,23 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 
 | 서브레이어 | 색상 규칙 |
 |---|---|
-| `positive` | 텍스트와 동일한 규칙 (§3/§5) — `on-surface` 를 쓰고, **실제 배경과의 대비로 유형을 고른다** |
-| `negative` | 아래 별도 규칙 — **`on-surface` 를 절대 쓰지 않음** |
+| `positive` | 텍스트와 동일한 규칙 (§3/§5) — `inner` 를 쓰고, **실제 배경과의 대비로 맥락을 고른다** |
+| `negative` | 아래 별도 규칙 — **`inner` 를 절대 쓰지 않음** |
 
 ### `negative` 레이어 규칙 (배경을 "오려내는" 넉아웃 레이어)
 
-`negative`는 아이콘 모양대로 부모 배경색이 뚫려 보이게 하는 용도라, `on-surface` 가 아니라 **부모의 `surface` 를 따라갑니다**:
+`negative`는 아이콘 모양대로 부모 배경색이 뚫려 보이게 하는 용도라, `inner` 가 아니라 **부모의 `surface` 를 따라갑니다**:
 
 - 부모가 **불투명한** 면을 가지면 → `negative`는 **그 부모와 완전히 같은 `surface` 변수**를 씁니다.
-- 부모가 **반투명한** 면을 가지면 (`floating`·`overlay` 맥락, interactive 의 `floating`·`overlay-*` 상태) → 같은 그룹의 **불투명한 면**을 씁니다.
+- 부모가 **반투명한** 면을 가지면 (`surface` 의 `high`~`highest`, interactive 의 `floating`·`overlay-*` 상태) → 같은 그룹의 **불투명한 면**을 씁니다.
   - interactive: `interactive/{변이}/surface/default` 가 불투명하면 그것.
-  - non-interactive: `surface/{그룹}/elevation/base`.
-  - 둘 다 해당하지 않으면(예: `ghost` 처럼 `surface/default` 자체가 투명) `surface/default/elevation/base` 로 폴백합니다.
-- 부모에 면이 아예 없으면 → `surface/default/elevation/base` 를 씁니다.
+  - non-interactive: 같은 그룹·같은 맥락의 `surface/{그룹}/{맥락}/base`.
+  - 둘 다 해당하지 않으면(예: `ghost` 처럼 `surface/default` 자체가 투명) `surface/neutral/default/base` 로 폴백합니다.
+- 부모에 면이 아예 없으면 → `surface/neutral/default/base` 를 씁니다.
 
 반투명 부모 아래의 `negative` 는 뒤에 비치는 배경까지 똑같이 흉내 낼 수 없습니다 — 위 규칙은 "가장 가까운 불투명 면"으로 근사하는 것입니다. 같은 자리의 `positive` 는 여전히 §5 대로 합성 배경과의 대비로 고릅니다.
 
-근사가 맞지 않는 자리 — 예를 들어 어두운 사진 위 floating 처럼 합성 배경은 어두운데 근사한 불투명 면은 밝아서 구멍이 튀어 보이는 경우 — 는 규칙 위반으로 보지 않습니다. 바인딩은 위 규칙대로 두고, QA 에서 **확인 대상**으로 따로 보고합니다 (§8). 이 자리에서 `negative` 를 켤지는 그 컴포넌트를 만드는 쪽이 정합니다.
+근사가 맞지 않는 자리 — 예를 들어 어두운 사진 위 반투명 면처럼 합성 배경은 어두운데 근사한 불투명 면은 밝아서 구멍이 튀어 보이는 경우 — 는 규칙 위반으로 보지 않습니다. 바인딩은 위 규칙대로 두고, QA 에서 **확인 대상**으로 따로 보고합니다 (§8). 이 자리에서 `negative` 를 켤지는 그 컴포넌트를 만드는 쪽이 정합니다.
 
 **주의**: `negative` 레이어의 색을 확인할 때는 반드시 **부모(아이콘을 담고 있는 컨테이너)의 면을 기준으로 먼저 판단**하세요. `negative` 자신의 `surface` 바인딩을 "부모 면을 정하는 신호"로 거꾸로 써버리면, 원래는 틀린 값인데도 자기 자신과 비교해서 맞다고 잘못 판단하게 됩니다.
 
@@ -282,20 +326,24 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 | 보조/테두리 버튼 | `interactive/secondary/*`, `interactive/outline/*` |
 | 배경 없는 텍스트 버튼 | `interactive/ghost/*` |
 | 삭제/위험 액션 버튼 | `interactive/*-destructive/*` |
-| 버튼의 눌림 효과 | `state-overlay/{on-light\|on-dark}/pressed` — **아래 배경의 밝기**로 고른다 (베이스 색 아님, §4) |
-| 모드에 따라 밝기가 바뀌는 배경 위의 눌림 효과 | `state-overlay/on-brand/pressed` (§4) |
-| 상호작용 컴포넌트 안의 덜 강조된 보조 텍스트 | `interactive/{변이}/on-surface/subtle` (있다면, §3) |
-| 화면 배경, 시트·카드 같은 기본 면 | `surface/default/elevation/*` — `base` 가 기준면, `low` 쪽이 물러난 면 (§2, §9) |
-| 명도가 반전된 면 (어두운 배너·툴팁 등) | `surface/inverse/elevation/*` |
-| 브랜드·피드백 톤 정적 면 (배지, 배너, 강조 카드) | `surface/{brand\|success\|error\|warning\|info}/elevation/*` |
-| 아래에 있는 것 위에 떠 있는 반투명 면 (스낵바, GNB, 다이얼로그 등) | `surface/{그룹}/floating/*` (§5) |
-| 면 안에서 영역을 구분·강조하는 반투명 판 | `surface/{그룹}/overlay/*` (§5) |
-| 테두리·구분선 | `stroke/{그룹}/{맥락}/*` — elevation 은 surface 단계와 짝이 아니다 (§2, §5) |
-| 텍스트·아이콘 | `on-surface/{색}/{유형}/{스케일}` — **실제 배경과의 대비**로 색·유형을 고른다 (§5) |
-| 사진·지도처럼 모드와 무관한 배경 위의 텍스트·아이콘 | `on-surface/{색}/fixed-dark\|fixed-light/*` (§5) |
+| 버튼의 눌림 효과 | `state/pressed/{on-light\|on-dark}` — **아래 면**으로 고른다: 앱 기본 면이면 `on-light`, 반대 톤 면이면 `on-dark` (베이스 색 아님, §4) |
+| 브랜드 대표색 면 위의 눌림 효과 | `state/pressed/on-brand` (§4) |
+| 누를 수 있는 카드·리스트 행 (색이 바뀌는 상태 없음) | 그릇과 콘텐츠 모두 `surface`·`stroke`·`inner`, 눌림은 `state/pressed/*` (§3 「최상위 선택」) |
+| `surface`·`stroke`·`inner` 로 만든 그릇 전체의 비활성 | 가장 바깥 레이어의 opacity 에 `state/disabled/global` (§4) |
+| 상호작용 컴포넌트 안의 덜 강조된 보조 텍스트 | `interactive/{변이}/inner/subtle` (있다면, §3) |
+| 화면 배경, 시트·카드 같은 기본 면 | `surface/neutral/default/*` — `base` 가 기준면, `low` 쪽이 물러난 면 (§2, §9) |
+| 명도가 반전된 면 (어두운 배너·툴팁 등) | `surface/neutral/inverse/*` |
+| 브랜드·피드백 톤 정적 면 (배지, 배너, 강조 카드) | `surface/{brand\|success\|error\|warning\|info}/{맥락}/*` |
+| 아래에 있는 것 위에 떠 있거나 덧칠하는 반투명 면 (스낵바, GNB, 다이얼로그, 구분 블록) | `surface/{그룹}/{맥락}/{high\|higher\|highest}` (§5) |
+| 모드와 무관하게 늘 진하거나 연해야 하는 면 | `surface/{그룹}/fixed-deep\|fixed-pale/*` (§5) |
+| 테두리·구분선 | `stroke/{그룹}/{맥락}/*` — 실제 배경 위에서 보이는 맥락, surface 단계와 짝이 아니다 (§2, §5) |
+| 본문 텍스트 | `inner/neutral/{맥락}/{스케일}` — **실제 배경과의 대비**로 맥락을 고른다 (§5) |
+| 아이콘·그래픽 | `inner/{그룹}/{맥락}/{스케일}` — 색 그룹도 쓸 수 있다 (§5) |
+| 사진·지도처럼 모드와 무관한 배경 위의 텍스트·아이콘 | `inner/{그룹}/fixed-deep\|fixed-pale/*` (§5) |
+| 모드와 무관하게 고정된 영역 안에 컴포넌트(버튼 등)가 있을 때 | 그 영역 컨테이너에 모드 지정 (§10) |
 | 색이 있는 배경 위의 아이콘 "구멍" 표현 | `icon-frame`의 `negative` 서브레이어, §6 규칙 |
-| 정적 컴포넌트(상호작용 없음)의 색 | `surface`·`stroke`·`on-surface` (§3 「최상위 선택」) |
-| 상호작용 컴포넌트 안의 그래픽 요소(knob 등) / interactive 토큰으로 대비가 맞지 않을 때 | 해당 레이어만 `surface`·`stroke`·`on-surface` 차용 (§3 「최상위 선택」) |
+| 정적 컴포넌트(상호작용 없음)의 색 | `surface`·`stroke`·`inner` (§3 「최상위 선택」) |
+| 상호작용 컴포넌트 안의 그래픽 요소(knob 등) / interactive 토큰으로 대비가 맞지 않을 때 | 해당 레이어만 `surface`·`stroke`·`inner` 차용 (§3 「최상위 선택」) |
 | 그림자 색 | `styles/shadow/{low\|mid\|high}` — 레이어에 직접 쓰지 않고 `shadow/*` Effect Style 을 적용 (§2-1) |
 | 그라디언트 색 | `styles/gradient/{overlay\|solid\|transparent}` — 레이어에 직접 쓰지 않고 `gradient/*` 색상 스타일을 적용 (§2-1) |
 
@@ -305,26 +353,28 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 
 1. **트리를 한 번만, 위에서 아래로 순회**하면서 두 가지를 추적합니다.
    - **interactive 컨텍스트** `{변이, 상태}` — 노드가 스스로 새로 설정하지 않으면(§3 의 우선순위 신호가 하나도 없으면) 부모 것을 그대로 물려받습니다.
-   - **배경 스택** — 지금 노드 아래에 깔린 면들을 바닥부터 순서대로 쌓은 것. 반투명 면(`floating`·`overlay`, interactive 의 `floating`·`overlay-*`)을 만나면 그 아래 스택 위에 덧쌓습니다.
+   - **배경 스택** — 지금 노드 아래에 깔린 면들을 바닥부터 순서대로 쌓은 것. 반투명 면(`surface` 의 `high`~`highest`, interactive 의 `floating`·`overlay-*`)을 만나면 그 아래 스택 위에 덧쌓습니다.
    형제 노드마다 매번 조상까지 거슬러 올라가며 다시 계산하지 않습니다.
 2. **숨겨진 노드도 포함**해서 검사합니다 (§6의 `negative` 레이어처럼 평소엔 안 보이지만 바인딩은 맞아야 하는 경우가 있음).
 3. 텍스트/아이콘(`positive`)은 **배경 스택을 합성한 색과의 대비**를 **모든 모드에서** 잽니다 (§5). 기준은 `base` 에서 본문 4.5, 큰 글자·아이콘 3.0 이고, `low`~`lowest` 와 `disabled`·`placeholder` 는 의도적으로 약한 단계라 제외합니다. 기준에 못 미치면 위반이 아니라 **권장 미달**로 보고합니다 (§5).
-   - 면과 글자의 **그룹이 다른 것은 위반이 아닙니다** (§1). 대비가 통과하면 `surface/brand/*` 위의 `on-surface/neutral/*` 도 정상입니다.
+   - 면과 글자의 **그룹이 다른 것은 위반이 아닙니다** (§1). 대비가 통과하면 `surface/brand/*` 위의 `inner/neutral/*` 도 정상입니다.
+   - 본문 텍스트가 색 그룹 잉크이면서 권장 미달이면, `inner/neutral/*` 로 바꾸는 안을 함께 적습니다 (§5 4번).
    - interactive 컨텍스트 안에서는 대비와 별도로 **상태가 맞는지**도 봅니다 (§3) — 예: selected 면 위에 `default` 잉크가 남아 있지 않은지. 단 `subtle` 은 §3 대로 의도된 선택으로 봅니다.
 3-1. 배경 스택의 바닥이 토큰이 아닌 것(사진·지도·외부 콘텐츠)이면 토큰만으로는 합성색이 정해지지 않습니다. 실제로 그 자리에 올 콘텐츠의 밝기 범위(밝은·중간·어두운)를 가정해 재고, **어떤 바탕을 가정했는지 함께 기록**합니다. 범위를 알 수 없으면 위반으로 단정하지 말고 확인 대상으로 보고합니다.
-3-2. 상호작용 컴포넌트 안에서 `surface`·`stroke`·`on-surface` 토큰이 바인딩된 레이어는 §3 「최상위 선택」의 차용으로 봅니다 — 그 레이어를 배경 스택에 쌓고, 부모가 interactive 라는 이유만으로 위반 처리하지 않습니다. 대신 §3 의 차용 조건(그래픽 요소이거나 interactive 토큰으로 대비가 부적절)에 해당하는지, 같은 상태를 표현할 interactive 토큰이 이미 있는데 빌린 것은 아닌지를 확인합니다. 정적 컴포넌트의 `surface`·`stroke`·`on-surface` 사용은 애초에 정상입니다.
+3-2. 상호작용 컴포넌트 안에서 `surface`·`stroke`·`inner` 토큰이 바인딩된 레이어는 §3 「최상위 선택」의 차용으로 봅니다 — 그 레이어를 배경 스택에 쌓고, 부모가 interactive 라는 이유만으로 위반 처리하지 않습니다. 대신 §3 의 차용 조건(그래픽 요소이거나 interactive 토큰으로 대비가 부적절)에 해당하는지, 같은 상태를 표현할 interactive 토큰이 이미 있는데 빌린 것은 아닌지를 확인합니다. 정적 컴포넌트의 `surface`·`stroke`·`inner` 사용은 애초에 정상입니다. 누를 수 있는 그릇(카드 등)의 `surface`·`stroke`·`inner` 는 차용이 아니라 §3 「최상위 선택」의 권장 판정입니다. 그 그릇에 selected 같은 색 상태가 있으면, 상태 레이어가 `interactive` 상태 토큰을 쓰는지와 안쪽 글자 대비를 각 상태 배경에서 쟀는지를 봅니다. 그릇 안의 컴포넌트 인스턴스는 그 컴포넌트의 기준으로 따로 봅니다.
 4. `icon-frame`의 `negative`는 §6 규칙으로 별도 계산합니다 — 부모 면 기준으로 먼저 기대값을 정하고, 그 다음에 실제 값과 비교하세요 (자기 자신의 바인딩으로 되짚어 판단하지 않기). 근사가 합성 배경과 맞지 않는 자리는 위반이 아니라 **확인 대상**입니다 (§6).
 5. `styles/*` 가 레이어에 직접 바인딩돼 있으면 위반입니다 (§2-1).
+5-1. `state/disabled/global` 이 fill·stroke 에 바인딩돼 있거나, 이미 흐려진 레이어의 자손에 또 걸려 있거나, `interactive` 의 `disabled` 색 토큰과 같은 레이어에 함께 걸려 있으면 위반입니다 (§4).
 6. **위반이나 권장 미달을 발견하면:** 노드 이름/id, 속성(fill/stroke), 현재 변수, **모드별 대비값과 기준**, **합성에 쓴 배경 스택**(가정한 바탕 포함), 그리고 interactive 상태 위반이면 그 상태를 어떤 신호(부모/컴포넌트 property 등)로 결정했는지를 함께 기록합니다. 권장 미달은 위반과 구분해서 적습니다.
-7. 대비를 고칠 때는 **모든 모드에서 권장 기준을 넘는 다른 유형·색**을 먼저 찾아봅니다 (§5 의 절차 그대로). 그런 조합이 없거나, 사람이 화면을 보고 지금 조합이 괜찮다고 정했으면 그대로 둡니다. 수치만 맞추려고 반복해서 고치지 않습니다. 네 유형 모두 읽기 어려우면 모드 고정(§10)을 검토합니다. 필요한 변수가 없으면 임의로 비슷한 걸 추측해서 넣지 말고 **실제로 존재하는 변수 목록을 먼저 확인**한 뒤 처리합니다.
+7. 대비를 고칠 때는 **모든 모드에서 권장 기준을 넘는 다른 맥락·그룹**을 먼저 찾아봅니다 (§5 의 절차 그대로). 그런 조합이 없거나, 사람이 화면을 보고 지금 조합이 괜찮다고 정했으면 그대로 둡니다. 수치만 맞추려고 반복해서 고치지 않습니다. 네 맥락 모두 읽기 어려우면 모드 고정(§10)을 검토합니다. 필요한 변수가 없으면 임의로 비슷한 걸 추측해서 넣지 말고 **실제로 존재하는 변수 목록을 먼저 확인**한 뒤 처리합니다.
 
-토큰 값 자체가 두 모드에서 성립하는지(면끼리의 구분, 대표 바탕 위의 floating 등)는 레이어 검사와 별개로 `npm run tokens:audit` 이 잽니다.
+토큰 값 자체가 두 모드에서 성립하는지(면끼리의 구분, 대표 바탕 위의 반투명 면 등)는 레이어 검사와 별개로 `npm run tokens:audit` 이 잽니다.
 
 ## 9. `color-semantic`의 모드 축 — 명도 × 브랜드
 
 `color-semantic`은 여러 **모드**(Figma Variable Mode)를 가지고, 각 모드가 **"명도 하나 × 브랜드 컬러 테마 하나"** 조합에 대응합니다. 모드 이름은 전부 **`{명도}/{브랜드}`** 2단 구조입니다 (예: `light/rikaride`, `dark/rikaride`, `light/govt-navy`) — 이름 구조가 처음부터 명도 축과 브랜드 축을 분리해뒀습니다.
 
-- **이 문서의 §1~§8 규칙(이름 구조, 최상위별 어휘, 맥락·유형 선택, icon-frame 규칙 등)은 전부 모드와 무관하게 동일하게 적용됩니다.** 모드가 늘어도 토큰 **이름 구조나 선택 기준 자체는 안 바뀝니다** — 같은 토큰 이름이 모드마다 다른 값을 가리킬 뿐입니다. 따라서 모드가 추가돼도 **컴포넌트 재바인딩은 필요 없습니다.** 단, §5 의 대비 검사는 **새 모드에서도 다시 통과해야** 합니다 — 글자 유형 선택은 모든 모드를 기준으로 한 판단이기 때문입니다.
+- **이 문서의 §1~§8 규칙(이름 구조, 최상위별 어휘, 맥락·단계 선택, icon-frame 규칙 등)은 전부 모드와 무관하게 동일하게 적용됩니다.** 모드가 늘어도 토큰 **이름 구조나 선택 기준 자체는 안 바뀝니다** — 같은 토큰 이름이 모드마다 다른 값을 가리킬 뿐입니다. 따라서 모드가 추가돼도 **컴포넌트 재바인딩은 필요 없습니다.** 단, §5 의 대비 검사는 **새 모드에서도 다시 통과해야** 합니다 — 글자 맥락 선택은 모든 모드를 기준으로 한 판단이기 때문입니다.
 - 다크모드는 브랜드마다 **`dark/{브랜드}`를 `light/{브랜드}` 옆에 나란히 추가**하는 방식으로 확장합니다 — 브랜드 수만큼 모드가 2배로 늘어나는 구조입니다. 브랜드를 한꺼번에 다 만들 필요는 없습니다.
 - **새 모드가 추가되면, 기존 `color-semantic` 토큰 전부가 그 새 모드에도 값을 갖고 있는지 반드시 확인**하세요. Figma는 모드를 새로 추가해도 기존 변수에 자동으로 값이 채워지지 않는 경우가 있어서, 일부 토큰만 값이 비어있거나 다른 모드 값을 실수로 복사해둔 채로 남을 수 있습니다.
 - **`styles` 그룹(§2-1)도 모든 모드에 값을 가져야 합니다.** 이 그룹이 비면 화면 전체가 다크인데 그림자와 그라디언트만 라이트로 남습니다.
@@ -332,45 +382,44 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 
 ### 기본 서피스를 가장 먼저 못 박는다
 
-`surface/default/elevation/*` 다섯 값은 **나머지 전부의 기준**입니다. stroke·글자·floating·overlay 의 다크값이 모두 이 면과의 대비로 정해지므로, 여기를 바꾸면 연쇄로 다시 유도해야 합니다. **다른 토큰의 다크값을 정하기 전에 이 다섯 개를 먼저 확정하세요.** `surface/inverse/elevation/*` 은 이 다섯 값을 명도 반전한 것입니다.
+`surface/neutral/default/*` 의 불투명 네 값(`base`~`lowest`)은 **나머지 전부의 기준**입니다. 테두리·글자·반투명 면의 값이 모두 이 면과의 대비로 정해지므로, 여기를 바꾸면 연쇄로 다시 유도해야 합니다. **다른 토큰의 값을 정하기 전에 이 네 개를 먼저 확정하세요.** `surface/neutral/inverse/*` 는 이 네 값의 반대 톤입니다.
 
 | 토큰 | 역할 |
 |---|---|
-| `surface/default/elevation/base` | **기본 서피스.** 화면의 배경이자, 그 위에 놓이는 시트·카드의 면 |
-| `surface/default/elevation/low` · `lower` | **물러난 면.** 올라온 요소(바텀시트 등) 뒤를 눌러 깊이를 표현한다 |
-| `surface/default/elevation/high` · `higher` | **올라온 면.** 기준면 위로 한 겹 더 올라온 요소 |
+| `surface/neutral/default/base` | **기본 서피스.** 화면의 배경이자, 그 위에 놓이는 시트·카드의 면 |
+| `surface/neutral/default/low` · `lower` · `lowest` | **물러난 면.** 올라온 요소(바텀시트 등) 뒤를 눌러 깊이를 표현한다 |
 
-**물러난 쪽은 두 모드 모두 어두워집니다** — 이름이 가리키는 방향이 모드와 무관하게 유지됩니다. 다크라고 해서 `low` 가 `base` 보다 밝아지면, 올라온 시트가 뒤 배경보다 어두워져 깊이가 뒤집힙니다.
+**물러난 쪽은 모든 그룹·맥락·모드에서 어두워집니다** — 이름이 가리키는 방향이 모드와 무관하게 유지됩니다. 다크라고 해서 `low` 가 `base` 보다 밝아지면, 올라온 시트가 뒤 배경보다 어두워져 깊이가 뒤집힙니다.
 
-올라온 쪽은 모드마다 다르게 움직입니다. 다크에서는 `base` 보다 밝아지지만, 라이트에서는 `base` 가 이미 램프 끝(흰색)이라 더 밝아질 수 없어 **`high`·`higher` 가 `low`·`lower` 와 같은 값**이 됩니다. 그래서 라이트에서 올라온 면은 밝기만으로 구분되지 않습니다 — 그림자(`shadow/*`)나 stroke 로 보탭니다.
-
-> **이 방향 보장은 `default`·`inverse` 의 elevation 에만 해당합니다.** 색 그룹(`brand`·`success`·`error`·`warning`·`info`)의 elevation 은 **강조 세기**이고, 미러링 결과라 **다크에서 방향이 뒤집힙니다** — 라이트에서 `base`→`highest` 로 갈수록 어두워지던 것이 다크에서는 밝아집니다. 그 자체가 결함은 아니지만, 깊이 표현에 쓰면 모드에 따라 뒤집힙니다. 깊이는 `surface/default/elevation/*` 로 표현하세요.
+**기준면보다 올라온 불투명 단계는 없습니다.** 기준면 위로 떠 있는 요소(스낵바·다이얼로그 같은 floating UI)는 보통 반투명 단계(`high`~`highest`)를 쓰고, 그림자(`shadow/*`)나 stroke 를 보태 구분합니다. 불투명해야 하면 `base` 에 그림자나 stroke 를 보탭니다.
 
 > **다크에서는 물러날 수 있는 총 폭이 좁습니다.** 대비 비율은 검정 근처에서 압축되므로, `base` 아래로 순검정까지 내려가도 벌릴 수 있는 폭에 한계가 있습니다. 이건 램프의 해상도가 아니라 대비 공식 자체의 성질이라 **어떤 값을 골라도 바뀌지 않습니다.** `base` 를 더 어둡게 두면 폭이 더 줄고, 압축이 가장 많이 쓰는 첫 단계로 옮겨올 뿐입니다.
 >
-> 그 좁은 폭 **안에서** 단계 간격은 균등해야 합니다 — 안 그러면 첫 단계가 일을 다 하고 나머지는 아무것도 안 해서, "한 단계 더 진하게"가 작동하지 않습니다. 기존 램프만으로는 간격이 기울어지므로 **중간 단계를 primitive 에 추가해 균등하게 맞춥니다.**
+> 그 좁은 폭 **안에서** 단계 간격은 균등해야 합니다 — 안 그러면 첫 단계가 일을 다 하고 나머지는 아무것도 안 해서, "한 단계 더 진하게"가 작동하지 않습니다. 기본 램프 단계만으로는 간격이 기울어지므로, **primitive 에 중간 단계(`850`·`925`)를 두어 균등하게 맞춥니다.**
 >
 > 총 폭의 한계는 남습니다. **가장 깊은 단계로도 부족하면 면을 더 어둡게 하려 하지 말고 stroke 로 표현하세요.** 그림자는 다크에서 약하므로(아래 예외표 「그림자 색」) 깊이를 더 벌리는 수단으로 쓸 수 없습니다.
 
-### 다크모드 값을 산출하는 방법 — 미러링은 출발점일 뿐, 검증이 필수
+### 다크모드 값을 산출하는 방법
 
-`dark/{브랜드}` 값의 **1차 초안**은 primitive 참조를 램프 양끝 기준으로 뒤집어(미러링) 만듭니다. 램프가 대칭이므로 이 방식은 라이트 모드의 대비 관계를 그대로 보존하고, 감으로 고른 팔레트보다 검증이 쉽습니다. `neutral` 의 `dark-alpha.N` ↔ `light-alpha.N` 은 같은 단계끼리 맞바꿉니다.
+**`surface`·`stroke`·`inner` 는 맥락을 맞바꾸는 것에서 출발합니다.** 다크 모드의 `default` 는 라이트 모드의 `inverse` 값을, 다크 모드의 `inverse` 는 라이트 모드의 `default` 값을 1차 초안으로 씁니다. `fixed-deep`·`fixed-pale` 은 라이트와 같습니다.
 
-`stroke/*/elevation` 은 surface 단계와 짝이 아니므로(§2) surface 의 미러를 따라가지 않습니다. 그 그룹 `surface/*/elevation/base` 위에서 `base`→`highest` 로 세기가 커지도록 **각 모드에서 따로** 잡습니다.
+초안에서 단계 값은 필요하면 조정할 수 있습니다 — 예: 다크 `default/lowest` 가 `neutral/default/1000` 이어도 라이트 `inverse/lowest` 는 `900` 으로 둘 수 있습니다. 단 **톤은 맞바꾼 그대로여야 합니다.** 다크의 `default` 와 라이트의 `inverse` 는 둘 다 진하거나 둘 다 연해야 하고, 한쪽만 흰색이 되는 식으로 톤이 갈라지면 안 됩니다. 톤이 갈라지면 같은 `inverse` 가 모드에 따라 다른 뜻이 되어, §5 의 맥락 선택이 무너집니다.
 
-**미러링만으로 완전한 다크모드가 되지는 않습니다.** 반드시 실제 컴포넌트와 화면에 적용해 **스크린샷과 명도 대비(contrast)를 확인**하고, 아래 종류의 예외를 손으로 정합니다. 예외를 정할 때마다 그 근거를 남기세요.
+**`interactive`·`state`·`styles` 는 맞바꿀 짝이 없어서 따로 정합니다.** 1차 초안은 primitive 참조를 램프 양끝 기준으로 뒤집어(미러링) 만듭니다. 램프가 대칭이므로 이 방식은 라이트 모드의 대비 관계를 그대로 보존하고, 감으로 고른 팔레트보다 검증이 쉽습니다. `neutral` 의 `dark-alpha.N` ↔ `light-alpha.N` 은 같은 단계끼리 맞바꿉니다.
+
+**맞바꾸기든 미러링이든 그것만으로 완전한 다크모드가 되지는 않습니다.** 반드시 실제 컴포넌트와 화면에 적용해 **스크린샷과 명도 대비(contrast)를 확인**하고, 아래 종류의 예외를 손으로 정합니다. 예외를 정할 때마다 그 근거를 남기세요.
 
 | 미러링이 틀리는 경우 | 어떻게 처리하는가 |
 |---|---|
-| **이름이 배경 밝기를 가리키는 토큰** (`state-overlay/on-light`, `on-dark`) | 모드와 무관한 토큰이므로 **값을 그대로** 둡니다 (§4) |
-| **배경 밝기가 모드마다 뒤집히는 자리의 오버레이** (`state-overlay/on-brand`) | 미러가 아니라, §4 의 "밝은 배경 → 어둡게, 어두운 배경 → 밝게" 를 **그 모드의 실제 배경에 다시 적용**합니다 |
+| **기본 면·반대 톤 면 위의 눌림** (`state/pressed/on-light`, `on-dark`) | 이름은 라이트 모드 기준의 면 밝기입니다. 다크에서는 덮이는 면(`default`·`inverse`)의 톤이 맞바뀌므로 **덧칠 방향도 같이 바꿉니다** (§4) |
+| **브랜드 대표색 면 위의 눌림** (`state/pressed/on-brand`) | 미러가 아니라, 그 브랜드 대표색 면의 실제 밝기에 "밝은 면 → 어둡게, 진한 면 → 밝게" 를 **모드마다 다시 적용**합니다 |
+| **불투명도** (`state/disabled/global`) | 색이 아니므로 모드와 무관하게 **같은 값**을 둡니다 |
 | **그림자 색** (`styles/shadow/*`) | 미러하면 밝은 색이 되어 그림자가 아니라 글로우가 됩니다. **어두운 색을 두 모드 모두 그대로** 둡니다. 다크에서 대비 수치는 라이트보다 낮게 나오지만(1.03~1.10 vs 1.12~1.61) **알파를 올려 수치를 맞추면 눈으로는 부자연스럽게 밝아집니다** — 어두운 배경에서 그림자가 약한 건 정상입니다. 수치로 보정하지 마세요. 다크에서 고도를 더 분명히 해야 하면 그림자가 아니라 **stroke** 로 표현합니다 |
-| **의미 신호 색**(파괴적 액션·경고 등) | 서피스 색이 아니라 **위험하다는 신호**이므로 모드가 바뀐다고 색조가 옮기면 안 됩니다. 미러하면 빨강이 파스텔로 풀려 경고로 안 읽힙니다. **색은 그대로 두고, 그 위의 `on-surface` 만 대비에 맞춰 고릅니다** |
+| **의미 신호 색**(파괴적 액션·경고 등) | 서피스 색이 아니라 **위험하다는 신호**이므로 모드가 바뀐다고 색조가 옮기면 안 됩니다. 미러하면 빨강이 파스텔로 풀려 경고로 안 읽힙니다. **색은 그대로 두고, 그 위의 `inner` 만 대비에 맞춰 고릅니다** |
 | **램프 양 끝점**(순백·순검정) | 다크의 기본 서피스를 램프 끝(순검정)에 두면 물러날 폭이 아예 없고, 그 위에서는 어떤 그림자도 읽히지 않습니다. **안쪽 단계**를 씁니다 |
-| **색 패밀리의 알파 램프** (`{패밀리}/main-alpha`·`dark-alpha`·`light-alpha`) | `neutral` 의 두 램프와 달리 이 셋은 **명암 쌍이 아닙니다** — `main-alpha` 는 그 패밀리의 아이덴티티 색, `dark-alpha` 는 짙은 색, `light-alpha` 는 옅은 틴트입니다 (§1). 기계적으로 맞바꾸면 경고 빨강이 따뜻한 회색이 되는 식으로 **색 자체를 잃습니다.** 색 그룹의 `floating` 은 `main-alpha` 그대로 두 모드에 고정하고, `overlay` 는 라이트 `main-alpha` → 다크 `light-alpha` 로 **놓이는 면의 밝기에 맞춰** 고릅니다 |
-| **`surface/default/floating`** | 아래에 있는 것을 「띄우는」 흰 재질이므로 **램프 방향은 유지**해야 합니다 — 반전시키면 floating 이 아래보다 어두워져 통째로 사라집니다. 다만 밝은 배경용으로 맞춘 높은 알파는 어두운 배경에서 과하므로, **순서를 유지한 채 알파 대역을 낮춥니다** |
-| **모드와 무관한 배경 위의 글자·아이콘**(사진·지도·고정색 배너) | 배경은 모드를 안 따라가는데 `default`·`inverse` 글자는 따라가서, 어느 한쪽 모드에서는 깨집니다. 먼저 **`fixed-dark`·`fixed-light` 유형**으로 해결합니다 (§5) |
-| **모드와 무관한 배경 위의 면까지 고정해야 할 때** (지도·사진 위 floating 처럼 합성 배경이 모드마다 반대로 움직여 네 유형 모두 실패할 때) | 토큰으로 풀 문제가 아닙니다. **그 서브트리를 배경에 맞는 모드로 고정**하세요 (§10) |
+| **색 패밀리의 알파 램프** (`{패밀리}/main-alpha`·`dark-alpha`·`light-alpha`) | `neutral` 의 두 램프와 달리 이 셋은 **명암 쌍이 아닙니다** — `main-alpha` 는 그 패밀리의 대표색, `dark-alpha` 는 짙은 색, `light-alpha` 는 옅은 틴트입니다 (§1). 기계적으로 맞바꾸면 경고 빨강이 따뜻한 회색이 되는 식으로 **색 자체를 잃습니다.** 놓이는 면의 톤에 맞춰 고릅니다 |
+| **모드와 무관한 배경 위의 글자·아이콘**(사진·지도·고정색 배너) | 배경은 모드를 안 따라가는데 `default`·`inverse` 글자는 따라가서, 어느 한쪽 모드에서는 깨집니다. 먼저 **`fixed-deep`·`fixed-pale` 맥락**으로 해결합니다 (§5) |
+| **모드와 무관한 영역 안에 컴포넌트가 있거나, 면까지 고정해야 할 때** (고정된 다이얼로그 안의 버튼, 지도·사진 위 반투명 면처럼 합성 배경이 모드마다 반대로 움직여 네 맥락 모두 실패할 때) | 토큰으로 풀 문제가 아닙니다. **그 서브트리를 배경에 맞는 모드로 고정**하세요 (§10) |
 
 ## 10. 모드는 화면 전체 단위가 아니라, 노드/서브트리 단위로 지역 오버라이드될 수 있다
 
@@ -379,6 +428,19 @@ color-semantic    ← 실제로 컴포넌트에 바인딩되는 토큰. 전부 c
 예: 어떤 화면 프레임 전체에는 `light/sky-blue` 모드가 적용되어 있어서 화면 대부분은 파란 계열 색상으로 보이지만, 그 화면 안의 특정 버튼 컴포넌트에는 `light/rikaride` 모드가 개별 지정되어 있어서 그 버튼(과 버튼 내부의 모든 자손 레이어)만 검정 계열로 렌더링될 수 있습니다. 상위(화면)에서 내려오는 모드값을, 하위(버튼)가 자신에게 명시적으로 지정된 모드값으로 **그 서브트리 범위 안에서만 덮어쓰는** 구조입니다. 더 안쪽에 또 다른 모드가 지정된 노드가 있다면 같은 원리로 한 번 더 덮어써질 수 있습니다 — 즉 임의 깊이로 중첩될 수 있는 구조입니다.
 
 > 이 문서에서는 이해를 돕기 위해서만 "부모 요소에 적용된 값을, 자식 요소가 자신에게 지정된 값으로 지역적으로 덮어쓴다"는 일반적인 상속·오버라이드 개념을 참고로 언급합니다. 이것은 **개념 설명일 뿐이며, 실제 플랫폼(Web/iOS/Android) 구현이 특정 기술로 되어야 한다는 뜻이 아닙니다** — 각 플랫폼에 맞는 방식으로 "지역 범위에서 모드를 덮어쓰는" 동작을 구현하면 됩니다.
+
+### `fixed-*` 와 모드 지정 중 무엇을 쓰나
+
+어떤 영역을 모드와 무관하게 고정할 때 기준은 **그 안에 컴포넌트 인스턴스가 있는가** 하나입니다.
+
+| 고정할 대상 | 방법 |
+|---|---|
+| 레이어 하나 — 사진 위 글자, 아이콘, 선, 안에 컴포넌트가 없는 면 | `fixed-deep`·`fixed-pale` 토큰 (§5) |
+| 안에 컴포넌트 인스턴스가 하나라도 있는 영역 | **그 영역의 컨테이너에 모드를 지정**한다 |
+
+- 컴포넌트는 안에서 모드를 따라가는 토큰(`default`·`inverse`, `interactive/*`)을 씁니다. `interactive` 토큰에는 `fixed-*` 가 없어서, 고정된 면 위에 버튼만 모드를 따라 뒤집혀 묻힙니다. 컴포넌트를 `fixed-*` variant 로 늘리지 말고 영역의 모드를 고정합니다.
+- 모드를 지정하는 경계는 **고정된 면 자체**로 둡니다 — 예: 다이얼로그라면 버튼 컨테이너가 아니라 다이얼로그 면. 그 안에서는 `fixed-*` 대신 `default` 맥락을 써도 됩니다.
+- 모드 이름에는 브랜드가 함께 들어 있어서(§9), 모드를 지정하면 **브랜드도 같이 고정됩니다.** 지금 화면의 브랜드와 같은 브랜드의 모드를 고르세요 (예: `dark/rikaride` 화면 안에서 연하게 고정하려면 `light/rikaride`).
 
 ### 읽을 때(Figma 분석) 주의할 점
 

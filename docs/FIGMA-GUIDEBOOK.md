@@ -45,7 +45,7 @@
 1. **색상/상태/엘리베이션을 소유하는가?** (칠해진 색이 아니라 그 색을 여기서 정하는지) → 아니오면 **스켈레톤**. 끝. (수정 가능한 속성이 하나도 없어도 스켈레톤이다 — "고정이냐 수정 가능이냐"는 질문 자체가 이 레이어엔 안 통한다.)
 2. **텍스트/아이콘/중첩 인스턴스 중 여전히 수정 가능한 게 있는가?** → 있으면 **템플릿**, 없으면 **패턴**. (고정된 콘텐츠를 켜고 끄기만 하는 표시 boolean·데이터 슬롯은 "수정 가능"에 넣지 않는다.)
 
-다른 기준(예: "형제 인스턴스가 다르게 쓸 것 같다")은 쓰지 않는다 — 사람마다 판단이 달라지는 문제 때문에 폐기됐다.
+다른 기준(예: "형제 인스턴스가 다르게 쓸 것 같다")은 쓰지 않는다 — 사람마다 판단이 달라진다.
 
 ### 중첩 규칙
 
@@ -241,29 +241,36 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 
 **컴포넌트에는 항상 `color-semantic`만 쓴다.** 이름은 `{역할}/{그룹}/{맥락}/{스케일}` 이다.
 
-- **역할** 3가지: `surface`(면), `stroke`(테두리·구분선), `on-surface`(면 위의 텍스트·아이콘).
-- `surface`·`stroke` 의 **그룹**은 면 계열(`default`·`inverse`·`brand`·`success`·`error`·`warning`·`info`), **맥락**은 면이 놓이는 방식(`elevation`·`floating`·`overlay`).
-- `on-surface` 는 `on-surface/{색}/{유형}/{스케일}` — 색은 `neutral`·`brand`·의미색, 유형은 `default`·`inverse`·`fixed-dark`·`fixed-light`.
-- 이 구조를 따르지 않는 최상위 셋: `interactive/{변이}/{surface|stroke|on-surface}/{상태}`, `state-overlay/{on-light|on-dark|on-brand}/pressed`, `styles/{shadow|gradient}/*`.
+- **역할** 3가지: `surface`(면), `stroke`(테두리·구분선), `inner`(면 위의 텍스트·아이콘).
+- **그룹**은 세 역할 공통: `neutral`·`brand`·`success`·`error`·`warning`·`info`.
+- **맥락**도 세 역할 공통: `default`·`inverse`·`fixed-deep`·`fixed-pale`. `surface` 에서는 면의 톤, `stroke`·`inner` 에서는 선·글자 자신의 톤이다 — 같은 맥락 이름끼리 짝이 아니다.
+- `deep`·`pale` 은 밝기가 아니라 **진하기**다. 색 그룹의 진한 쪽은 그 자체로 밝을 수 있다(노랑 계열 등). 이름으로 짝을 정하지 말고 대비를 잰다.
+- 이 구조를 따르지 않는 최상위 셋: `interactive/{변이}/{surface|stroke|inner}/{상태}`, `state/pressed/{on-light|on-dark|on-brand}`·`state/disabled/global`, `styles/{shadow|gradient}/*`.
 - **면과 글자는 같은 그룹일 필요가 없다.** 글자는 실제로 얹히는 배경과의 대비로 고른다 (아래 「글자 고르기」).
 
 ### 최상위마다 다른 어휘
 
-| | `interactive` | `surface` · `stroke` | `on-surface` | `styles` |
+| | `interactive` | `surface` | `stroke` · `inner` | `styles` |
 |---|---|---|---|---|
-| 마지막 세그먼트 | **상태**: `default`, `disabled`, `selected`, `selected-brand`, `floating`, `overlay-default`, `overlay-brand`, `subtle`, `placeholder`, `brand` | **맥락별 스케일** (아래) | `base` · `low` · `lower` · `lowest` | 역할마다 고정 목록 |
+| 마지막 세그먼트 | **상태**: `default`, `disabled`, `selected`, `selected-brand`, `floating`, `overlay-default`, `overlay-brand`, `subtle`, `placeholder`, `brand` | `lowest`~`base` (불투명) · `high`~`highest` (반투명) | `lowest`~`base` | 역할마다 고정 목록 |
 | "기본값" 이름 | `default` | `base` | `base` | 없음 |
 | 레이어에 직접 바인딩 | 예 | 예 | 예 | **아니오** |
 
-| 맥락 | 스케일 |
-|---|---|
-| `surface/{default,inverse}/elevation` | `lower` · `low` · `base` · `high` · `higher` — 위치 (물러남 ↔ 올라옴) |
-| `surface/{색 그룹}/elevation` | `base` · `high` · `higher` · `highest` — 강조 세기 |
-| `stroke/*/elevation` | `base` · `high` · `higher` · `highest` — 테두리 세기. **surface 단계와 짝이 아니다** |
-| `*/floating` | `lower` · `low` · `base` · `high` · `higher` — 불투명도 |
-| `*/overlay` | `base` · `strong` · `stronger` · `strongest` — 덧칠 세기 |
+| 맥락 | 라이트 | 다크 |
+|---|---|---|
+| `default` | 면 연하게 · 선·글자 진하게 | 면 진하게 · 선·글자 연하게 |
+| `inverse` | `default` 의 반대 | `default` 의 반대 |
+| `fixed-deep` | 진하게 | 진하게 (모드와 무관) |
+| `fixed-pale` | 연하게 | 연하게 (모드와 무관) |
 
-어휘를 섞지 않는다 — elevation 에 `strong` 을, `surface` 에 `default` 상태를 찾지 않는다. 그룹마다 갖고 있는 단계가 다르니 없는 단계를 추측하지 않는다.
+| 역할 | 스케일 |
+|---|---|
+| `surface` `base`·`low`·`lower`·`lowest` | 불투명. 아래로 갈수록 물러난 면 — 모든 그룹·맥락·모드에서 어두워진다 |
+| `surface` `high`·`higher`·`highest` | 반투명. `high` 가 가장 많이 비친다 |
+| `stroke` `base`~`lowest` | 테두리 세기. `base` 만 불투명. **surface 단계와 짝이 아니다** |
+| `inner` `base`~`lowest` | 강조 단계. `base` 만 불투명, `lowest` 는 장식·비활성 수준 |
+
+어휘를 섞지 않는다 — `stroke`·`inner` 에 `high` 를, `surface` 에 `default` 상태를 찾지 않는다.
 
 ### `styles` 그룹: 레이어가 아니라 Style이 소비한다 (원문: `color-token-rule.md` §2-1)
 
@@ -273,56 +280,69 @@ color-semantic   ← 실제로 컴포넌트에 바인딩. color-primitive를 참
 - 반대로 **레이어가 `styles` 토큰을 직접 물고 있으면 위반**이다 — Style을 적용해야 할 자리다.
 - 존재 이유는 모드다. `effects` 컬렉션과 색상 스타일에는 모드 축이 없어서, 그림자·그라디언트 색을 primitive에 직접 걸면 다크모드에서 영원히 안 바뀐다. `color-semantic` 안으로 끌어오면 **이 컬렉션의 모드 하나만 전환해서 색·그림자·그라디언트가 함께 따라온다.**
 
-### Interactive: surface/stroke/on-surface는 따로 논다
+### Interactive: surface/stroke/inner는 따로 논다
 
-패턴: `interactive/{변이}/{surface|stroke|on-surface}/{상태}`. 변이: `primary` > `secondary` > `outline` > `ghost` (+ 각각 `-destructive`).
+패턴: `interactive/{변이}/{surface|stroke|inner}/{상태}`. 변이: `primary` > `secondary` > `outline` > `ghost` (+ 각각 `-destructive`).
 
-**핵심: 세 역할의 상태가 항상 같이 바뀌는 게 아니다.** disabled 에서 면은 `surface/default`를 유지한 채 `on-surface/disabled`만 바뀌는 경우가 있다 — 면의 상태를 보고 글자도 같은 상태일 거라 넘겨짚지 않는다. 판단 우선순위: ① `surface/` 변수 ② 컴포넌트 자체 property(`state` 등) ③ `stroke/` 변수(surface 없을 때만) ④ 그 외 변수.
+**핵심: 세 역할의 상태가 항상 같이 바뀌는 게 아니다.** disabled 에서 면은 `surface/default`를 유지한 채 `inner/disabled`만 바뀌는 경우가 있다 — 면의 상태를 보고 글자도 같은 상태일 거라 넘겨짚지 않는다. 판단 우선순위: ① `surface/` 변수 ② 컴포넌트 자체 property(`state` 등) ③ `stroke/` 변수(surface 없을 때만) ④ 그 외 변수.
 
-원하는 상태의 토큰이 없으면 `default`로 대체한다 — 정상적인 폴백이다. `on-surface/subtle`(보조 텍스트/아이콘)이 이미 쓰여있는 자리는 `default`로 강제로 바꾸지 않는다 — 의도된 선택이다. 반투명 상태(`floating`·`overlay-*`) 위의 글자는 아래 「글자 고르기」를 따른다.
+원하는 상태의 토큰이 없으면 `default`로 대체한다 — 정상적인 폴백이다. `inner/subtle`(보조 텍스트/아이콘)이 이미 쓰여있는 자리는 `default`로 강제로 바꾸지 않는다 — 의도된 선택이다. 반투명 상태(`floating`·`overlay-*`) 위의 글자는 아래 「글자 고르기」를 따른다.
 
-`state-overlay/{on-light|on-dark|on-brand}/pressed`는 베이스 색이 아니라 **이미 칠해진 면 위에 겹치는 덧칠 레이어**다 — 변이/상태 판단 대상에서 제외한다. **이름은 그 아래 배경을 가리킨다**: 밝은 배경에는 `on-light`, 어두운 배경에는 `on-dark`, 모드에 따라 밝기가 바뀌는 배경에는 `on-brand`.
+`interactive` 에는 `fixed-*` 맥락이 없다. 고정된 면 안에 버튼 같은 컴포넌트가 들어가면 토큰을 바꾸지 말고 그 영역에 모드를 지정한다 (아래 「모드(테마)와 서브트리 오버라이드」).
 
-### 최상위 선택: 상호작용 여부가 먼저 (원문: `color-token-rule.md` §3)
+`state/pressed/{on-light|on-dark|on-brand}`는 베이스 색이 아니라 **이미 칠해진 면 위에 겹치는 덧칠 레이어**다 — 변이/상태 판단 대상에서 제외한다. **대상 이름은 그 아래 면을 가리킨다**: 앱 기본 면(`default`) 위에는 `on-light`, 반대 톤 면(`inverse`) 위에는 `on-dark`, 브랜드 대표색 면 위에는 `on-brand`. light/dark 는 라이트 모드 기준이라 다크에서는 덧칠 방향이 면과 함께 바뀐다. 비활성은 `state/disabled/global`(불투명도 40%)을 레이어 opacity 에 건다 — 색 상태 토큰이 없는 그릇 전체를 흐릴 때, 가장 바깥 레이어 하나에만.
 
-- **정적 컴포넌트**(누르거나 조작하지 않는 것)는 그래픽 요소로 보고 처음부터 `surface`·`stroke`·`on-surface` 를 쓴다.
-- **상호작용 컴포넌트**는 `interactive/*`가 1순위. 단 ① knob·트랙처럼 어느 역할에도 안 맞는 그래픽 요소, ② interactive 토큰으로는 대비가 부족/과한 경우엔 **그 레이어만** `surface`·`stroke`·`on-surface` 를 빌린다.
-- 빌린 레이어부터 새 컨텍스트. 상태별 색은 variant마다 스케일로 지정, pressed는 계속 `state-overlay`. 같은 상태를 표현할 interactive 토큰이 있으면 빌리지 않는다.
+### 최상위 선택: 색이 상태를 표현하는가 (원문: `color-token-rule.md` §3)
 
-### 면 고르기: 맥락으로 (원문: `color-token-rule.md` §5)
+누를 수 있는지가 아니라 **색이 상태에 따라 바뀌는가**로 정한다. pressed 는 어느 쪽이든 `state/pressed/*` 라 판단에서 뺀다.
 
-| 맥락 | 무엇인가 |
-|---|---|
-| `elevation` | 불투명 면. `default`·`inverse` 는 위치 사다리, 색 그룹은 강조 세기 |
-| `floating` | 아래에 있는 것 위에 **떠 있는** 반투명 면. blur·liquid-glass 는 추정 근거일 뿐 조건이 아니다 |
-| `overlay` | 같은 그룹 elevation 면 위에 덧칠하는 반투명 판. `overlay/base` 가 같은 그룹 `elevation/base` 위에서 보여야 한다 |
+- **권장 `interactive`** — 버튼·칩·토글·입력·탭처럼 상태가 색으로 정의되는 컨트롤.
+- **권장 `surface`·`stroke`·`inner`** — 카드·리스트 행·배너처럼 누를 수 있지만 색 상태가 pressed 뿐인 그릇. 비활성은 `state/disabled/global`.
+- **괜찮음** — 그 그릇에 selected 같은 색 상태가 있으면, 상태 레이어(면·테두리)만 `interactive` 상태 토큰, 안쪽 콘텐츠는 non-interactive. 각 상태 배경에서 대비를 다시 잰다.
+- **비권장** — 상태 색을 non-interactive 단계로 직접 만들기(브랜드별 상태 색에서 벗어남), 정적 요소에 `interactive`.
+- 그릇 안의 컴포넌트 인스턴스(카드 안 버튼 등)는 그 컴포넌트의 기준을 따른다.
+- `interactive` 컨트롤 안에서는 ① knob·트랙처럼 어느 역할에도 안 맞는 그래픽 요소, ② interactive 토큰으로는 대비가 부족/과한 경우에만 **그 레이어만** `surface`·`stroke`·`inner` 를 빌린다. 빌린 레이어부터 새 컨텍스트, 상태별 색은 variant마다 스케일로 지정, pressed는 계속 `state/pressed/*`.
 
-floating 의 모드 동작은 그룹마다 다르다 — `default` 는 두 모드 모두 흰 알파, `inverse` 는 모드를 따라 바뀌고, 색 그룹은 `main-alpha` 로 고정이다. 같은 그룹 안에서 어느 단계를 쓸지는 재량이다.
+### 면 고르기: 맥락과 단계로 (원문: `color-token-rule.md` §5)
+
+- **맥락** — 앱과 같이 뒤집혀야 하면 `default`, 기준 면과 반대 톤이면 `inverse`, 모드와 무관하게 늘 진하거나 연해야 하면 `fixed-deep`·`fixed-pale`.
+- **단계** — 아래가 비치지 않는 면은 불투명(`base`~`lowest`), 아래에 있는 것 위에 떠 있거나 덧칠하는 면(스낵바·GNB·다이얼로그·플로팅 버튼·구분 블록)은 반투명(`high`~`highest`). blur·liquid-glass 는 추정 근거일 뿐 조건이 아니다.
+- 반투명 세 단계 중에서는 **그 위 텍스트의 가독성**을 보고 고른다. 떠 있는 요소는 필요하면 그림자나 `stroke` 를 보탠다. 기준면보다 올라온 불투명 단계는 없다.
+- `stroke` 도 실제 배경 위에서 보이는 맥락을 고른다. 권장 대비 수치는 없고, 묻히지 않는지만 본다.
 
 ### 글자 고르기: 실제 배경과의 대비로 (원문: `color-token-rule.md` §5)
 
 **누가 고르든 기준은 하나 — 그 글자·아이콘이 얹힌 배경과의 대비.**
 
-1. **실제 배경을 정한다.** 반투명 면(`floating`·`overlay`)이면 그 뒤에 비치는 것까지 합성한 색이다. 같은 `overlay/strong` 이라도 밝은 면 위와 어두운 사진 위에서는 맞는 글자가 다르다.
+1. **실제 배경을 정한다.** 반투명 면(`high`~`highest`, interactive 의 `floating`·`overlay-*`)이면 그 뒤에 비치는 것까지 합성한 색이다. 같은 면이라도 밝은 면 위와 어두운 사진 위에서는 맞는 글자가 다르다.
 2. **모든 모드에서 잰다.**
-3. **유형을 고른다.** 배경이 모드를 따라가면 `default`/`inverse`, 모드와 무관하게 밝거나 어두우면 `fixed-dark`/`fixed-light`.
-4. **색도 같은 기준.** 면이 `brand` 라고 글자가 `brand` 일 필요는 없다.
-5. 권장 기준: 본문 4.5, 큰 글자·아이콘 3.0 (`base` 기준). 위반선이 아니다 — 최종 판단은 화면을 보고 한다. `low`~`lowest` 는 의도적으로 약한 단계.
+3. **맥락을 고른다.** 배경이 모드를 따라가면 `default`/`inverse`, 모드와 무관하게 진하거나 연하면 `fixed-deep`/`fixed-pale`.
+4. **그룹을 고른다.** 본문은 `inner/neutral/*`. 색 그룹 잉크는 아이콘·그래픽에 쓴다. 면이 `brand` 라고 글자가 `brand` 일 필요는 없다.
+5. 권장 기준: 본문 4.5, 큰 글자·아이콘 3.0 (`base` 기준). 위반선이 아니다 — 최종 판단은 화면을 보고 한다. 수치는 반올림하지 않는다(4.47 은 미달). `low`~`lowest` 는 의도적으로 약한 단계.
 
-하나의 토큰으로 모든 배경을 덮지 않는다. 네 유형 모두 읽기 어려우면 그 서브트리를 한쪽 모드로 고정하는 것을 검토한다. **검증에서 대비 미달은 위반이 아니라 "권장 미달"이다** — 그룹이 다른 것도 위반이 아니다. 수치만 맞추려고 같은 자리를 반복해서 고치지 않는다.
+하나의 토큰으로 모든 배경을 덮지 않는다. 네 맥락 모두 읽기 어려우면 그 서브트리를 한쪽 모드로 고정하는 것을 검토한다. **검증에서 대비 미달은 위반이 아니라 "권장 미달"이다** — 그룹이 다른 것도 위반이 아니다. 수치만 맞추려고 같은 자리를 반복해서 고치지 않는다.
 
 ### icon-frame의 positive/negative
 
 | 서브레이어 | 규칙 |
 |---|---|
-| `positive` | 텍스트와 동일 — `on-surface`, 실제 배경과의 대비로 고름 |
-| `negative` | `on-surface`를 절대 안 씀 — 부모의 `surface`를 그대로 따라감 (배경을 오려내는 넉아웃) |
+| `positive` | 텍스트와 동일 — `inner`, 실제 배경과의 대비로 고름 |
+| `negative` | `inner`를 절대 안 씀 — 부모의 `surface`를 그대로 따라감 (배경을 오려내는 넉아웃) |
 
-`negative`는 부모가 불투명이면 부모와 완전히 같은 `surface`, 반투명이면 같은 그룹의 불투명 면(`interactive/{변이}/surface/default` 또는 `surface/{그룹}/elevation/base`), 그것도 없으면 `surface/default/elevation/base`로 폴백. 근사가 합성 배경과 맞지 않는 자리는 위반이 아니라 확인 대상이다. **판단은 항상 부모 기준**이지 자기 자신의 바인딩을 거꾸로 근거로 쓰지 않는다. 평소 숨김 상태(`visible: false`)로 있어도 값은 항상 맞아야 한다.
+`negative`는 부모가 불투명이면 부모와 완전히 같은 `surface`, 반투명이면 같은 그룹의 불투명 면(`interactive/{변이}/surface/default` 또는 `surface/{그룹}/{맥락}/base`), 그것도 없으면 `surface/neutral/default/base`로 폴백. 근사가 합성 배경과 맞지 않는 자리는 위반이 아니라 확인 대상이다. **판단은 항상 부모 기준**이지 자기 자신의 바인딩을 거꾸로 근거로 쓰지 않는다. 평소 숨김 상태(`visible: false`)로 있어도 값은 항상 맞아야 한다.
 
 ### 모드(테마)와 서브트리 오버라이드
 
-`color-semantic`은 여러 모드(브랜드 컬러 테마)를 갖는다. **모드는 화면 전체 단위가 아니라 노드/서브트리 단위로 지역 오버라이드될 수 있다** — 화면 전체가 `light/sky-blue`여도 특정 버튼 인스턴스만 `light/rikaride`으로 개별 지정돼 있으면 그 버튼(과 자손)만 다른 색으로 보인다. 명시적 지정이 없으면 가장 가까운 상위 노드의 모드를 물려받는다.
+`color-semantic`은 여러 모드(명도 × 브랜드)를 갖는다. **모드는 화면 전체 단위가 아니라 노드/서브트리 단위로 지역 오버라이드될 수 있다** — 화면 전체가 `light/sky-blue`여도 특정 버튼 인스턴스만 `light/rikaride`으로 개별 지정돼 있으면 그 버튼(과 자손)만 다른 색으로 보인다. 명시적 지정이 없으면 가장 가까운 상위 노드의 모드를 물려받는다.
+
+영역을 모드와 무관하게 고정할 때 기준은 **그 안에 컴포넌트 인스턴스가 있는가** 하나다.
+
+| 고정할 대상 | 방법 |
+|---|---|
+| 레이어 하나 (사진 위 글자, 아이콘, 선, 컴포넌트가 없는 면) | `fixed-deep`·`fixed-pale` 토큰 |
+| 컴포넌트 인스턴스가 들어 있는 영역 | 그 영역(고정된 면 자체)에 모드 지정. 브랜드도 같이 고정되니 지금 화면과 같은 브랜드의 모드를 고른다 |
+
+다크 모드의 `surface`·`stroke`·`inner` 는 맥락을 맞바꾸는 것에서 출발한다 — 다크 `default` 는 라이트 `inverse` 와, 다크 `inverse` 는 라이트 `default` 와 **같은 톤**이다. 단계 값은 조정할 수 있지만 톤이 갈라지면 안 된다. `fixed-*` 는 그대로.
 
 ### 색상 치트시트
 
@@ -332,19 +352,23 @@ floating 의 모드 동작은 그룹마다 다르다 — `default` 는 두 모�
 | 보조/테두리 버튼 | `interactive/secondary/*`, `interactive/outline/*` |
 | 배경 없는 텍스트 버튼 | `interactive/ghost/*` |
 | 삭제/위험 액션 | `interactive/*-destructive/*` |
-| 버튼 눌림 효과 | `state-overlay/{on-light|on-dark}/pressed` — 아래 배경 밝기로 고름 |
-| 모드에 따라 밝기가 바뀌는 배경 위 눌림 효과 | `state-overlay/on-brand/pressed` |
-| 상호작용 컴포넌트 안 보조 텍스트 | `interactive/{변이}/on-surface/subtle` |
-| 화면 배경, 시트·카드 | `surface/default/elevation/*` |
-| 명도가 반전된 면 | `surface/inverse/elevation/*` |
-| 브랜드·피드백 톤 정적 면 | `surface/{brand|success|error|warning|info}/elevation/*` |
-| 떠 있는 반투명 면 (스낵바, GNB 등) | `surface/{그룹}/floating/*` |
-| 면 안의 구분·강조 반투명 판 | `surface/{그룹}/overlay/*` |
+| 버튼 눌림 효과 | `state/pressed/{on-light|on-dark}` — 앱 기본 면이면 `on-light`, 반대 톤 면이면 `on-dark` |
+| 브랜드 대표색 면 위 눌림 효과 | `state/pressed/on-brand` |
+| 누를 수 있는 카드·리스트 행 (색 상태 없음) | `surface`·`stroke`·`inner`, 눌림은 `state/pressed/*` |
+| non-interactive 그릇 전체의 비활성 | 가장 바깥 레이어 opacity 에 `state/disabled/global` |
+| 상호작용 컴포넌트 안 보조 텍스트 | `interactive/{변이}/inner/subtle` |
+| 화면 배경, 시트·카드 | `surface/neutral/default/*` |
+| 명도가 반전된 면 | `surface/neutral/inverse/*` |
+| 브랜드·피드백 톤 정적 면 | `surface/{brand|success|error|warning|info}/{맥락}/*` |
+| 떠 있거나 덧칠하는 반투명 면 (스낵바, GNB, 다이얼로그, 구분 블록) | `surface/{그룹}/{맥락}/{high|higher|highest}` |
+| 모드와 무관하게 늘 진하거나 연한 면 | `surface/{그룹}/fixed-deep|fixed-pale/*` |
 | 테두리·구분선 | `stroke/{그룹}/{맥락}/*` |
-| 텍스트·아이콘 | `on-surface/{색}/{유형}/{스케일}` — 실제 배경과의 대비로 |
-| 모드와 무관한 배경(사진·지도) 위 텍스트·아이콘 | `on-surface/{색}/fixed-dark|fixed-light/*` |
-| 정적 컴포넌트의 색 | `surface`·`stroke`·`on-surface` |
-| 상호작용 컴포넌트 안 그래픽 요소(knob 등) / 대비 부적절 | 그 레이어만 `surface`·`stroke`·`on-surface` 차용 |
+| 본문 텍스트 | `inner/neutral/{맥락}/{스케일}` — 실제 배경과의 대비로 |
+| 아이콘·그래픽 | `inner/{그룹}/{맥락}/{스케일}` |
+| 모드와 무관한 배경(사진·지도) 위 텍스트·아이콘 | `inner/{그룹}/fixed-deep|fixed-pale/*` |
+| 고정된 영역 안의 컴포넌트(버튼 등) | 그 영역에 모드 지정 |
+| 정적 컴포넌트의 색 | `surface`·`stroke`·`inner` |
+| 상호작용 컴포넌트 안 그래픽 요소(knob 등) / 대비 부적절 | 그 레이어만 `surface`·`stroke`·`inner` 차용 |
 | 색 배경 위 아이콘 "구멍" | `icon-frame`의 `negative` |
 
 ---
@@ -545,10 +569,10 @@ Text Style (레거시)  ← 디자이너가 실제로 레이어에 적용하는 
 | 섹션 | 잘 안 보이는 컴포넌트 밑에 배경용 섹션을 깖 | 섹션 대신 배경 frame — 이름 없는 섹션은 sub-group 으로 읽힘 |
 | 섹션 | 공유하지 않는 템플릿·패턴을 한 sub-group 에 모음 / 빌딩블록 섹션에 컴포넌트 이름을 붙임 | sub-group 은 빌딩블록 공유 묶음, 빌딩블록 섹션 이름은 항상 `building-block` |
 | 재선언 | 재선언된 속성인데 중첩 스켈레톤 그룹을 직접 수정 | 항상 템플릿 자체(최상단) 값만 조작 ([§3](#3-스켈레톤-속성을-템플릿이-다시-써야-할-때)) |
-| 색상 | 면의 상태를 보고 글자도 같을 거라 가정 | 세 역할(surface/stroke/on-surface)을 독립적으로 판단 |
+| 색상 | 면의 상태를 보고 글자도 같을 거라 가정 | 세 역할(surface/stroke/inner)을 독립적으로 판단 |
 | 색상 | `surface`·`stroke` 에서 `default` 를 스케일 이름으로 찾음 | `surface`·`stroke` 의 기본값 이름은 `base` (`default` 는 그룹 이름) |
 | 색상 | 면이 `brand` 라서 글자도 `brand` 로 맞춤 / 반투명 면 위 글자를 면 색만 보고 고름 | 글자는 뒤 배경까지 합성한 실제 배경과의 대비로, 모든 모드에서 |
-| 색상 | `icon-frame`의 `negative`에 `on-surface/*`를 바인딩 | `negative`는 부모의 `surface`를 따라감 |
+| 색상 | `icon-frame`의 `negative`에 `inner/*`를 바인딩 | `negative`는 부모의 `surface`를 따라감 |
 | 간격 | 숫자 스텝부터 고름 | `surface-margin`/`viewport-margin` 같은 의미 기반 토큰부터 확인 |
 | 아이콘 | SVG를 `icon-frame` 없이 직접 배치 | 모든 아이콘은 `icon-frame-*`를 통과 |
 | 아이콘 | `icon-frame` 모드가 텍스트 스텝과 다름 | 스텝 번호 일치 |

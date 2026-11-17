@@ -45,16 +45,17 @@ primitive 는 CSS 변수로 방출되지 않으므로 참조하면 반드시 깨
 
 ### 4. 글자·배경 대비 (색상)
 
-`color-token-rule.md` §5 — 대비는 **권장 기준**이다. 글자·아이콘과 실제 배경의 대비가 기준에 못 미치면 위반이 아니라 "권장 미달"로 보고하고, 사람이 화면을 보고 정한다. 그룹이 다른 것(`surface/brand/*` 위의 `on-surface/neutral/*`)은 지적하지 않는다.
+`color-token-rule.md` §5 — 대비는 **권장 기준**이다. 글자·아이콘과 실제 배경의 대비가 기준에 못 미치면 위반이 아니라 "권장 미달"로 보고하고, 사람이 화면을 보고 정한다. 그룹이 다른 것(`surface/brand/*` 위의 `inner/neutral/*`)은 지적하지 않는다.
 
-1. 글자·아이콘 색(`on-surface/*`, `interactive/*/on-surface/*`)이 쓰인 요소마다 **배경 스택**을 정한다 — 같은 요소나 가장 가까운 조상의 배경부터 바닥까지.
+1. 글자·아이콘 색(`inner/*`, `interactive/*/inner/*`)이 쓰인 요소마다 **배경 스택**을 정한다 — 같은 요소나 가장 가까운 조상의 배경부터 바닥까지.
 2. 스택이 전부 불투명하면 `tokens/design-tokens.json` 의 모드별 값으로 대비를 계산한다. **모든 모드에서** 잰다.
-3. 스택에 반투명 면(`floating`·`overlay`, interactive 의 `floating`·`overlay-*`)이 있으면 그 아래까지 합성해서 잰다. 바닥이 코드에서 정해지지 않으면(사진·지도·props 로 받는 배경) 위반으로 단정하지 말고 **확인 대상**으로 적는다 (§8 3-1).
-4. 권장 기준은 `base` 에서 본문 4.5, 큰 글자·아이콘 3.0. `low`~`lowest` 와 `disabled`·`placeholder` 는 제외한다.
+3. 스택에 반투명 면(`surface` 의 `high`~`highest`, interactive 의 `floating`·`overlay-*`)이 있으면 그 아래까지 합성해서 잰다. 바닥이 코드에서 정해지지 않으면(사진·지도·props 로 받는 배경) 위반으로 단정하지 말고 **확인 대상**으로 적는다 (§8 3-1).
+4. 권장 기준은 `base` 에서 본문 4.5, 큰 글자·아이콘 3.0. 수치는 반올림하지 않는다(4.47 은 미달). `low`~`lowest` 와 `disabled`·`placeholder` 는 제외한다.
+5. 본문 텍스트가 색 그룹 잉크(`inner/{brand|success|error|warning|info}/*`)이면서 권장 미달이면 `inner/neutral/*` 로 바꾸는 안을 함께 적는다 (§5 4번).
 
 ```
-정상:      bg-surface-brand-elevation-base 위 text-on-surface-neutral-default-base  (그룹은 달라도 모든 모드에서 기준 통과)
-권장 미달: bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base (라이트에서 흰 바탕에 흰 글자)
+정상:      bg-surface-brand-default-base 위 text-inner-neutral-default-base  (그룹은 달라도 모든 모드에서 기준 통과)
+권장 미달: bg-surface-neutral-default-base 위 text-inner-neutral-inverse-base (라이트에서 흰 바탕에 흰 글자)
 ```
 
 이 검사는 룰북을 읽어야 정확히 할 수 있다. `color-token-rule.md` 를 Read 하고 §5·§8 기준으로 판단한다.
@@ -69,17 +70,17 @@ primitive 는 CSS 변수로 방출되지 않으므로 참조하면 반드시 깨
 
 ```
 ❌ 깨진 참조 (스타일이 안 먹는 중)
-   src/components/Card/Card.tsx:18  bg-surface-brand-elevation-old  → theme.css 에 --color-surface-brand-elevation-old 없음
+   src/components/Card/Card.tsx:18  bg-surface-brand-default-old  → theme.css 에 --color-surface-brand-default-old 없음
 
 ❌ 하드코딩
    src/components/Card/Card.tsx:14  #f5f5f5  → 토큰으로 교체 필요
 
 ⚠️  대비 권장 미달 — 화면 확인 필요 (color-token-rule.md §5)
-   src/components/Card/Card.tsx:22  bg-surface-default-elevation-base 위 text-on-surface-neutral-inverse-base
+   src/components/Card/Card.tsx:22  bg-surface-neutral-default-base 위 text-inner-neutral-inverse-base
                                     light 1.00 / dark 1.00 (기준 4.5)
 
 ℹ️  확인 대상 — 합성 배경 불명 (color-token-rule.md §8 3-1)
-   src/components/MapCard/MapCard.tsx:9  bg-surface-default-floating-low 위 text-on-surface-neutral-default-base — 바닥이 지도
+   src/components/MapCard/MapCard.tsx:9  bg-surface-neutral-default-high 위 text-inner-neutral-default-base — 바닥이 지도
 
 ℹ️  구조
    src/components/Card/  types.ts 없음

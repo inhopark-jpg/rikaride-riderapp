@@ -31,7 +31,7 @@
 - 5개 필드(`position-x`, `position-y`, `blur`, `spread`, `color`)를 **각각 개별 값으로 적용**합니다 — CSS `box-shadow` 한 줄로 조합하는 건 최종 렌더링 단계에서는 괜찮지만, 토큰을 코드에 옮길 때는 이 5개를 분리된 변수/상수로 유지해야 나중에 하나만 바뀌어도 대응할 수 있습니다.
 - `color` 필드는 **`color-semantic` 의 `styles/shadow/{low|mid|high}` 를 참조하는 alias**입니다 (`color-token-rule.md` §2-1). `color-primitive` 를 직접 참조하지 않습니다 — primitive 에는 모드 축이 없어서 직접 걸면 라이트/다크 모드에서 그림자 색이 바뀌지 않습니다. 이 참조 관계를 그대로 유지하세요.
 - **`effects` 컬렉션 자체에는 모드 축이 없습니다.** 그림자 색이 모드를 따라가는 것은 전적으로 `color-semantic` 쪽 모드 덕분입니다. 코드로 옮길 때 이 alias 를 리터럴 값으로 펼쳐버리면 모드 전환이 깨집니다 — **모드 축이 다른 컬렉션으로 넘어가는 alias 는 값이 아니라 참조로 내보내세요** (CSS 라면 `var()`).
-- 다크모드에서 그림자 색은 라이트 값을 뒤집는 게 아니라 **어두운 색을 유지하고 알파를 올립니다** (`color-token-rule.md` §9). 뒤집으면 그림자가 아니라 글로우가 됩니다.
+- 다크모드에서 그림자 색은 라이트 값을 뒤집지 않고 **두 모드 모두 같은 어두운 색을 그대로** 둡니다 (`color-token-rule.md` §9). 뒤집으면 그림자가 아니라 글로우가 되고, 알파를 올려 다크의 대비 수치를 맞추면 눈으로는 부자연스럽게 밝아집니다.
 
 ## 2. `background-blur/uniform/{강도}/blur` vs `background-blur/progressive/{강도}-{방향}/{start|end}`
 

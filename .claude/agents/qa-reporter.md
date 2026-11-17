@@ -160,7 +160,7 @@ Figma MCP `get_variable_defs` 결과 vs `tokens/design-tokens.json`.
      src/components/Card/Card.tsx:14   #f5f5f5
      src/components/Card/Card.tsx:22   p-[13px]
 5. 존재하지 않는 참조  ✅ / ❌ N건
-     src/components/Card/Card.tsx:18   --color-surface-brand-elevation-old (theme.css 에 없음)
+     src/components/Card/Card.tsx:18   --color-surface-brand-default-old (theme.css 에 없음)
 6. primitive 참조      ✅ / ❌ N건
 7. theme.css 오염      ✅ / ❌
 8. 4파일 구조          ✅ / ❌ (누락 목록)
