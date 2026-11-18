@@ -36,7 +36,7 @@
 | `typography-token-rule.md` | font-family / weight / size / line-height 변수 구조. 카테고리(display·headline·body·magazine)마다 **지원 굵기가 비대칭**이다. 모드 축이 "브랜드×언어"로 색상과 다르다 |
 | `text-style-rule.md` | 디자이너가 실제로 레이어에 적용하는 완성 프리셋(Text Style). 이름이 `{카테고리}/{굵기}/{스텝}`이고 **굵기가 가운데 세그먼트**. 5속성을 빠짐없이 적용하는 규칙 |
 | `effect-token-rule.md` | shadow(5필드 분리) / background-blur(uniform vs progressive) / `effects/liquid-glass/*` (유리 효과 시각적 정의) / `gradient/*` 색상 스타일(유일하게 Variable 이 아님). 그림자·그라디언트 색이 `color-semantic` 의 `styles` 그룹을 거쳐야 모드가 따라온다는 점, **liquid-glass는 표준 CSS로 재현 불가**라는 경고와 플랫폼별 대안 |
-| `language-rule.md` | `language` 컬렉션(다국어 i18n 문자열, 디자인 토큰 아님). 텍스트 노드/text prop 에만 적용. 변수 하나 = 번역 항목 하나, 코드 키는 변수명 끝 6자 ID. 변수 생성·연결은 사람이 전용 도구로 하고 Claude 는 찾기·번역 제안·기존 값 수정만. 번역 테이블은 검사 제외, `--` = 미번역. `design-tokens.json` 이 아닌 별도 i18n 파일로 추출. typeface-semantic 모드와 동기 전환 |
+| `language-rule.md` | `language` 컬렉션(다국어 i18n 문자열, 디자인 토큰 아님). 텍스트 노드/text prop 에만 적용. 변수 하나 = 번역 항목 하나, 코드 키는 변수명 끝 6자 ID. 변수 생성·연결·번역 테이블은 i18n 플러그인이나 §9 데이터 계약대로(Claude 도 가능), 이름 변경·삭제는 플러그인으로. 번역 테이블은 검사 제외, `--` = 미번역. `design-tokens.json` 이 아닌 별도 i18n 파일로 추출. typeface-semantic 모드와 동기 전환 |
 | `component-structure-rule.md` | 스켈레톤/템플릿/패턴 3계층 판별 2단계 테스트, 중첩 규칙, 빌딩블록·스코프 플래그, 네이밍 스키마, 페이지 배치 규칙 |
 | `section-layout-rule.md` | Figma 페이지 안의 섹션 구성. 컴포넌트 레이아웃(패밀리 → sub-group → template/pattern/building-block)과 페이지 레이아웃(흐름 → sub-group → page/sub page). **위치가 곧 사용 관계** — 빌딩블록은 쓰는 쪽을 모두 포함하는 가장 안쪽 섹션 아래. 기존 섹션을 읽어 레이어·공유 범위를 판별하는 절차 |
 | `design-to-dev-rule.md` | Figma↔코드 변환 규칙 — 이름 기계적 변환 알고리즘(`.` → `_`, `pattern-` 을 앞으로) + 스켈레톤/템플릿 속성 재선언 처리 |

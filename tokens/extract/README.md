@@ -9,6 +9,7 @@
 | `figma-dump.js` | Figma Plugin API 스니펫. node로 실행하지 않고 `use_figma` MCP로 실행합니다 |
 | `to-dtcg.mjs` | `raw/*.json` → `tokens/design-tokens.json` 변환 + 검증. `language` 와 변수 0개 칸막이 컬렉션은 건너뜀 |
 | `to-i18n.mjs` | `raw/vars.language.json` → `src/i18n/locales/*.json` (언어별, 키 = 6자 ID). `language-rule.md` §4 |
+| `language-naming.js` | `use_figma` 스니펫. language 토큰 이름 함수(i18n 플러그인 사본) + 계약 버전 확인. 토큰·번역 테이블을 만드는 스크립트 앞에 붙인다. `language-rule.md` §9 |
 | `collections.json` | 룰북이 전제하는 컬렉션/경로 이름. 대조 기준입니다 |
 | `raw/` | 덤프 원본 (생성물, git에 올리지 않음) |
 

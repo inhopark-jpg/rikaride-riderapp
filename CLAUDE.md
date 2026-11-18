@@ -76,7 +76,7 @@ btn-ghost/pattern-go-back    → PatternBtnGhostGoBack.tsx
 | 상황 | 에이전트 |
 |---|---|
 | Figma URL 을 받아 컴포넌트/화면 구현 | `figma-implementer` |
-| Figma 에서 디자인 시스템 수정·컴포넌트 생성·화면 조립·기존 `language` 변수의 번역 값 채우기 | `figma-editor` — 메인이 계획 승인을 받은 뒤 위임. 변수가 바뀌었으면 이어서 `token-checker` |
+| Figma 에서 디자인 시스템 수정·컴포넌트 생성·화면 조립·`language` 변수 생성·연결·번역 테이블(`language-rule.md` §9)·번역 값 채우기 | `figma-editor` — 메인이 계획 승인을 받은 뒤 위임. 변수가 바뀌었으면 이어서 `token-checker` |
 | Figma 토큰과 `design-tokens.json` 이 어긋난 것 같을 때 | `token-checker` |
 | 작업을 끝내고 전체 검사 | `qa-reporter` |
 | 코드 전체에서 하드코딩 찾기 | `design-reviewer` |

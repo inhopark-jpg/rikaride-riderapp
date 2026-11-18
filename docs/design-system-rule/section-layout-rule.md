@@ -97,7 +97,7 @@ template·pattern·building-block 섹션은 **주제 컴포넌트를 정확히 �
 
 ### building-block 섹션의 폭
 
-맨 아래 띠의 building-block 섹션은 **부모 섹션의 안쪽 폭이 더 넓으면 그 폭까지 늘린다.** 컴포넌트 레이아웃·페이지 레이아웃 모두 같다. 같은 띠에 building-block 섹션이 여러 개 나란히 있으면 각자 자기 내용 폭을 유지한다.
+building-block 섹션이 아닌 섹션(sub-group·template·pattern·page)의 맨 아래 띠에 놓인 building-block 섹션은 **부모 섹션의 안쪽 폭이 더 넓으면 그 폭까지 늘린다.** 컴포넌트 레이아웃·페이지 레이아웃 모두 같다. 같은 띠에 building-block 섹션이 여러 개 나란히 있으면 각자 자기 내용 폭을 유지한다. building-block 섹션 안에 중첩된 building-block 섹션(재료의 재료)은 늘리지 않고 자기 내용 폭을 유지한다.
 
 ---
 

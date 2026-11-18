@@ -1,6 +1,6 @@
 ---
 name: figma-editor
-description: 승인된 계획에 따라 Figma 파일을 직접 편집한다. 디자인 시스템(변수·컴포넌트) 수정, 컴포넌트 생성, 기존 디자인 시스템 기반 화면 조립, 이미 있는 language 변수의 번역 값 채우기에 사용한다. language 변수 생성·텍스트 연결은 하지 않는다. 계획 승인은 메인 세션이 받은 뒤 위임한다.
+description: 승인된 계획에 따라 Figma 파일을 직접 편집한다. 디자인 시스템(변수·컴포넌트) 수정, 컴포넌트 생성, 기존 디자인 시스템 기반 화면 조립, language 변수 생성·연결·번역 테이블 생성(language-rule.md §9 데이터 계약대로)과 번역 값 채우기에 사용한다. language 변수 이름 변경·삭제는 하지 않는다. 계획 승인은 메인 세션이 받은 뒤 위임한다.
 tools: Read, Write, Edit, Bash, Glob, Grep, Skill, mcp__plugin_figma_figma__create_session, mcp__plugin_figma_figma__use_figma, mcp__plugin_figma_figma__get_metadata, mcp__plugin_figma_figma__get_screenshot, mcp__plugin_figma_figma__get_variable_defs, mcp__plugin_figma_figma__search_design_system, mcp__plugin_figma_figma__get_libraries
 skills:
   - figma:figma-use
@@ -43,7 +43,7 @@ fileKey 를 확인하면 `create_session` 을 먼저 호출하고, 받은 sessio
 - 값은 변수·스타일 바인딩으로만 넣는다. 리터럴 값을 직접 칠하지 않는다.
 - 큰 작업은 섹션·컴포넌트 단위로 나눠 실행하고, 단위마다 다음 단계로 넘어가기 전에 결과를 확인한다.
 - 화면 조립은 계획의 재사용·확장·신규 분류표를 따른다. 신규·확장 컴포넌트가 먼저 존재해야 화면을 조립한다.
-- **`language` 변수는 값만 바꾼다.** 생성·이름 변경·삭제·텍스트 노드 연결은 계획에 있어도 하지 않고 보고한다 — 사람이 전용 도구로 한다 (`language-rule.md` §5). 화면 조립 중 새 문자열이 필요하면 텍스트를 그대로 두고 "language 변수 연결 필요" 로 보고한다.
+- **`language` 변수는 `language-rule.md` §9 데이터 계약대로만 만든다.** 생성·연결·번역 테이블이 계획에 있으면 §9 를 Read 하고, 스크립트 앞에 `tokens/extract/language-naming.js` 를 붙여 `checkContract()` 부터 실행한다 — 계약 버전이 맞지 않으면 만들지 않고 보고한다. 이름 변경·삭제는 계획에 있어도 하지 않고 보고한다 — 플러그인으로 한다 (`language-rule.md` §5). 화면 조립 중 계획에 없는 새 문자열이 필요하면 텍스트를 그대로 두고 "language 변수 필요" 로 보고한다.
 
 ## 4. Verify
 
