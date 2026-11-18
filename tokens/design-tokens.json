@@ -1,6 +1,6 @@
 {
   "$description": "자동 생성. tokens/extract/to-dtcg.mjs 가 Figma 덤프에서 만듭니다. 직접 편집은 docs/TOKENS.md 절차를 따르세요.",
-  "$generatedAt": "2026-11-17T08:19:33.454Z",
+  "$generatedAt": "2026-11-18T12:37:19.520Z",
   "color-primitive": {
     "$extensions": {
       "com.figma.modes": [
@@ -10865,18 +10865,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.success-green.default.50}",
+            "$value": "{color-primitive.success-green.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:42",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.success-green.default.50}",
+                "light/rikaride": "{color-primitive.success-green.default.200}",
                 "dark/rikaride": "{color-primitive.success-green.default.600}",
-                "light/govt-navy": "{color-primitive.success-green.default.50}",
-                "light/sky-blue": "{color-primitive.success-green.default.50}",
-                "light/coral-orange": "{color-primitive.success-green.default.50}",
-                "light/ocean-teal": "{color-primitive.success-green.default.50}",
-                "light/mango-yellow": "{color-primitive.success-green.default.50}",
-                "light/dusk-magenta": "{color-primitive.success-green.default.50}"
+                "light/govt-navy": "{color-primitive.success-green.default.200}",
+                "light/sky-blue": "{color-primitive.success-green.default.200}",
+                "light/coral-orange": "{color-primitive.success-green.default.200}",
+                "light/ocean-teal": "{color-primitive.success-green.default.200}",
+                "light/mango-yellow": "{color-primitive.success-green.default.200}",
+                "light/dusk-magenta": "{color-primitive.success-green.default.200}"
               }
             }
           }
@@ -11005,18 +11005,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.success-green.default.50}",
+            "$value": "{color-primitive.success-green.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:50",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.success-green.default.50}",
-                "dark/rikaride": "{color-primitive.success-green.default.50}",
-                "light/govt-navy": "{color-primitive.success-green.default.50}",
-                "light/sky-blue": "{color-primitive.success-green.default.50}",
-                "light/coral-orange": "{color-primitive.success-green.default.50}",
-                "light/ocean-teal": "{color-primitive.success-green.default.50}",
-                "light/mango-yellow": "{color-primitive.success-green.default.50}",
-                "light/dusk-magenta": "{color-primitive.success-green.default.50}"
+                "light/rikaride": "{color-primitive.success-green.default.200}",
+                "dark/rikaride": "{color-primitive.success-green.default.200}",
+                "light/govt-navy": "{color-primitive.success-green.default.200}",
+                "light/sky-blue": "{color-primitive.success-green.default.200}",
+                "light/coral-orange": "{color-primitive.success-green.default.200}",
+                "light/ocean-teal": "{color-primitive.success-green.default.200}",
+                "light/mango-yellow": "{color-primitive.success-green.default.200}",
+                "light/dusk-magenta": "{color-primitive.success-green.default.200}"
               }
             }
           }
@@ -11147,18 +11147,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.error-red.default.50}",
+            "$value": "{color-primitive.error-red.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:58",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.error-red.default.50}",
+                "light/rikaride": "{color-primitive.error-red.default.200}",
                 "dark/rikaride": "{color-primitive.error-red.default.600 (main)}",
-                "light/govt-navy": "{color-primitive.error-red.default.50}",
-                "light/sky-blue": "{color-primitive.error-red.default.50}",
-                "light/coral-orange": "{color-primitive.error-red.default.50}",
-                "light/ocean-teal": "{color-primitive.error-red.default.50}",
-                "light/mango-yellow": "{color-primitive.error-red.default.50}",
-                "light/dusk-magenta": "{color-primitive.error-red.default.50}"
+                "light/govt-navy": "{color-primitive.error-red.default.200}",
+                "light/sky-blue": "{color-primitive.error-red.default.200}",
+                "light/coral-orange": "{color-primitive.error-red.default.200}",
+                "light/ocean-teal": "{color-primitive.error-red.default.200}",
+                "light/mango-yellow": "{color-primitive.error-red.default.200}",
+                "light/dusk-magenta": "{color-primitive.error-red.default.200}"
               }
             }
           }
@@ -11287,18 +11287,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.error-red.default.50}",
+            "$value": "{color-primitive.error-red.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:66",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.error-red.default.50}",
-                "dark/rikaride": "{color-primitive.error-red.default.50}",
-                "light/govt-navy": "{color-primitive.error-red.default.50}",
-                "light/sky-blue": "{color-primitive.error-red.default.50}",
-                "light/coral-orange": "{color-primitive.error-red.default.50}",
-                "light/ocean-teal": "{color-primitive.error-red.default.50}",
-                "light/mango-yellow": "{color-primitive.error-red.default.50}",
-                "light/dusk-magenta": "{color-primitive.error-red.default.50}"
+                "light/rikaride": "{color-primitive.error-red.default.200}",
+                "dark/rikaride": "{color-primitive.error-red.default.200}",
+                "light/govt-navy": "{color-primitive.error-red.default.200}",
+                "light/sky-blue": "{color-primitive.error-red.default.200}",
+                "light/coral-orange": "{color-primitive.error-red.default.200}",
+                "light/ocean-teal": "{color-primitive.error-red.default.200}",
+                "light/mango-yellow": "{color-primitive.error-red.default.200}",
+                "light/dusk-magenta": "{color-primitive.error-red.default.200}"
               }
             }
           }
@@ -11429,18 +11429,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.warning-yellow.default.50}",
+            "$value": "{color-primitive.warning-yellow.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:74",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.warning-yellow.default.50}",
+                "light/rikaride": "{color-primitive.warning-yellow.default.200}",
                 "dark/rikaride": "{color-primitive.warning-yellow.default.600}",
-                "light/govt-navy": "{color-primitive.warning-yellow.default.50}",
-                "light/sky-blue": "{color-primitive.warning-yellow.default.50}",
-                "light/coral-orange": "{color-primitive.warning-yellow.default.50}",
-                "light/ocean-teal": "{color-primitive.warning-yellow.default.50}",
-                "light/mango-yellow": "{color-primitive.warning-yellow.default.50}",
-                "light/dusk-magenta": "{color-primitive.warning-yellow.default.50}"
+                "light/govt-navy": "{color-primitive.warning-yellow.default.200}",
+                "light/sky-blue": "{color-primitive.warning-yellow.default.200}",
+                "light/coral-orange": "{color-primitive.warning-yellow.default.200}",
+                "light/ocean-teal": "{color-primitive.warning-yellow.default.200}",
+                "light/mango-yellow": "{color-primitive.warning-yellow.default.200}",
+                "light/dusk-magenta": "{color-primitive.warning-yellow.default.200}"
               }
             }
           }
@@ -11569,18 +11569,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.warning-yellow.default.50}",
+            "$value": "{color-primitive.warning-yellow.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:82",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.warning-yellow.default.50}",
-                "dark/rikaride": "{color-primitive.warning-yellow.default.50}",
-                "light/govt-navy": "{color-primitive.warning-yellow.default.50}",
-                "light/sky-blue": "{color-primitive.warning-yellow.default.50}",
-                "light/coral-orange": "{color-primitive.warning-yellow.default.50}",
-                "light/ocean-teal": "{color-primitive.warning-yellow.default.50}",
-                "light/mango-yellow": "{color-primitive.warning-yellow.default.50}",
-                "light/dusk-magenta": "{color-primitive.warning-yellow.default.50}"
+                "light/rikaride": "{color-primitive.warning-yellow.default.200}",
+                "dark/rikaride": "{color-primitive.warning-yellow.default.200}",
+                "light/govt-navy": "{color-primitive.warning-yellow.default.200}",
+                "light/sky-blue": "{color-primitive.warning-yellow.default.200}",
+                "light/coral-orange": "{color-primitive.warning-yellow.default.200}",
+                "light/ocean-teal": "{color-primitive.warning-yellow.default.200}",
+                "light/mango-yellow": "{color-primitive.warning-yellow.default.200}",
+                "light/dusk-magenta": "{color-primitive.warning-yellow.default.200}"
               }
             }
           }
@@ -11711,18 +11711,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.info-blue.default.50}",
+            "$value": "{color-primitive.info-blue.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:90",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.info-blue.default.50}",
+                "light/rikaride": "{color-primitive.info-blue.default.200}",
                 "dark/rikaride": "{color-primitive.info-blue.default.600}",
-                "light/govt-navy": "{color-primitive.info-blue.default.50}",
-                "light/sky-blue": "{color-primitive.info-blue.default.50}",
-                "light/coral-orange": "{color-primitive.info-blue.default.50}",
-                "light/ocean-teal": "{color-primitive.info-blue.default.50}",
-                "light/mango-yellow": "{color-primitive.info-blue.default.50}",
-                "light/dusk-magenta": "{color-primitive.info-blue.default.50}"
+                "light/govt-navy": "{color-primitive.info-blue.default.200}",
+                "light/sky-blue": "{color-primitive.info-blue.default.200}",
+                "light/coral-orange": "{color-primitive.info-blue.default.200}",
+                "light/ocean-teal": "{color-primitive.info-blue.default.200}",
+                "light/mango-yellow": "{color-primitive.info-blue.default.200}",
+                "light/dusk-magenta": "{color-primitive.info-blue.default.200}"
               }
             }
           }
@@ -11851,18 +11851,18 @@
           },
           "base": {
             "$type": "color",
-            "$value": "{color-primitive.info-blue.default.50}",
+            "$value": "{color-primitive.info-blue.default.200}",
             "$extensions": {
               "com.figma.variableId": "VariableID:3287:98",
               "com.figma.modeValues": {
-                "light/rikaride": "{color-primitive.info-blue.default.50}",
-                "dark/rikaride": "{color-primitive.info-blue.default.50}",
-                "light/govt-navy": "{color-primitive.info-blue.default.50}",
-                "light/sky-blue": "{color-primitive.info-blue.default.50}",
-                "light/coral-orange": "{color-primitive.info-blue.default.50}",
-                "light/ocean-teal": "{color-primitive.info-blue.default.50}",
-                "light/mango-yellow": "{color-primitive.info-blue.default.50}",
-                "light/dusk-magenta": "{color-primitive.info-blue.default.50}"
+                "light/rikaride": "{color-primitive.info-blue.default.200}",
+                "dark/rikaride": "{color-primitive.info-blue.default.200}",
+                "light/govt-navy": "{color-primitive.info-blue.default.200}",
+                "light/sky-blue": "{color-primitive.info-blue.default.200}",
+                "light/coral-orange": "{color-primitive.info-blue.default.200}",
+                "light/ocean-teal": "{color-primitive.info-blue.default.200}",
+                "light/mango-yellow": "{color-primitive.info-blue.default.200}",
+                "light/dusk-magenta": "{color-primitive.info-blue.default.200}"
               }
             }
           }
