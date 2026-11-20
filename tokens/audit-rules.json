@@ -101,7 +101,7 @@
   },
 
   "toneSwaps": ["surface/*/*/*", "stroke/*/*/*", "inner/*/*/*"],
-  "$toneSwapsComment": "다크 default ↔ 라이트 inverse, 다크 inverse ↔ 라이트 default 가 같은 톤인지 보는 대상 (§2 「맥락 4종」·§9). 값은 조정할 수 있지만 톤은 맞바꾼 그대로여야 한다. 같은 이름의 fixed-* 는 라이트·다크 값이 그대로인지 본다.",
+  "$toneSwapsComment": "다크 default ↔ 라이트 inverse, 다크 inverse ↔ 라이트 default 가 같은 톤인지 보는 대상 (§2 「맥락 4종」·§9). 값은 조정할 수 있지만 톤은 맞바꾼 그대로여야 한다. fixed-* 는 같은 이름의 라이트·다크 값이 같은 톤인지 본다 (값은 조정할 수 있다).",
 
   "stateSet": ["default", "selected", "selected-brand", "disabled"],
   "$stateSetComment": "서로 전환되는 interactive 상태. 이 안의 두 상태가 surface·stroke·inner 전부에서 같으면 구분이 사라진 것이다 (§3 — 역할마다 독립적으로 바뀔 수 있으므로 한 역할만 같은 건 정상). 없는 역할은 default 를, default 도 없으면 '색 없음'을 쓴다. floating·overlay-*·subtle·placeholder·brand 는 상태라기보다 쓰이는 자리·잉크 변형이라 비교하지 않는다.",

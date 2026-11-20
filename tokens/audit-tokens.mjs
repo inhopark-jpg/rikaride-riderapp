@@ -333,9 +333,11 @@ for (const { brand, light, dark } of PAIRS) {
         add('soft', '맞바꾼 맥락의 톤 갈라짐', brand,
           `다크 ${sem} ${resolve(sem, dark)} ↔ 라이트 ${twin} ${resolve(twin, light)}  대비 ${ratio(a, b).toFixed(2)} (§9 「톤은 맞바꾼 그대로」)`)
     } else if (ctx === 'fixed-deep' || ctx === 'fixed-pale') {
-      // J. 고정 맥락 — 라이트·다크가 바뀌어도 값이 그대로여야 한다 (§2).
-      if (resolve(sem, light) !== resolve(sem, dark))
-        add('soft', '고정 맥락이 모드를 따라감', brand, `${sem}  라이트 ${resolve(sem, light)} → 다크 ${resolve(sem, dark)} (§2 「fixed-* 는 값이 그대로」)`)
+      // J. 고정 맥락 — 라이트·다크가 바뀌어도 톤이 그대로여야 한다 (§2·§9). 값은 조정할 수 있으므로 I 와 같이 대비로 본다.
+      const a = onMid(sem, dark), b = onMid(sem, light)
+      if (a && b && ratio(a, b) >= TH.toneSplit)
+        add('soft', '고정 맥락의 톤 갈라짐', brand,
+          `${sem}  라이트 ${resolve(sem, light)} ↔ 다크 ${resolve(sem, dark)}  대비 ${ratio(a, b).toFixed(2)} (§2 「fixed-* 는 톤이 그대로」)`)
     }
   }
 

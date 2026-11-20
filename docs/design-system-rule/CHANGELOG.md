@@ -14,6 +14,9 @@
 
 ---
 
+## 2026-11-20
+- **color-token-rule.md** §2 「맥락 4종 — 세 역할 공통」·§9 「다크모드 값을 산출하는 방법」, **FIGMA-GUIDEBOOK.md** 「모드(테마)와 서브트리 오버라이드」, **TOKENS.md** 감사 표 — `fixed-deep`·`fixed-pale` 을 "라이트·다크 값이 그대로"에서 "톤이 그대로, 값은 라이트에서 출발해 모드마다 조정 가능(조정값도 두 모드에서 §5 대비 통과)"으로 완화. 감사 J 검사도 값 일치 대신 중간톤 바탕 대비(톤 갈라짐)로 변경 — 다크 `inner/{색 그룹}/fixed-deep/base` 를 한 단계 연하게(600 → 500) 조정하려는 사용자 판단. 맞바꿈 맥락과 같은 조정 기준을 `fixed-*` 에도 적용 (사용자 승인 — 섹션별 승인)
+
 ## 2026-11-18
 - **section-layout-rule.md** §2 「building-block 섹션의 폭」, **FIGMA-GUIDEBOOK.md** §4 「빌딩블록을 어디에 두는가」 — 부모 안쪽 폭까지 늘리는 대상을 "building-block 섹션이 아닌 섹션(sub-group·template·pattern·page)의 맨 아래 띠에 놓인 building-block 섹션"으로 한정하고, building-block 섹션 안에 중첩된 building-block 섹션(재료의 재료)은 자기 내용 폭을 유지한다고 명시 — 부모 폭을 채우는 것은 공유 범위를 나타내는 최상위 빌딩블록이고, 그 안의 재료의 재료는 바깥 빌딩블록에 종속되므로 채울 이유가 없다. 기존 문구("맨 아래 띠의 building-block 섹션")는 중첩된 섹션까지 포함하는 것으로 읽혀 Figma 구조 검사가 `.skeleton/stop-direction-arrow` 의 중첩 섹션을 위반으로 판정했다 (사용자 판단 — 섹션별 승인)
 - **component-structure-rule.md** §3 「variant 로 묶을지, 별도 컴포넌트로 나눌지 — 상태와 타입」(구 「타입(type) 분화 규칙」)·§7 오류 패턴 1행, **FIGMA-GUIDEBOOK.md** §1 같은 항목 — 옵션들을 먼저 상태(같은 인스턴스가 사용 중에 오감)와 타입(쓰는 쪽이 골라 씀)으로 가르고, 상태는 레이아웃·속성이 달라도 하나의 컴포넌트 셋, 기존 분리 기준(스켈레톤·속성 동일 여부)은 타입에만 적용, 50개 초과 시 타입 축에서 나눔 — 기존 규칙이 타입만 다뤄 iOS Live Activity 의 Dynamic Island 표시 형태(minimal/compact/expanded)처럼 시스템이 바꾸는 상태까지 분리 대상으로 읽혔다. 프로젝트 고유 규칙이 아니라 variant/별도 컴포넌트를 가르는 일반 표준을 담는 방향 (사용자 승인 — 섹션별 승인)
